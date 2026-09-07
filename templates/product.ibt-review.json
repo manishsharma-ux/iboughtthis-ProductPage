@@ -30,7 +30,7 @@
         "badge_text": "",
         "show_vendor": true,
         "show_price": true,
-        "reviews_anchor": "#ibt-buyer-reviews",
+        "reviews_anchor": "",
         "cta_label": "View Deal on Amazon",
         "cta_bg": "#1c4ead",
         "cta_color": "#ffffff",
@@ -89,81 +89,6 @@
         "bgsection": "#f9f9f7",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
-        "marginsection": "0px 0px 0px 0px",
-        "marginmobile": "0px 0px 0px 0px"
-      }
-    },
-    "expert": {
-      "type": "ibt-expert-review",
-      "blocks": {
-        "part_who": {
-          "type": "part",
-          "settings": {
-            "subhead": "Who it's for",
-            "source": "richtext",
-            "copy": "<p>Describe the buyer this product actually suits, and who should skip it. Two or three sentences is plenty.</p>",
-            "icon": "person"
-          }
-        },
-        "part_performs": {
-          "type": "part",
-          "settings": {
-            "subhead": "How it performs",
-            "source": "expert_review",
-            "copy": "",
-            "icon": "gauge"
-          }
-        },
-        "part_proscons": {
-          "type": "part",
-          "settings": {
-            "subhead": "Pros and cons",
-            "source": "pros_cons",
-            "copy": "",
-            "icon": "scale"
-          }
-        },
-        "part_worth": {
-          "type": "part",
-          "settings": {
-            "subhead": "Worth it or not",
-            "source": "experience",
-            "copy": "",
-            "icon": "wallet"
-          }
-        }
-      },
-      "block_order": [
-        "part_who",
-        "part_performs",
-        "part_proscons",
-        "part_worth"
-      ],
-      "settings": {
-        "setwidth": "container",
-        "eyebrow": "Hands-on testing",
-        "heading": "Expert review",
-        "intro": "",
-        "align": "left",
-        "show_rule": true,
-        "show_byline": true,
-        "byline_prefix": "Reviewed by",
-        "byline_name": "",
-        "byline_role": "",
-        "show_bio": false,
-        "show_verdict": true,
-        "part_style": "cards",
-        "two_col_parts": false,
-        "numbered": false,
-        "indent_copy": true,
-        "pros_label": "Pros",
-        "cons_label": "Cons",
-        "show_top_accent": true,
-        "accent_color": "#1c4ead",
-        "animation": "fade-up",
-        "bgsection": "#f4f7fc",
-        "paddingsection": "60px 0px 60px 0px",
-        "paddingmobile": "40px 0px 40px 0px",
         "marginsection": "0px 0px 0px 0px",
         "marginmobile": "0px 0px 0px 0px"
       }
@@ -233,69 +158,12 @@
         "marginsection": "0px 0px 0px 0px",
         "marginmobile": "0px 0px 0px 0px"
       }
-    },
-    "reviews": {
-      "type": "ibt-buyer-reviews",
-      "blocks": {
-        "review_1": {
-          "type": "review",
-          "settings": {
-            "name": "Verified buyer",
-            "rating": "5",
-            "title": "",
-            "quote": "<p>Add a per-product quote through the Buyer Reviews metafield. This card is the store-wide placeholder.</p>",
-            "date": "",
-            "verified": true
-          }
-        },
-        "review_2": {
-          "type": "review",
-          "settings": {
-            "name": "Verified buyer",
-            "rating": "4",
-            "title": "",
-            "quote": "<p>Add a per-product quote through the Buyer Reviews metafield. This card is the store-wide placeholder.</p>",
-            "date": "",
-            "verified": true
-          }
-        }
-      },
-      "block_order": [
-        "review_1",
-        "review_2"
-      ],
-      "settings": {
-        "setwidth": "container",
-        "eyebrow": "What buyers say",
-        "heading": "Buyer reviews",
-        "intro": "",
-        "align": "left",
-        "show_summary": true,
-        "summary_prefix": "Average of",
-        "summary_suffix": "customer ratings",
-        "columns": "2",
-        "verified_label": "Verified purchase",
-        "attribution": "Quotes are from verified Amazon customer reviews and have been shortened for length.",
-        "attribution_link_text": "Read all reviews on Amazon",
-        "show_cta": true,
-        "cta_label": "View Deal on Amazon",
-        "cta_color": "#ffffff",
-        "accent_color": "#1c4ead",
-        "animation": "fade-up",
-        "bgsection": "#f9f9f7",
-        "paddingsection": "56px 0px 64px 0px",
-        "paddingmobile": "36px 0px 40px 0px",
-        "marginsection": "0px 0px 0px 0px",
-        "marginmobile": "0px 0px 0px 0px"
-      }
     }
   },
   "order": [
     "main",
     "about",
     "features",
-    "expert",
-    "faqs",
-    "reviews"
+    "faqs"
   ]
 }
