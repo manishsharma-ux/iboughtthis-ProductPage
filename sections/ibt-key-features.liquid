@@ -1,0 +1,380 @@
+<!-- ibt-key-features.liquid | IBT product page - Section 3: Key features -->
+{%- liquid
+  assign manual_count = 0
+  for block in section.blocks
+    if block.settings.text != blank
+      assign manual_count = manual_count | plus: 1
+    endif
+  endfor
+
+  assign usp = product.metafields.custom.usp_details
+  assign use_metafield = false
+  if manual_count == 0 and usp != blank
+    assign use_metafield = true
+  endif
+
+  assign img = section.settings.image
+  assign has_img = false
+  if img != blank
+    assign has_img = true
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}{
+    --ibt-ink:#1a1a1a;
+    --ibt-body:#54595f;
+    --ibt-line:#e6e6e6;
+    --ibt-soft:#f7f7f5;
+    --ibt-check:{{ section.settings.icon_color }};
+    --ibt-radius:14px;
+    background-color:{{ section.settings.bgsection }};
+    padding:{{ section.settings.paddingsection }};
+    margin:{{ section.settings.marginsection }};
+  }
+  @media (max-width:750px){
+    #shopify-section-{{ section.id }}{
+      padding:{{ section.settings.paddingmobile }};
+      margin:{{ section.settings.marginmobile }};
+    }
+  }
+{%- endstyle -%}
+
+<style>
+  #shopify-section-{{ section.id }} .ibt-feat{
+    {% if section.settings.boxed %}
+      border:1px solid var(--ibt-line);
+      border-radius:var(--ibt-radius);
+      padding:32px;
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__grid{
+    display:grid;
+    gap:32px;
+    grid-template-columns:1fr;
+    align-items:center;
+  }
+  #shopify-section-{{ section.id }} .ibt-eyebrow{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#8a8f94;
+    margin:0 0 10px;
+  }
+  #shopify-section-{{ section.id }} .ibt-h2{
+    font-size:28px;
+    line-height:1.3;
+    font-weight:700;
+    color:var(--ibt-ink);
+    margin:0 0 22px;
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:grid;
+    gap:16px;
+    grid-template-columns:1fr;
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__item{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin:0;
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__icon{
+    flex:0 0 auto;
+    width:22px;
+    height:22px;
+    margin-top:2px;
+    color:var(--ibt-check);
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__copy{ min-width:0; }
+  #shopify-section-{{ section.id }} .ibt-feat__title{
+    display:block;
+    font-size:17px;
+    font-weight:700;
+    line-height:1.45;
+    color:var(--ibt-ink);
+    margin:0 0 2px;
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__desc{
+    font-size:15px;
+    line-height:1.65;
+    color:var(--ibt-body);
+    margin:0;
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__desc p:last-child{ margin-bottom:0; }
+
+  /* Rich-text metafield fallback: turn its <li> rows into checkmark rows */
+  #shopify-section-{{ section.id }} .ibt-feat__rte ul,
+  #shopify-section-{{ section.id }} .ibt-feat__rte ol{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:grid;
+    gap:16px;
+    grid-template-columns:1fr;
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__rte li{
+    position:relative;
+    padding-left:34px;
+    font-size:17px;
+    line-height:1.55;
+    color:var(--ibt-ink);
+    margin:0;
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__rte li::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:2px;
+    width:22px;
+    height:22px;
+    background-color:var(--ibt-check);
+    -webkit-mask:var(--ibt-check-mask) center / contain no-repeat;
+    mask:var(--ibt-check-mask) center / contain no-repeat;
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__rte p{
+    font-size:16px;
+    line-height:1.7;
+    color:var(--ibt-body);
+    margin:0 0 14px;
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__rte{
+    --ibt-check-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M8 12.5l2.6 2.6L16 9.6'/%3E%3C/svg%3E");
+  }
+
+  #shopify-section-{{ section.id }} .ibt-feat__media img{
+    display:block;
+    width:100%;
+    height:auto;
+    border-radius:var(--ibt-radius);
+    background:var(--ibt-soft);
+  }
+  #shopify-section-{{ section.id }} .ibt-feat__caption{
+    font-size:13px;
+    color:#8a8f94;
+    margin:10px 0 0;
+    text-align:center;
+  }
+
+  @media (min-width:768px){
+    {% if section.settings.columns == '2' and has_img == false %}
+      #shopify-section-{{ section.id }} .ibt-feat__list,
+      #shopify-section-{{ section.id }} .ibt-feat__rte ul,
+      #shopify-section-{{ section.id }} .ibt-feat__rte ol{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:18px 40px;
+      }
+    {% endif %}
+    {% if has_img %}
+      #shopify-section-{{ section.id }} .ibt-feat__grid{
+        grid-template-columns:{% if section.settings.image_position == 'left' %}minmax(0,{{ section.settings.image_width }}fr) minmax(0,{{ 100 | minus: section.settings.image_width }}fr){% else %}minmax(0,{{ 100 | minus: section.settings.image_width }}fr) minmax(0,{{ section.settings.image_width }}fr){% endif %};
+        gap:48px;
+      }
+      #shopify-section-{{ section.id }} .ibt-feat__media{
+        order:{% if section.settings.image_position == 'left' %}0{% else %}1{% endif %};
+      }
+      #shopify-section-{{ section.id }} .ibt-feat__text{
+        order:{% if section.settings.image_position == 'left' %}1{% else %}0{% endif %};
+      }
+    {% endif %}
+  }
+  @media (max-width:767px){
+    #shopify-section-{{ section.id }} .ibt-feat{ {% if section.settings.boxed %}padding:24px;{% endif %} }
+    #shopify-section-{{ section.id }} .ibt-h2{ font-size:24px; }
+    #shopify-section-{{ section.id }} .ibt-feat__media{ order:0; }
+  }
+</style>
+
+<div class="{{ section.settings.setwidth }}" id="ibt-key-features">
+  <div class="ibt-feat" {% if section.settings.animation != blank %}data-aos="{{ section.settings.animation }}"{% endif %}>
+    <div class="ibt-feat__grid">
+
+      {%- if has_img -%}
+        <div class="ibt-feat__media">
+          <img
+            src="{{ img | image_url: width: 900 }}"
+            srcset="{{ img | image_url: width: 500 }} 500w, {{ img | image_url: width: 900 }} 900w, {{ img | image_url: width: 1400 }} 1400w"
+            sizes="(min-width:768px) 45vw, 100vw"
+            alt="{{ img.alt | default: product.title | escape }}"
+            loading="lazy"
+            width="{{ img.width }}"
+            height="{{ img.height }}"
+          >
+          {%- if section.settings.image_caption != blank -%}
+            <p class="ibt-feat__caption">{{ section.settings.image_caption }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="ibt-feat__text">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="ibt-eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h2 class="ibt-h2">{{ section.settings.heading | default: 'Key features' }}</h2>
+
+        {%- if manual_count > 0 -%}
+          <ul class="ibt-feat__list">
+            {%- for block in section.blocks -%}
+              {%- if block.settings.text != blank -%}
+                <li class="ibt-feat__item" {{ block.shopify_attributes }}>
+                  <svg class="ibt-feat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M8 12.5l2.6 2.6L16 9.6"/>
+                  </svg>
+                  <div class="ibt-feat__copy">
+                    <span class="ibt-feat__title">{{ block.settings.text }}</span>
+                    {%- if block.settings.description != blank -%}
+                      <div class="ibt-feat__desc rte">{{ block.settings.description }}</div>
+                    {%- endif -%}
+                  </div>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        {%- elsif use_metafield -%}
+          <div class="ibt-feat__rte rte">
+            {{ usp | metafield_tag }}
+          </div>
+        {%- elsif section.settings.fallback_body != blank -%}
+          <div class="ibt-feat__rte rte">
+            {{ section.settings.fallback_body }}
+          </div>
+        {%- endif -%}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "IBT 3. Key features",
+  "settings": [
+    {
+      "type": "select",
+      "id": "setwidth",
+      "label": "Container",
+      "default": "container",
+      "options": [
+        { "value": "container", "label": "Container" },
+        { "value": "container-fluid", "label": "Container fluid" },
+        { "value": "full", "label": "Full width" }
+      ]
+    },
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow label" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Key features"
+    },
+    {
+      "type": "paragraph",
+      "content": "Add 3-5 Feature blocks below for full control. With no blocks added, the section falls back to the product's USP Details metafield and renders its bullets as checkmark rows."
+    },
+    {
+      "type": "richtext",
+      "id": "fallback_body",
+      "label": "Fallback copy",
+      "info": "Shown only when there are no Feature blocks and USP Details is empty."
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns (desktop, no image)",
+      "default": "1",
+      "options": [
+        { "value": "1", "label": "1 column" },
+        { "value": "2", "label": "2 columns" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Checkmark colour",
+      "default": "#1c6b33"
+    },
+    { "type": "header", "content": "Image" },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Optional. Continues the photo / claim rhythm from the About section."
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position (desktop)",
+      "default": "right",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Image column width",
+      "min": 30,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "default": 45
+    },
+    { "type": "text", "id": "image_caption", "label": "Image caption" },
+    { "type": "header", "content": "Section style" },
+    { "type": "checkbox", "id": "boxed", "label": "Show card border", "default": false },
+    {
+      "type": "select",
+      "id": "animation",
+      "label": "Animation",
+      "default": "fade-up",
+      "options": [
+        { "value": "", "label": "None" },
+        { "value": "fade", "label": "Fade" },
+        { "value": "fade-up", "label": "Fade up" }
+      ]
+    },
+    { "type": "color", "id": "bgsection", "label": "Background", "default": "#f9f9f7" },
+    { "type": "text", "id": "paddingsection", "label": "Padding desktop", "default": "56px 0px 56px 0px" },
+    { "type": "text", "id": "paddingmobile", "label": "Padding mobile", "default": "36px 0px 36px 0px" },
+    { "type": "text", "id": "marginsection", "label": "Margin desktop", "default": "0px 0px 0px 0px" },
+    { "type": "text", "id": "marginmobile", "label": "Margin mobile", "default": "0px 0px 0px 0px" }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Feature (benefit-led)",
+          "default": "Clears pores without drying your skin out"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Supporting detail",
+          "info": "Optional one-liner under the feature."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "IBT 3. Key features",
+      "blocks": [
+        { "type": "feature" },
+        { "type": "feature" },
+        { "type": "feature" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,448 @@
+<!-- ibt-faqs.liquid | IBT product page - Section 5: FAQs -->
+{%- liquid
+  comment
+    Source priority: the product's own FAQs metafield (JSON list), then the
+    section's FAQ blocks as a store-wide fallback.
+  endcomment
+  assign mf_faqs = product.metafields.custom.faqs.value
+  assign use_mf = false
+  assign faq_count = 0
+
+  if mf_faqs != blank and mf_faqs.size > 0
+    for row in mf_faqs
+      assign q = row.question | default: row.q | default: row.title
+      assign a = row.answer | default: row.a | default: row.body
+      if q != blank and a != blank
+        assign faq_count = faq_count | plus: 1
+      endif
+    endfor
+    if faq_count > 0
+      assign use_mf = true
+    endif
+  endif
+
+  unless use_mf
+    assign faq_count = 0
+    for block in section.blocks
+      if block.settings.question != blank and block.settings.answer != blank
+        assign faq_count = faq_count | plus: 1
+      endif
+    endfor
+  endunless
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}{
+    --ibt-ink:#1a1a1a;
+    --ibt-body:#54595f;
+    --ibt-line:#e6e6e6;
+    --ibt-soft:#f7f7f5;
+    --ibt-accent:{{ section.settings.accent_color }};
+    --ibt-radius:14px;
+    background-color:{{ section.settings.bgsection }};
+    padding:{{ section.settings.paddingsection }};
+    margin:{{ section.settings.marginsection }};
+  }
+  @media (max-width:750px){
+    #shopify-section-{{ section.id }}{
+      padding:{{ section.settings.paddingmobile }};
+      margin:{{ section.settings.marginmobile }};
+    }
+  }
+{%- endstyle -%}
+
+<style>
+  #shopify-section-{{ section.id }} .ibt-faq{
+    {% if section.settings.narrow %}
+      max-width:820px;
+      margin-left:auto;
+      margin-right:auto;
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .ibt-eyebrow{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#8a8f94;
+    margin:0 0 10px;
+  }
+  #shopify-section-{{ section.id }} .ibt-h2{
+    font-size:28px;
+    line-height:1.3;
+    font-weight:700;
+    color:var(--ibt-ink);
+    margin:0 0 8px;
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__intro{
+    font-size:16px;
+    line-height:1.7;
+    color:var(--ibt-body);
+    margin:0 0 26px;
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__head{
+    text-align:{{ section.settings.align }};
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__list{
+    {% if section.settings.boxed %}
+      border:1px solid var(--ibt-line);
+      border-radius:var(--ibt-radius);
+      overflow:hidden;
+      background:#fff;
+    {% else %}
+      border-top:1px solid var(--ibt-line);
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__item{
+    border-bottom:1px solid var(--ibt-line);
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__item:last-child{ border-bottom:0; }
+  #shopify-section-{{ section.id }} .ibt-faq__q{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    width:100%;
+    margin:0;
+    padding:20px 22px;
+    background:none;
+    border:0;
+    text-align:left;
+    font-family:inherit;
+    font-size:17px;
+    font-weight:600;
+    line-height:1.5;
+    color:var(--ibt-ink);
+    cursor:pointer;
+    transition:color .15s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__q:hover{ color:var(--ibt-accent); }
+  #shopify-section-{{ section.id }} .ibt-faq__q:focus-visible{
+    outline:2px solid var(--ibt-accent);
+    outline-offset:-2px;
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__chev{
+    flex:0 0 auto;
+    width:20px;
+    height:20px;
+    color:#8a8f94;
+    transition:transform .25s ease,color .15s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__q[aria-expanded="true"]{ color:var(--ibt-accent); }
+  #shopify-section-{{ section.id }} .ibt-faq__q[aria-expanded="true"] .ibt-faq__chev{
+    transform:rotate(180deg);
+    color:var(--ibt-accent);
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__a{
+    overflow:hidden;
+    height:0;
+    transition:height .28s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__a-inner{
+    padding:0 22px 22px;
+    font-size:16px;
+    line-height:1.75;
+    color:var(--ibt-body);
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__a-inner > *:last-child{ margin-bottom:0; }
+  #shopify-section-{{ section.id }} .ibt-faq__a-inner p{ margin:0 0 12px; }
+  #shopify-section-{{ section.id }} .ibt-faq__a-inner ul,
+  #shopify-section-{{ section.id }} .ibt-faq__a-inner ol{
+    margin:0 0 12px;
+    padding-left:20px;
+  }
+  #shopify-section-{{ section.id }} .ibt-faq__a-inner li{ margin-bottom:6px; }
+  #shopify-section-{{ section.id }} .ibt-faq__a-inner a{
+    color:var(--ibt-accent);
+    text-decoration:underline;
+  }
+  @media (max-width:767px){
+    #shopify-section-{{ section.id }} .ibt-h2{ font-size:24px; }
+    #shopify-section-{{ section.id }} .ibt-faq__q{
+      padding:16px 18px;
+      font-size:16px;
+    }
+    #shopify-section-{{ section.id }} .ibt-faq__a-inner{ padding:0 18px 18px; }
+  }
+</style>
+
+<noscript>
+  <style>
+    #shopify-section-{{ section.id }} .ibt-faq__a{ height:auto; }
+    #shopify-section-{{ section.id }} .ibt-faq__chev{ display:none; }
+    #shopify-section-{{ section.id }} .ibt-faq__q{ cursor:default; }
+  </style>
+</noscript>
+
+<div class="{{ section.settings.setwidth }}" id="ibt-faqs">
+  <div class="ibt-faq" {% if section.settings.animation != blank %}data-aos="{{ section.settings.animation }}"{% endif %}>
+
+    <div class="ibt-faq__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="ibt-eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 class="ibt-h2">{{ section.settings.heading | default: 'FAQs' }}</h2>
+      {%- if section.settings.intro != blank -%}
+        <p class="ibt-faq__intro">{{ section.settings.intro }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if faq_count > 0 -%}
+      <div class="ibt-faq__list" id="ibt-faq-list-{{ section.id }}">
+        {%- if use_mf -%}
+          {%- for row in mf_faqs -%}
+            {%- assign q = row.question | default: row.q | default: row.title -%}
+            {%- assign a = row.answer | default: row.a | default: row.body -%}
+            {%- if q != blank and a != blank -%}
+              {%- assign faq_uid = section.id | append: '-mf-' | append: forloop.index -%}
+              {%- render 'ibt-faq-item', ibt_q: q, ibt_a: a, ibt_uid: faq_uid -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for block in section.blocks -%}
+            {%- if block.settings.question != blank and block.settings.answer != blank -%}
+              {%- render 'ibt-faq-item',
+                ibt_q: block.settings.question,
+                ibt_a: block.settings.answer,
+                ibt_uid: block.id,
+                ibt_attrs: block.shopify_attributes
+              -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    {%- elsif request.design_mode -%}
+      <p style="color:#8a8f94;font-size:15px;">Add FAQ blocks to fill this section.</p>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{%- if section.settings.enable_faq_schema and faq_count > 0 -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- assign printed = 0 -%}
+        {%- if use_mf -%}
+          {%- for row in mf_faqs -%}
+            {%- assign q = row.question | default: row.q | default: row.title -%}
+            {%- assign a = row.answer | default: row.a | default: row.body -%}
+            {%- if q != blank and a != blank -%}
+              {%- if printed > 0 -%},{%- endif -%}
+              {
+                "@type": "Question",
+                "name": {{ q | strip_html | strip | json }},
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": {{ a | strip_html | strip | json }}
+                }
+              }
+              {%- assign printed = printed | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for block in section.blocks -%}
+            {%- if block.settings.question != blank and block.settings.answer != blank -%}
+              {%- if printed > 0 -%},{%- endif -%}
+              {
+                "@type": "Question",
+                "name": {{ block.settings.question | strip_html | strip | json }},
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": {{ block.settings.answer | strip_html | strip | json }}
+                }
+              }
+              {%- assign printed = printed | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      ]
+    }
+  </script>
+{%- endif -%}
+
+<script>
+  (function () {
+    var list = document.getElementById('ibt-faq-list-{{ section.id }}');
+    if (!list) return;
+
+    var singleOpen = {{ section.settings.single_open | json }};
+    var buttons = [].slice.call(list.querySelectorAll('.ibt-faq__q'));
+
+    function close(btn) {
+      var panel = document.getElementById(btn.getAttribute('aria-controls'));
+      if (!panel) return;
+      panel.style.height = panel.scrollHeight + 'px';
+      requestAnimationFrame(function () {
+        panel.style.height = '0px';
+      });
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    function open(btn) {
+      var panel = document.getElementById(btn.getAttribute('aria-controls'));
+      if (!panel) return;
+      panel.style.height = panel.scrollHeight + 'px';
+      btn.setAttribute('aria-expanded', 'true');
+      window.setTimeout(function () {
+        if (btn.getAttribute('aria-expanded') === 'true') {
+          panel.style.height = 'auto';
+        }
+      }, 300);
+    }
+
+    // Collapse everything, then let CSS transitions take over.
+    buttons.forEach(function (btn) {
+      var panel = document.getElementById(btn.getAttribute('aria-controls'));
+      if (panel) panel.style.height = '0px';
+      btn.setAttribute('aria-expanded', 'false');
+    });
+    list.setAttribute('data-ready', 'true');
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var isOpen = btn.getAttribute('aria-expanded') === 'true';
+        if (isOpen) {
+          close(btn);
+          return;
+        }
+        if (singleOpen) {
+          buttons.forEach(function (other) {
+            if (other !== btn && other.getAttribute('aria-expanded') === 'true') {
+              close(other);
+            }
+          });
+        }
+        open(btn);
+      });
+    });
+
+    // Keep an open panel correctly sized after a viewport change.
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(function () {
+        buttons.forEach(function (btn) {
+          if (btn.getAttribute('aria-expanded') === 'true') {
+            var panel = document.getElementById(btn.getAttribute('aria-controls'));
+            if (panel) panel.style.height = 'auto';
+          }
+        });
+      }, 150);
+    });
+
+    {%- if section.settings.open_first -%}
+      if (buttons.length) open(buttons[0]);
+    {%- endif -%}
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "IBT 5. FAQs",
+  "settings": [
+    {
+      "type": "select",
+      "id": "setwidth",
+      "label": "Container",
+      "default": "container",
+      "options": [
+        { "value": "container", "label": "Container" },
+        { "value": "container-fluid", "label": "Container fluid" },
+        { "value": "full", "label": "Full width" }
+      ]
+    },
+    { "type": "header", "content": "Heading" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow label", "default": "Before you buy" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "FAQs" },
+    { "type": "text", "id": "intro", "label": "Intro line" },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Heading alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ]
+    },
+    { "type": "header", "content": "Behaviour" },
+    {
+      "type": "paragraph",
+      "content": "4-6 rows, collapsed on load. Per-product FAQs come from the product's FAQs metafield (custom.faqs, type JSON list). The blocks below are the store-wide fallback used when that metafield is empty."
+    },
+    {
+      "type": "checkbox",
+      "id": "single_open",
+      "label": "Only one row open at a time",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first",
+      "label": "Open the first row on load",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_faq_schema",
+      "label": "Add FAQ structured data",
+      "default": true,
+      "info": "Outputs FAQPage schema so the questions can show as rich results in Google."
+    },
+    { "type": "header", "content": "Section style" },
+    { "type": "checkbox", "id": "boxed", "label": "Show card border", "default": true },
+    { "type": "checkbox", "id": "narrow", "label": "Constrain width", "default": true },
+    { "type": "color", "id": "accent_color", "label": "Accent colour", "default": "#1c4ead" },
+    {
+      "type": "select",
+      "id": "animation",
+      "label": "Animation",
+      "default": "fade-up",
+      "options": [
+        { "value": "", "label": "None" },
+        { "value": "fade", "label": "Fade" },
+        { "value": "fade-up", "label": "Fade up" }
+      ]
+    },
+    { "type": "color", "id": "bgsection", "label": "Background", "default": "#ffffff" },
+    { "type": "text", "id": "paddingsection", "label": "Padding desktop", "default": "56px 0px 56px 0px" },
+    { "type": "text", "id": "paddingmobile", "label": "Padding mobile", "default": "36px 0px 36px 0px" },
+    { "type": "text", "id": "marginsection", "label": "Margin desktop", "default": "0px 0px 0px 0px" },
+    { "type": "text", "id": "marginmobile", "label": "Margin mobile", "default": "0px 0px 0px 0px" }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "FAQ",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "How long does one jar last?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Answer the objection directly in two or three sentences.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "IBT 5. FAQs",
+      "blocks": [
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" }
+      ]
+    }
+  ]
+}
+{% endschema %}

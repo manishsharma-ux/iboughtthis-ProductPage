@@ -1,0 +1,26 @@
+{%- comment -%}
+  Renders one FAQ accordion row for the IBT product template.
+  Accepts: ibt_q (string), ibt_a (string/html), ibt_uid (unique id fragment), ibt_attrs (shopify_attributes)
+{%- endcomment -%}
+<div class="ibt-faq__item" {{ ibt_attrs }}>
+  <button
+    class="ibt-faq__q"
+    type="button"
+    aria-expanded="false"
+    aria-controls="ibt-faq-a-{{ ibt_uid }}"
+    id="ibt-faq-q-{{ ibt_uid }}"
+  >
+    <span>{{ ibt_q }}</span>
+    <svg class="ibt-faq__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <path d="M6 9l6 6 6-6"/>
+    </svg>
+  </button>
+  <div
+    class="ibt-faq__a"
+    id="ibt-faq-a-{{ ibt_uid }}"
+    role="region"
+    aria-labelledby="ibt-faq-q-{{ ibt_uid }}"
+  >
+    <div class="ibt-faq__a-inner rte">{{ ibt_a }}</div>
+  </div>
+</div>

@@ -1,0 +1,557 @@
+<!-- ibt-hero.liquid | IBT product page - Section 1: Hero gallery + buy box -->
+{{ 'photoswipe.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'photoswipe.min.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'photoswipe-ui-default.min.js' | asset_url }}" defer="defer"></script>
+{{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-model.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign featured_img = current_variant.featured_image | default: product.featured_image
+
+  assign rating = product.metafields.custom.rating.value
+  assign review_count = product.metafields.custom.number_of_reviews.value
+  assign buyers = product.metafields.custom.total_buyers.value
+  assign score_label = product.metafields.custom.score_label.value
+
+  assign badge_text = section.settings.badge_text
+  if badge_text == blank
+    assign badge_text = product.metafields.custom.badge.value
+  endif
+
+  assign buy_url = product.metafields.custom.custom_tracking_link.value
+  if buy_url == blank
+    assign buy_url = product.metafields.custom.tracking_link.value
+  endif
+  if buy_url == blank
+    assign buy_url = product.url
+  endif
+
+  assign rating_pct = 0
+  if rating != blank
+    assign rating_pct = rating | times: 20
+  endif
+
+  assign left_size = 'col-lg-6 col-12'
+  assign right_size = 'col-lg-6 col-12'
+  case section.settings.media_size
+    when 'small'
+      assign left_size = 'col-lg-5 col-12'
+      assign right_size = 'col-lg-7 col-12'
+    when 'large'
+      assign left_size = 'col-lg-7 col-12'
+      assign right_size = 'col-lg-5 col-12'
+  endcase
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}{
+    --ibt-blue:{{ section.settings.cta_bg }};
+    --ibt-blue-hover:{{ section.settings.cta_bg | color_darken: 8 }};
+    --ibt-cta-text:{{ section.settings.cta_color }};
+    --ibt-ink:#1a1a1a;
+    --ibt-body:#54595f;
+    --ibt-line:#e6e6e6;
+    --ibt-soft:#f7f7f5;
+    --ibt-star:#ffa41c;
+    --ibt-radius:14px;
+    background-color:{{ section.settings.bgsection }};
+    padding:{{ section.settings.paddingsection }};
+    margin:{{ section.settings.marginsection }};
+  }
+  @media (max-width:750px){
+    #shopify-section-{{ section.id }}{
+      padding:{{ section.settings.paddingmobile }};
+      margin:{{ section.settings.marginmobile }};
+    }
+  }
+{%- endstyle -%}
+
+<style>
+  #shopify-section-{{ section.id }} .ibt-hero__row{
+    display:flex;
+    flex-wrap:wrap;
+    margin-left:-15px;
+    margin-right:-15px;
+  }
+  #shopify-section-{{ section.id }} .ibt-hero__media,
+  #shopify-section-{{ section.id }} .ibt-hero__buybox{
+    padding-left:15px;
+    padding-right:15px;
+  }
+  #shopify-section-{{ section.id }} .ibt-buybox{
+    padding:0 0 0 2.5rem;
+  }
+  #shopify-section-{{ section.id }} .ibt-badge{
+    display:inline-block;
+    background:var(--ibt-soft);
+    border:1px solid var(--ibt-line);
+    color:var(--ibt-ink);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:6px 12px;
+    border-radius:999px;
+    margin-bottom:14px;
+  }
+  #shopify-section-{{ section.id }} .ibt-hero__title{
+    font-size:32px;
+    line-height:1.25;
+    font-weight:700;
+    color:var(--ibt-ink);
+    margin:0 0 12px;
+  }
+  #shopify-section-{{ section.id }} .ibt-hero__vendor{
+    font-size:14px;
+    color:var(--ibt-body);
+    margin:0 0 8px;
+  }
+  #shopify-section-{{ section.id }} .ibt-rating{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:0 0 14px;
+  }
+  #shopify-section-{{ section.id }} .ibt-rating__num{
+    font-size:16px;
+    font-weight:700;
+    color:var(--ibt-ink);
+  }
+  #shopify-section-{{ section.id }} .ibt-stars{
+    position:relative;
+    display:inline-block;
+    line-height:1;
+    font-size:18px;
+    letter-spacing:1px;
+  }
+  #shopify-section-{{ section.id }} .ibt-stars__bg{ color:#dcdcdc; }
+  #shopify-section-{{ section.id }} .ibt-stars__fill{
+    position:absolute;
+    top:0;
+    left:0;
+    overflow:hidden;
+    white-space:nowrap;
+    color:var(--ibt-star);
+  }
+  #shopify-section-{{ section.id }} .ibt-rating__count{
+    font-size:14px;
+    color:var(--ibt-body);
+  }
+  #shopify-section-{{ section.id }} .ibt-rating__count a{
+    color:var(--ibt-body);
+    text-decoration:underline;
+  }
+  #shopify-section-{{ section.id }} .ibt-score{
+    display:inline-block;
+    background:#eaf4ec;
+    color:#1c6b33;
+    font-size:12px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:6px;
+  }
+  #shopify-section-{{ section.id }} .ibt-price{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin:0 0 10px;
+  }
+  #shopify-section-{{ section.id }} .ibt-price__now{
+    font-size:26px;
+    font-weight:700;
+    color:var(--ibt-ink);
+  }
+  #shopify-section-{{ section.id }} .ibt-price__was{
+    font-size:16px;
+    color:#8a8f94;
+    text-decoration:line-through;
+  }
+  #shopify-section-{{ section.id }} .ibt-price__save{
+    font-size:13px;
+    font-weight:700;
+    color:#b12704;
+  }
+  #shopify-section-{{ section.id }} .ibt-buyers{
+    font-size:14px;
+    color:var(--ibt-body);
+    margin:0 0 18px;
+  }
+  #shopify-section-{{ section.id }} .ibt-cta{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    max-width:360px;
+    background:var(--ibt-blue);
+    color:var(--ibt-cta-text);
+    font-size:16px;
+    font-weight:700;
+    line-height:1.2;
+    text-align:center;
+    padding:16px 22px;
+    border:0;
+    border-radius:10px;
+    text-decoration:none;
+    transition:background .2s ease,transform .12s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-cta:hover{
+    background:var(--ibt-blue-hover);
+    color:var(--ibt-cta-text);
+    text-decoration:none;
+    transform:translateY(-1px);
+  }
+  #shopify-section-{{ section.id }} .ibt-cta__arrow{
+    flex:0 0 auto;
+    width:16px;
+    height:16px;
+  }
+  #shopify-section-{{ section.id }} .ibt-cta-note{
+    font-size:12px;
+    color:#8a8f94;
+    margin:10px 0 0;
+    max-width:360px;
+  }
+  #shopify-section-{{ section.id }} .ibt-trust{
+    list-style:none;
+    margin:18px 0 0;
+    padding:16px 0 0;
+    border-top:1px solid var(--ibt-line);
+  }
+  #shopify-section-{{ section.id }} .ibt-trust li{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    font-size:14px;
+    color:var(--ibt-body);
+    margin-bottom:8px;
+  }
+  #shopify-section-{{ section.id }} .ibt-trust li:last-child{ margin-bottom:0; }
+  #shopify-section-{{ section.id }} .ibt-trust svg{
+    flex:0 0 auto;
+    width:16px;
+    height:16px;
+    margin-top:2px;
+    color:#1c6b33;
+  }
+  @media (min-width:992px){
+    #shopify-section-{{ section.id }} .ibt-hero__media{ flex:0 0 auto; }
+    {% if section.settings.sticky_media %}
+      #shopify-section-{{ section.id }} .ibt-hero__sticky{
+        position:sticky;
+        top:6.65rem;
+      }
+      .template-product .page-container{ overflow:visible; }
+    {% endif %}
+  }
+  @media (max-width:991px){
+    #shopify-section-{{ section.id }} .ibt-buybox{ padding:24px 0 0; }
+    #shopify-section-{{ section.id }} .ibt-hero__title{ font-size:26px; }
+    #shopify-section-{{ section.id }} .ibt-cta{ max-width:100%; }
+    #shopify-section-{{ section.id }} .ibt-cta-note{ max-width:100%; }
+  }
+</style>
+
+<div
+  class="{{ section.settings.setwidth }} js-recently-view"
+  itemscope
+  itemtype="http://schema.org/Product"
+  id="ProductSection-{{ section.id }}"
+  data-id="{{ section.settings.media_style }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="product"
+  data-enable-history-state="true"
+  data-ajax="true"
+  data-stock="false"
+  data-handle="{{ product.handle }}"
+  data-autoplay="false"
+  data-videoloop="{{ section.settings.enable_video_looping }}"
+>
+  <meta itemprop="name" content="{{ product.title }}">
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | image_url: width: 600, height: 600 }}">
+  <meta itemprop="brand" content="{{ product.vendor }}">
+
+  <div class="ibt-hero__row">
+    <div class="{{ left_size }} ibt-hero__media">
+      <div class="ibt-hero__sticky">
+        {% render 'product-media',
+          product: product,
+          featured_image: featured_img,
+          image_size: section.settings.image_size,
+          loop: section.settings.enable_video_looping,
+          media_style: section.settings.media_style
+        %}
+      </div>
+    </div>
+
+    <div class="{{ right_size }} ibt-hero__buybox">
+      <div class="ibt-buybox">
+
+        {%- if badge_text != blank -%}
+          <span class="ibt-badge">{{ badge_text }}</span>
+        {%- endif -%}
+
+        {%- if section.settings.show_vendor and product.vendor != blank -%}
+          <p class="ibt-hero__vendor">{{ product.vendor }}</p>
+        {%- endif -%}
+
+        <h1 class="ibt-hero__title" itemprop="name">{{ product.title }}</h1>
+
+        {%- if rating != blank -%}
+          <div class="ibt-rating">
+            <span class="ibt-rating__num">{{ rating }}</span>
+            <span
+              class="ibt-stars"
+              role="img"
+              aria-label="Rated {{ rating }} out of 5{% if review_count != blank %} based on {{ review_count }} reviews{% endif %}"
+            >
+              <span class="ibt-stars__bg">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="ibt-stars__fill" style="width:{{ rating_pct }}%">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </span>
+            {%- if review_count != blank -%}
+              <span class="ibt-rating__count">
+                {%- if section.settings.reviews_anchor != blank -%}
+                  <a href="{{ section.settings.reviews_anchor }}">({{ review_count }} reviews)</a>
+                {%- else -%}
+                  ({{ review_count }} reviews)
+                {%- endif -%}
+              </span>
+            {%- endif -%}
+            {%- if score_label != blank -%}
+              <span class="ibt-score">{{ score_label }}</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_price and product.price > 0 -%}
+          <div class="ibt-price">
+            <span class="ibt-price__now">{{ current_variant.price | money }}</span>
+            {%- if current_variant.compare_at_price > current_variant.price -%}
+              <span class="ibt-price__was">{{ current_variant.compare_at_price | money }}</span>
+              {%- assign save_pct = current_variant.compare_at_price
+                | minus: current_variant.price
+                | times: 100.0
+                | divided_by: current_variant.compare_at_price
+                | round
+              -%}
+              <span class="ibt-price__save">Save {{ save_pct }}%</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if buyers != blank -%}
+          <p class="ibt-buyers">{{ buyers }}</p>
+        {%- endif -%}
+
+        <a
+          href="{{ buy_url }}"
+          id="ibtCta-{{ section.id }}"
+          class="ibt-cta"
+          target="_blank"
+          rel="nofollow sponsored noopener"
+        >
+          {{ section.settings.cta_label | default: 'View Deal on Amazon' }}
+          <svg class="ibt-cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M5 12h13M13 6l6 6-6 6"/>
+          </svg>
+        </a>
+
+        {%- if section.settings.cta_note != blank -%}
+          <p class="ibt-cta-note">{{ section.settings.cta_note }}</p>
+        {%- endif -%}
+
+        {%- if section.blocks.size > 0 -%}
+          <ul class="ibt-trust">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'trust_point' and block.settings.text != blank -%}
+                <li {{ block.shopify_attributes }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                  <span>{{ block.settings.text }}</span>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- comment -%}
+  PhotoSwipe lightbox container. The gallery anchors rendered by 'product-media'
+  are bound by the theme-wide init that ships in the javascript bundle of
+  product-template-1 - the same arrangement product templates 2-8 use, so no
+  second init is needed here (adding one would double-open the lightbox).
+{%- endcomment -%}
+{%- render 'photoswipe' -%}
+
+{% unless product == empty %}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{ product | json }}
+  </script>
+{% endunless %}
+
+<script>
+  (function () {
+    var cta = document.getElementById('ibtCta-{{ section.id }}');
+    if (!cta) return;
+    cta.addEventListener('click', function () {
+      if (typeof fbq === 'function') {
+        fbq('track', 'Purchase');
+      }
+      if (typeof gtag === 'function') {
+        gtag('event', 'affiliate_click', {
+          product_title: {{ product.title | json }},
+          product_handle: {{ product.handle | json }},
+          placement: 'ibt_hero'
+        });
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "IBT 1. Hero + buy box",
+  "settings": [
+    {
+      "type": "select",
+      "id": "setwidth",
+      "label": "Container",
+      "default": "container",
+      "options": [
+        { "value": "container", "label": "Container" },
+        { "value": "container-fluid", "label": "Container fluid" },
+        { "value": "full", "label": "Full width" }
+      ]
+    },
+    { "type": "header", "content": "Gallery" },
+    {
+      "type": "select",
+      "id": "media_style",
+      "label": "Gallery style",
+      "default": "media-bottom",
+      "options": [
+        { "value": "media-bottom", "label": "Thumbnails bottom" },
+        { "value": "media-left", "label": "Thumbnails left" },
+        { "value": "media-right", "label": "Thumbnails right" },
+        { "value": "media-nothumb", "label": "No thumbnails" },
+        { "value": "media-list", "label": "Stacked list" },
+        { "value": "media-grid", "label": "Grid" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "media_size",
+      "label": "Gallery width",
+      "default": "normal",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "large", "label": "Large" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_size",
+      "label": "Image ratio",
+      "default": "portrait",
+      "options": [
+        { "value": "auto", "label": "Natural" },
+        { "value": "square", "label": "Square" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "landscape", "label": "Landscape" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_video_looping",
+      "label": "Loop gallery videos",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_media",
+      "label": "Stick gallery on scroll (desktop)",
+      "default": true
+    },
+    { "type": "header", "content": "Buy box" },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge override",
+      "info": "Leave blank to use the product's Badge metafield."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show brand name",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "reviews_anchor",
+      "label": "Review count links to",
+      "default": "#ibt-buyer-reviews",
+      "info": "Anchor of the Buyer reviews section. Leave blank for plain text."
+    },
+    { "type": "header", "content": "Call to action" },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "default": "View Deal on Amazon"
+    },
+    {
+      "type": "color",
+      "id": "cta_bg",
+      "label": "Button background",
+      "default": "#1c4ead"
+    },
+    {
+      "type": "color",
+      "id": "cta_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "cta_note",
+      "label": "Disclosure note",
+      "default": "We may earn a commission when you buy through this link, at no extra cost to you."
+    },
+    { "type": "header", "content": "Section style" },
+    { "type": "color", "id": "bgsection", "label": "Background", "default": "#ffffff" },
+    { "type": "text", "id": "paddingsection", "label": "Padding desktop", "default": "24px 0px 48px 0px" },
+    { "type": "text", "id": "paddingmobile", "label": "Padding mobile", "default": "16px 0px 32px 0px" },
+    { "type": "text", "id": "marginsection", "label": "Margin desktop", "default": "0px 0px 0px 0px" },
+    { "type": "text", "id": "marginmobile", "label": "Margin mobile", "default": "0px 0px 0px 0px" }
+  ],
+  "blocks": [
+    {
+      "type": "trust_point",
+      "name": "Trust point",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free returns within 30 days"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
