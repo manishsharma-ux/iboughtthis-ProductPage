@@ -32,6 +32,19 @@
     assign rating_pct = rating | times: 20
   endif
 
+  comment
+    Buy-box description. 'short_details' keeps the hero distinct from the
+    About section when that section is already using the full description.
+  endcomment
+  if section.settings.desc_source == 'short_details'
+    assign hero_desc = product.metafields.custom.short_details.value | newline_to_br
+    if hero_desc == blank
+      assign hero_desc = product.description
+    endif
+  else
+    assign hero_desc = product.description
+  endif
+
   assign left_size = 'col-lg-6 col-12'
   assign right_size = 'col-lg-6 col-12'
   case section.settings.media_size
@@ -236,6 +249,112 @@
     margin-top:2px;
     color:#1c6b33;
   }
+
+  /* --- Fixed square gallery, images contained rather than cropped --- */
+  {% if section.settings.force_square %}
+    #shopify-section-{{ section.id }} .product__photo-wrapper,
+    #shopify-section-{{ section.id }} .product-single__photo .deferred-media,
+    #shopify-section-{{ section.id }} .product-single__photo product-model{
+      padding-top:100% !important;
+      overflow:hidden;
+      background:{{ section.settings.gallery_bg }};
+      border-radius:12px;
+    }
+    #shopify-section-{{ section.id }} .product-single__thumbnail .image-wrap{
+      padding-top:100% !important;
+      background:{{ section.settings.gallery_bg }};
+      border-radius:8px;
+    }
+  {% endif %}
+  #shopify-section-{{ section.id }} .product__photo-wrapper img{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100%;
+    height:100%;
+    object-fit:{{ section.settings.image_fit }} !important;
+    object-position:center center;
+  }
+  #shopify-section-{{ section.id }} .product-single__thumbnail img{
+    object-fit:{{ section.settings.image_fit }} !important;
+    object-position:center center;
+    padding:{% if section.settings.image_fit == 'contain' %}4px{% else %}0{% endif %};
+  }
+  #shopify-section-{{ section.id }} .product-single__photo .deferred-media video,
+  #shopify-section-{{ section.id }} .product-single__photo .deferred-media iframe,
+  #shopify-section-{{ section.id }} .product-single__photo .deferred-media img{
+    object-fit:{{ section.settings.image_fit }} !important;
+  }
+
+  /* --- Buy-box description with read more --- */
+  #shopify-section-{{ section.id }} .ibt-desc{
+    margin:0 0 18px;
+    max-width:520px;
+  }
+  #shopify-section-{{ section.id }} .ibt-desc__body{
+    position:relative;
+    font-size:15px;
+    line-height:1.7;
+    color:var(--ibt-body);
+    overflow:hidden;
+    max-height:calc(1.7em * {{ section.settings.desc_lines }});
+    transition:max-height .3s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-desc__body p{ margin:0 0 10px; }
+  #shopify-section-{{ section.id }} .ibt-desc__body > *:last-child{ margin-bottom:0; }
+  #shopify-section-{{ section.id }} .ibt-desc__body ul,
+  #shopify-section-{{ section.id }} .ibt-desc__body ol{
+    margin:0 0 10px;
+    padding-left:20px;
+  }
+  #shopify-section-{{ section.id }} .ibt-desc__body li{ margin-bottom:5px; }
+  #shopify-section-{{ section.id }} .ibt-desc__body img{ display:none; }
+  #shopify-section-{{ section.id }} .ibt-desc__body table{ display:none; }
+  /* Fade the cut-off line while collapsed */
+  #shopify-section-{{ section.id }} .ibt-desc:not(.is-open):not(.is-short) .ibt-desc__body::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:2.2em;
+    background:linear-gradient(to bottom,{{ section.settings.bgsection | color_modify: 'alpha', 0 }},{{ section.settings.bgsection }} 92%);
+    pointer-events:none;
+  }
+  #shopify-section-{{ section.id }} .ibt-desc.is-open .ibt-desc__body{
+    max-height:none;
+  }
+  #shopify-section-{{ section.id }} .ibt-desc.is-short .ibt-desc__body{
+    max-height:none;
+  }
+  #shopify-section-{{ section.id }} .ibt-desc__toggle{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:8px;
+    padding:0;
+    background:none;
+    border:0;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    color:var(--ibt-blue);
+    cursor:pointer;
+    text-decoration:underline;
+    text-underline-offset:2px;
+  }
+  #shopify-section-{{ section.id }} .ibt-desc__toggle:hover{ opacity:.8; }
+  #shopify-section-{{ section.id }} .ibt-desc__toggle svg{
+    width:14px;
+    height:14px;
+    transition:transform .25s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-desc.is-open .ibt-desc__toggle svg{
+    transform:rotate(180deg);
+  }
+
   @media (min-width:992px){
     #shopify-section-{{ section.id }} .ibt-hero__media{ flex:0 0 auto; }
     {% if section.settings.sticky_media %}
@@ -346,6 +465,26 @@
           <p class="ibt-buyers">{{ buyers }}</p>
         {%- endif -%}
 
+        {%- if section.settings.show_description and hero_desc != blank -%}
+          <div class="ibt-desc" id="ibtDesc-{{ section.id }}">
+            <div class="ibt-desc__body rte" id="ibtDescBody-{{ section.id }}">
+              {{ hero_desc }}
+            </div>
+            <button
+              class="ibt-desc__toggle"
+              type="button"
+              id="ibtDescBtn-{{ section.id }}"
+              aria-expanded="false"
+              aria-controls="ibtDescBody-{{ section.id }}"
+            >
+              <span class="ibt-desc__toggle-text">{{ section.settings.read_more_label | default: 'Read more' }}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+          </div>
+        {%- endif -%}
+
         <a
           href="{{ buy_url }}"
           id="ibtCta-{{ section.id }}"
@@ -398,6 +537,46 @@
 {% endunless %}
 
 <script>
+  // Buy-box description: clamp to N lines, reveal on demand.
+  (function () {
+    var wrap = document.getElementById('ibtDesc-{{ section.id }}');
+    if (!wrap) return;
+    var body = document.getElementById('ibtDescBody-{{ section.id }}');
+    var btn = document.getElementById('ibtDescBtn-{{ section.id }}');
+    if (!body || !btn) return;
+
+    var label = btn.querySelector('.ibt-desc__toggle-text');
+    var moreText = {{ section.settings.read_more_label | default: 'Read more' | json }};
+    var lessText = {{ section.settings.read_less_label | default: 'Read less' | json }};
+
+    // Nothing to reveal? Drop the clamp and the button entirely.
+    function measure() {
+      if (wrap.classList.contains('is-open')) return;
+      var overflowing = body.scrollHeight > body.clientHeight + 2;
+      wrap.classList.toggle('is-short', !overflowing);
+      btn.hidden = !overflowing;
+    }
+
+    btn.addEventListener('click', function () {
+      var open = wrap.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (label) label.textContent = open ? lessText : moreText;
+      if (!open) {
+        // Collapsing: re-check in case content or width changed meanwhile.
+        window.setTimeout(measure, 320);
+      }
+    });
+
+    measure();
+    // Images/fonts settling can change the wrapped line count.
+    window.addEventListener('load', measure);
+    var t;
+    window.addEventListener('resize', function () {
+      window.clearTimeout(t);
+      t = window.setTimeout(measure, 150);
+    });
+  })();
+
   (function () {
     var cta = document.getElementById('ibtCta-{{ section.id }}');
     if (!cta) return;
@@ -477,6 +656,30 @@
     },
     {
       "type": "checkbox",
+      "id": "force_square",
+      "label": "Fixed square frames",
+      "default": true,
+      "info": "Every gallery slide and thumbnail gets the same square frame, whatever shape the source image is."
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "default": "contain",
+      "options": [
+        { "value": "contain", "label": "Contain - show the whole image, never crop" },
+        { "value": "cover", "label": "Cover - fill the frame, crop the overflow" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "gallery_bg",
+      "label": "Frame background",
+      "default": "#ffffff",
+      "info": "Fills the space around images that do not match the square frame."
+    },
+    {
+      "type": "checkbox",
       "id": "sticky_media",
       "label": "Stick gallery on scroll (desktop)",
       "default": true
@@ -507,6 +710,34 @@
       "default": "#ibt-buyer-reviews",
       "info": "Anchor of the Buyer reviews section. Leave blank for plain text."
     },
+    { "type": "header", "content": "Description" },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description in the buy box",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "desc_source",
+      "label": "Description source",
+      "default": "description",
+      "options": [
+        { "value": "description", "label": "Product description" },
+        { "value": "short_details", "label": "Short Details metafield" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "desc_lines",
+      "label": "Lines shown before Read more",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 5
+    },
+    { "type": "text", "id": "read_more_label", "label": "Read more label", "default": "Read more" },
+    { "type": "text", "id": "read_less_label", "label": "Read less label", "default": "Read less" },
     { "type": "header", "content": "Call to action" },
     {
       "type": "text",

@@ -16,12 +16,15 @@
           }
         }
       },
-      "block_order": ["trust_1", "trust_2"],
+      "block_order": [
+        "trust_1",
+        "trust_2"
+      ],
       "settings": {
         "setwidth": "container",
         "media_style": "media-bottom",
         "media_size": "normal",
-        "image_size": "portrait",
+        "image_size": "square",
         "enable_video_looping": true,
         "sticky_media": true,
         "badge_text": "",
@@ -36,7 +39,15 @@
         "paddingsection": "24px 0px 48px 0px",
         "paddingmobile": "16px 0px 32px 0px",
         "marginsection": "0px 0px 0px 0px",
-        "marginmobile": "0px 0px 0px 0px"
+        "marginmobile": "0px 0px 0px 0px",
+        "force_square": true,
+        "image_fit": "contain",
+        "gallery_bg": "#ffffff",
+        "show_description": true,
+        "desc_source": "description",
+        "desc_lines": 5,
+        "read_more_label": "Read more",
+        "read_less_label": "Read less"
       }
     },
     "about": {
@@ -90,7 +101,8 @@
           "settings": {
             "subhead": "Who it's for",
             "source": "richtext",
-            "copy": "<p>Describe the buyer this product actually suits, and who should skip it. Two or three sentences is plenty.</p>"
+            "copy": "<p>Describe the buyer this product actually suits, and who should skip it. Two or three sentences is plenty.</p>",
+            "icon": "person"
           }
         },
         "part_performs": {
@@ -98,7 +110,8 @@
           "settings": {
             "subhead": "How it performs",
             "source": "expert_review",
-            "copy": ""
+            "copy": "",
+            "icon": "gauge"
           }
         },
         "part_proscons": {
@@ -106,7 +119,8 @@
           "settings": {
             "subhead": "Pros and cons",
             "source": "pros_cons",
-            "copy": ""
+            "copy": "",
+            "icon": "scale"
           }
         },
         "part_worth": {
@@ -114,31 +128,42 @@
           "settings": {
             "subhead": "Worth it or not",
             "source": "experience",
-            "copy": ""
+            "copy": "",
+            "icon": "wallet"
           }
         }
       },
-      "block_order": ["part_who", "part_performs", "part_proscons", "part_worth"],
+      "block_order": [
+        "part_who",
+        "part_performs",
+        "part_proscons",
+        "part_worth"
+      ],
       "settings": {
         "setwidth": "container",
         "eyebrow": "Hands-on testing",
         "heading": "Expert review",
         "intro": "",
+        "align": "left",
+        "show_rule": true,
         "show_byline": true,
         "byline_prefix": "Reviewed by",
         "byline_name": "",
         "byline_role": "",
         "show_bio": false,
         "show_verdict": true,
+        "part_style": "cards",
+        "two_col_parts": false,
+        "numbered": false,
+        "indent_copy": true,
         "pros_label": "Pros",
         "cons_label": "Cons",
-        "boxed": true,
-        "show_rule": true,
+        "show_top_accent": true,
         "accent_color": "#1c4ead",
         "animation": "fade-up",
-        "bgsection": "#ffffff",
-        "paddingsection": "56px 0px 56px 0px",
-        "paddingmobile": "36px 0px 36px 0px",
+        "bgsection": "#f4f7fc",
+        "paddingsection": "60px 0px 60px 0px",
+        "paddingmobile": "40px 0px 40px 0px",
         "marginsection": "0px 0px 0px 0px",
         "marginmobile": "0px 0px 0px 0px"
       }
@@ -182,7 +207,13 @@
           }
         }
       },
-      "block_order": ["faq_1", "faq_2", "faq_3", "faq_4", "faq_5"],
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "faq_5"
+      ],
       "settings": {
         "setwidth": "container",
         "eyebrow": "Before you buy",
@@ -229,7 +260,10 @@
           }
         }
       },
-      "block_order": ["review_1", "review_2"],
+      "block_order": [
+        "review_1",
+        "review_2"
+      ],
       "settings": {
         "setwidth": "container",
         "eyebrow": "What buyers say",
@@ -256,5 +290,12 @@
       }
     }
   },
-  "order": ["main", "about", "features", "expert", "faqs", "reviews"]
+  "order": [
+    "main",
+    "about",
+    "features",
+    "expert",
+    "faqs",
+    "reviews"
+  ]
 }
