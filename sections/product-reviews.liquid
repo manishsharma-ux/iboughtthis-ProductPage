@@ -1,0 +1,1904 @@
+{% comment %}
+  FILE: sections/product-reviews.liquid
+  PLACE IN THEME: sections/product-reviews.liquid
+  CHANGES v11:
+    • Replaced oval rating pill with dynamic ★ star display (product cards)
+    • Replaced rating circle in comparison table with animated donut chart
+    • Both star fill % and donut arc are calculated dynamically from rating value
+    • Section setting: rating_max (default 10) controls the scale
+    • All v10 fixes retained
+{% endcomment %}
+
+<style>
+  /* ────────────────────────────────────────────
+     Global overflow guard — prevents body scroll
+  ──────────────────────────────────────────── */
+  .pr {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .pr__layout {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  /* ────────────────────────────────────────────
+     Sticky sidebar
+  ──────────────────────────────────────────── */
+  .pr__toc {
+    position: static;
+    top: 0;
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    scrollbar-width: none;
+    transition: opacity 0.2s;
+  }
+
+  .pr__toc::-webkit-scrollbar { display: none; }
+
+  .pr__toc--fixed {
+    position: fixed;
+    top: 0;
+    max-height: 100vh;
+    z-index: 50;
+    /* left and width are set inline by JS to match the sidebar column */
+  }
+
+  .pr__toc-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+    line-height: 1.3;
+    transition: background 0.12s;
+    background: #f0f0f0;
+    margin-bottom: 2px;
+  }
+
+  .pr__toc-item:hover { background: #e4e4e4; }
+  .pr__toc-item--active { background: #e0e0e0; font-weight: 700; }
+
+  .pr__toc-arrow {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    margin-top: 2px;
+    color: #555;
+  }
+
+  .pr__toc-arrow--right { color: #003087; font-weight: 700; }
+
+  /* ────────────────────────────────────────────
+     Main content
+  ──────────────────────────────────────────── */
+  .pr__main { display: flex; flex-direction: column; min-width: 0; grid-column: 2; }
+
+  .pr__section { margin-bottom: 60px; }
+
+  .pr__section-heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 18px;
+  }
+
+  .pr__section-intro {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: #2a2a2a;
+    margin: 0 0 20px;
+  }
+
+  /* ────────────────────────────────────────────
+     Review cards (listing)
+  ──────────────────────────────────────────── */
+  .rc {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    background: #fff;
+    width: 100%;
+  }
+
+  .rc--highlight { border: 2px solid #c8a400; }
+
+  .rc__popular-bar {
+    background: #fef7e0;
+    border-bottom: 1px solid #e8d585;
+    padding: 7px 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #7a5f00;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .rc__popular-bar svg { width: 13px; height: 13px; fill: #c8a400; flex-shrink: 0; }
+
+  .rc__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rc__left {
+    padding: 20px;
+    border-right: 1px solid #efefef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .rc__img {
+    width: 100%;
+    max-width: 200px;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f8f8;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .rc__img img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    padding: 12px;
+    display: block;
+  }
+
+  /* ── ★ Star Rating (replaces oval pill) ── */
+  .rc__star-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .rc__stars-wrap {
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+  }
+
+  .rc__stars-bg {
+    display: block;
+    color: #d4d4d4;
+    font-size: 1.35rem;
+    letter-spacing: 3px;
+    user-select: none;
+  }
+
+  .rc__stars-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #f5c518;
+    font-size: 1.35rem;
+    letter-spacing: 3px;
+    pointer-events: none;
+    transition: width 0.6s ease;
+  }
+
+  .rc__star-num {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    font-family: 'Inter', sans-serif;
+    line-height: 1;
+  }
+
+  .rc__right { padding: 20px; min-width: 0; }
+
+  .rc__award-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #f0f4ff;
+    border: 1px solid #bdd0f8;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 0.73rem;
+    font-weight: 700;
+    color: #003087;
+    margin-bottom: 12px;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .rc__award-tag svg { width: 13px; height: 13px; fill: #003087; flex-shrink: 0; }
+
+  .rc__specs {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .rc__spec {
+    font-size: 0.82rem;
+    color: #1a1a1a;
+    padding-left: 14px;
+    position: relative;
+    font-family: 'Inter', sans-serif;
+    word-break: break-word;
+  }
+
+  .rc__spec::before { content: '•'; position: absolute; left: 0; color: #555; }
+  .rc__spec strong { font-weight: 700; }
+
+  /* USP Details */
+  .rc__usp-details { list-style: none; padding: 0; margin: 16px 0; border-top: 1px solid #efefef; padding-top: 16px; }
+
+  .rc__usp-details li {
+    font-size: 0.82rem;
+    color: #1a1a1a;
+    padding-left: 20px;
+    position: relative;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 8px;
+    word-break: break-word;
+  }
+
+  .rc__usp-details li::before { content: '✓'; position: absolute; left: 0; color: #003087; font-weight: 700; }
+
+  .rc__buy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #005bd4;
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 12px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-bottom: 6px;
+    transition: background 0.15s;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .rc__buy-btn:hover { background: #003faa; }
+
+  .rc__site { font-size: 0.7rem; color: #6b6b6b; text-align: center; margin-bottom: 12px; word-break: break-word; }
+
+  /* ────────────────────────────────────────────
+     Tabs
+  ──────────────────────────────────────────── */
+  .rc__tabs { border-top: 1px solid #e4e4e4; }
+
+  .rc__tab-nav {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid #e4e4e4;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rc__tab-nav::-webkit-scrollbar { display: none; }
+
+  .rc__tab-btn {
+    flex-shrink: 0;
+    padding: 11px 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #555;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .rc__tab-btn--active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+
+  .rc__tab-panel { display: none; padding: 18px 20px; }
+  .rc__tab-panel--active { display: block; }
+
+  .rc__tab-panel h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 10px;
+  }
+
+  .rc__tab-panel p {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #2a2a2a;
+    margin: 0 0 10px;
+  }
+
+  .rc__tab-panel p:last-child { margin-bottom: 0; }
+
+  /* ────────────────────────────────────────────
+     Pros & Cons Grid
+  ──────────────────────────────────────────── */
+  .rc__pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px; }
+
+  .rc__pros-cons-column h5 {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .rc__pros-cons-column ul { list-style: none; padding: 0; margin: 0; }
+
+  .rc__pros-cons-column li {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #2a2a2a;
+    padding-left: 24px;
+    position: relative;
+    margin-bottom: 12px;
+    word-break: break-word;
+  }
+
+  .rc__pros-cons-column--pros li::before { content: '✓'; position: absolute; left: 0; color: #16a34a; font-weight: 700; font-size: 1rem; }
+  .rc__pros-cons-column--cons li::before { content: '✕'; position: absolute; left: 0; color: #dc2626; font-weight: 700; font-size: 1rem; }
+
+  /* ────────────────────────────────────────────
+     Comparison / Features / Types tables
+  ──────────────────────────────────────────── */
+  .pr-table-wrap {
+    overflow-x: auto;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pr-table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 0.83rem; }
+
+  .pr-table thead th {
+    background: #f0f0f0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #333;
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+    white-space: nowrap;
+  }
+
+  .pr-table thead th:first-child { text-align: left; }
+
+  .pr-table tbody tr { border-bottom: 1px solid #efefef; }
+  .pr-table tbody tr:last-child { border-bottom: none; }
+  .pr-table tbody tr:nth-child(even) { background: #fafafa; }
+
+  .pr-table tbody td { padding: 12px 16px; text-align: center; color: #1a1a1a; vertical-align: middle; }
+  .pr-table tbody td:first-child { text-align: left; font-weight: 500; }
+
+  .pr-table__popular {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #c8a400;
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    margin-left: 6px;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+
+  /* ── Donut Chart (replaces static rating circle in comparison table) ── */
+  .pr-table__donut {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pr-table__donut svg { display: block; overflow: visible;width:60px;height:60px }
+
+  .pr-table__donut-track { fill: none; stroke: #2a2a2a; }
+  .pr-table__donut-fill {
+    fill: none;
+    stroke: #f5c518;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.8s ease;
+  }
+
+  .pr-table__donut-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    fill: #1a1a1a;
+    dominant-baseline: central;
+    text-anchor: middle;
+  }
+
+  .pr-table__product-img { width: 60px; height: 50px; object-fit: contain; display: block; margin: 0 auto 4px; }
+  .pr-table__product-name { font-size: 0.78rem; color: #1a1a1a; font-weight: 500; }
+
+  .pr-table__btn {
+    display: inline-block;
+    background: #005bd4;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.15s;
+  }
+
+  .pr-table__btn:hover { background: #003faa; }
+  .pr-table__btn--view { background: #f0f0f0; color: #1a1a1a; }
+  .pr-table__btn--view:hover { background: #e0e0e0; }
+  .pr-table__site { font-size: 0.65rem; color: #888; margin-top: 3px; }
+
+  /* ────────────────────────────────────────────
+     Custom Liquid block container
+  ──────────────────────────────────────────── */
+  .pr__custom-block { margin-bottom: 32px; }
+
+  .pr__custom-block table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 0.83rem; }
+
+  .pr__custom-block table thead th {
+    background: #f0f0f0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #333;
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+    white-space: nowrap;
+  }
+
+  .pr__custom-block table thead th:first-child { text-align: left; }
+  .pr__custom-block table tbody tr { border-bottom: 1px solid #efefef; }
+  .pr__custom-block table tbody tr:last-child { border-bottom: none; }
+  .pr__custom-block table tbody tr:nth-child(even) { background: #fafafa; }
+
+  .pr__custom-block table tbody td { padding: 12px 16px; text-align: center; color: #1a1a1a; vertical-align: middle; }
+  .pr__custom-block table tbody td:first-child { text-align: left; font-weight: 500; }
+
+  .pr__custom-block .pr-table-wrap { border: 1px solid #e0e0e0; border-radius: 6px; overflow-x: auto; }
+  .pr__custom-block h3, .pr__custom-block h4 { font-family: 'Playfair Display', serif; margin-top: 0; }
+  .pr__custom-block p:last-child { margin-bottom: 0; }
+
+  /* ────────────────────────────────────────────
+     Rich content sections
+  ──────────────────────────────────────────── */
+  .pr__richtext { font-family: 'Source Serif 4', Georgia, serif; font-size: 0.92rem; line-height: 1.75; color: #2a2a2a; }
+
+  .pr__richtext h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: #1a1a1a; margin: 24px 0 8px; }
+  .pr__richtext p { margin: 0 0 14px; }
+  .pr__richtext p:last-child { margin-bottom: 0; }
+  .pr__richtext ul, .pr__richtext ol { padding-left: 22px; margin: 0 0 14px; }
+  .pr__richtext li { margin-bottom: 6px; }
+  .pr__richtext a { color: #003087; text-decoration: underline; }
+
+  /* ────────────────────────────────────────────
+     RESPONSIVE — Large Tablet (≤ 900px)
+  ──────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .pr { padding: 0 16px 60px; }
+    .pr__layout { grid-template-columns: 1fr; }
+    .pr__toc, .pr__main { grid-column: auto; }
+
+    /* ── Mobile: sticky horizontal tab bar (replaces the desktop sidebar) ── */
+    .pr__toc {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      flex-direction: row;
+      gap: 6px;
+      max-height: none;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 10px 0;
+      margin-bottom: 20px;
+      background: #fff;
+      border-bottom: 1px solid #e4e4e4;
+      -webkit-overflow-scrolling: touch;
+    }
+    /* mobile uses CSS sticky; neutralise the desktop JS --fixed class if present */
+    .pr__toc.pr__toc--fixed { position: sticky; top: 0; left: auto !important; width: auto !important; }
+
+    .pr__toc-item {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      align-items: center;
+      margin-bottom: 0;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      background: #f0f0f0;
+    }
+    .pr__toc-item:hover { background: #e4e4e4; }
+    .pr__toc-item--active { background: #1a1a1a; color: #fff; font-weight: 700; }
+    .pr__toc-arrow { display: none; }
+
+    /* offset anchor jumps so headings aren't hidden under the sticky bar */
+    .pr__section { margin-bottom: 48px; scroll-margin-top: 64px; }
+    .pr__section-heading { font-size: 1.6rem; margin-bottom: 14px; }
+  }
+
+  /* ────────────────────────────────────────────
+     RESPONSIVE — Small Tablet (≤ 680px)
+  ──────────────────────────────────────────── */
+  @media (max-width: 680px) {
+    .pr { padding: 0 12px 48px; }
+    .rc__inner { grid-template-columns: 1fr; }
+    .rc__left { border-right: none; border-bottom: 1px solid #efefef; padding: 16px; }
+    .rc__right { padding: 16px; }
+    .rc__buy-btn { font-size: 0.85rem; padding: 11px 16px; }
+    .rc__tab-btn { padding: 10px 10px; font-size: 0.73rem; }
+    .rc__tab-panel { padding: 14px 16px; }
+    .rc__pros-cons { gap: 16px; }
+    .pr-table { font-size: 0.78rem; }
+    .pr-table thead th { padding: 10px 12px; font-size: 0.68rem; }
+    .pr-table tbody td { padding: 10px 12px; }
+  }
+
+  /* ────────────────────────────────────────────
+     RESPONSIVE — Mobile (≤ 480px)
+  ──────────────────────────────────────────── */
+  @media (max-width: 480px) {
+    .pr { padding: 0 10px 36px; }
+    .pr__section { margin-bottom: 36px; }
+    .pr__section-heading { font-size: 1.3rem; margin-bottom: 12px; }
+    .pr__section-intro { font-size: 0.85rem; line-height: 1.6; }
+    .rc { margin-bottom: 16px; border-radius: 8px; }
+    .rc__popular-bar { padding: 6px 14px; font-size: 0.66rem; }
+    .rc__left { padding: 14px 12px; flex-direction: column; align-items: center; gap: 12px; }
+    .rc__img { max-width: 160px; width: 100%; }
+    .rc__img img { padding: 10px; }
+    .rc__stars-bg, .rc__stars-fill { font-size: 1.1rem; letter-spacing: 2px; }
+    .rc__star-num { font-size: 0.76rem; }
+    .rc__right { padding: 14px 12px; }
+    .rc__award-tag { font-size: 0.68rem; padding: 3px 8px; margin-bottom: 10px; }
+    .rc__spec { font-size: 0.76rem; }
+    .rc__usp-details li { font-size: 0.76rem; }
+    .rc__buy-btn { font-size: 0.82rem; padding: 10px 14px; border-radius: 6px; }
+    .rc__site { font-size: 0.66rem; }
+    .rc__tab-nav { gap: 0; }
+    .rc__tab-btn { padding: 9px 10px; font-size: 0.7rem; }
+    .rc__tab-panel { padding: 12px 14px; }
+    .rc__tab-panel h4 { font-size: 0.92rem; margin-bottom: 8px; }
+    .rc__tab-panel p { font-size: 0.82rem; line-height: 1.6; }
+    .rc__pros-cons { grid-template-columns: 1fr; gap: 14px; margin-top: 12px; }
+    .rc__pros-cons-column li { font-size: 0.82rem; padding-left: 22px; margin-bottom: 8px; line-height: 1.55; }
+    .pr-table { font-size: 0.72rem; }
+    .pr-table thead th { padding: 9px 10px; font-size: 0.64rem; }
+    .pr-table tbody td { padding: 9px 10px; }
+    .pr-table__product-img { width: 44px; height: 36px; }
+    .pr-table__product-name { font-size: 0.7rem; }
+    .pr-table__btn { font-size: 0.68rem; padding: 6px 10px; }
+    .pr-table__popular { font-size: 0.56rem; padding: 2px 5px; display: block; margin-left: 0; margin-top: 4px; }
+    .pr__richtext { font-size: 0.85rem; line-height: 1.7; }
+    .pr__richtext h3 { font-size: 1rem; margin: 18px 0 6px; }
+  }
+
+  /* ────────────────────────────────────────────
+     RESPONSIVE — Very small (≤ 360px)
+  ──────────────────────────────────────────── */
+  @media (max-width: 360px) {
+    .pr { padding: 0 8px 28px; }
+    .rc__tab-btn { padding: 8px 7px; font-size: 0.65rem; }
+    .rc__img { max-width: 130px; }
+    .pr-table thead th, .pr-table tbody td { padding: 7px 8px; }
+  }
+</style>
+
+{%- assign collection = collections[section.settings.collection] -%}
+{%- assign highlight_pos = section.settings.highlight_position | plus: 0 -%}
+{%- assign rating_max = section.settings.rating_max | default: 10 -%}
+
+{%- if section.settings.comparison_collection != blank -%}
+  {%- assign comparison_collection = collections[section.settings.comparison_collection] -%}
+{%- else -%}
+  {%- assign comparison_collection = collection -%}
+{%- endif -%}
+
+<section class="page-width" id="pr-section-{{ section.id }}" data-rating-max="{{ rating_max }}">
+  <div class="pr__layout">
+    <!-- ═══════════ SIDEBAR ═══════════ -->
+    <aside class="pr__toc" aria-label="Page sections">
+      <a href="#pr-list-{{ section.id }}" class="pr__toc-item pr__toc-item--active" data-toc-target="pr-list-{{ section.id }}">
+        <span class="pr__toc-arrow">&#8601;</span> {{ section.settings.list_heading | default: '8 Best Hearing Aids' }}
+      </a>
+      <a href="#pr-comparison-{{ section.id }}" class="pr__toc-item" data-toc-target="pr-comparison-{{ section.id }}">
+        <span class="pr__toc-arrow">&#8601;</span> Comparison: Best Hearing Aids
+      </a>
+      <a href="#pr-features-{{ section.id }}" class="pr__toc-item" data-toc-target="pr-features-{{ section.id }}">
+        <span class="pr__toc-arrow">&#8601;</span> Hearing Aid Features
+      </a>
+      <a href="#pr-howwork-{{ section.id }}" class="pr__toc-item" data-toc-target="pr-howwork-{{ section.id }}">
+        <span class="pr__toc-arrow">&#8601;</span> How Do Hearing Aids Work?
+      </a>
+      <a href="#pr-types-{{ section.id }}" class="pr__toc-item" data-toc-target="pr-types-{{ section.id }}">
+        <span class="pr__toc-arrow">&#8601;</span> Types of Hearing Aids
+      </a>
+      <a href="#pr-choose-{{ section.id }}" class="pr__toc-item" data-toc-target="pr-choose-{{ section.id }}">
+        <span class="pr__toc-arrow">&#8601;</span> How to Choose the Best Hearing Aids
+      </a>
+    </aside>
+
+    <!-- ═══════════ MAIN ═══════════ -->
+    <div class="pr__main">
+      <!-- ══════════════════════════════════════
+           SECTION 1 — Product List
+      ══════════════════════════════════════ -->
+      <div class="pr__section" id="pr-list-{{ section.id }}">
+        <h2 class="pr__section-heading">{{ section.settings.list_heading | default: '8 Best Hearing Aids' }}</h2>
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_liquid' and block.settings.position == 'before_list' -%}
+            <div class="pr__custom-block" {{ block.shopify_attributes }}>
+              {%- if block.settings.block_heading != blank -%}
+                <h3 class="pr__section-heading" style="font-size:1.2rem;margin-bottom:14px;">{{ block.settings.block_heading }}</h3>
+              {%- endif -%}
+              {{ block.settings.liquid_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- assign product_block_count = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'product_item' -%}
+            {%- assign product_block_count = product_block_count | plus: 1 -%}
+            {%- assign product = block.settings.product -%}
+            {%- if product != blank -%}
+              {%- assign is_hl = false -%}
+              {%- if product_block_count == highlight_pos -%}{%- assign is_hl = true -%}{%- endif -%}
+
+              {%- assign score_label = block.settings.score_label -%}
+              {%- if score_label == blank -%}{%- assign score_label = product.metafields.custom.score_label -%}{%- endif -%}
+
+              {%- assign rating = block.settings.rating -%}
+              {%- if rating == blank -%}{%- assign rating = product.metafields.custom.rating -%}{%- endif -%}
+
+              {%- assign short_det = block.settings.short_details -%}
+              {%- if short_det == blank -%}{%- assign short_det = product.metafields.custom.short_details -%}{%- endif -%}
+
+              {%- assign usp_det = block.settings.usp_details -%}
+              {%- if usp_det == blank -%}{%- assign usp_det = product.metafields.custom.usp_details -%}{%- endif -%}
+
+              {%- assign track_link = block.settings.tracking_link -%}
+              {%- if track_link == blank -%}{%- assign track_link = product.metafields.custom.tracking_link -%}{%- endif -%}
+
+              {%- assign cust_link = block.settings.custom_tracking_link -%}
+              {%- if cust_link == blank -%}{%- assign cust_link = product.metafields.custom.custom_tracking_link -%}{%- endif -%}
+
+              {%- assign website_lbl = block.settings.website_label -%}
+              {%- if website_lbl == blank -%}{%- assign website_lbl = product.metafields.custom.website_label -%}{%- endif -%}
+
+              {%- assign expert_review_raw = block.settings.expert_review -%}
+              {%- if expert_review_raw == blank -%}{%- assign expert_review_raw = product.metafields.custom.our_expert_review -%}{%- endif -%}
+
+              {%- assign pros_cons_raw = block.settings.pros_cons -%}
+              {%- if pros_cons_raw == blank -%}{%- assign pros_cons_raw = product.metafields.custom.pros_cons -%}{%- endif -%}
+
+              {%- assign our_experience_raw = block.settings.our_experience -%}
+              {%- if our_experience_raw == blank -%}{%- assign our_experience_raw = product.metafields.custom.our_experience -%}{%- endif -%}
+
+              {%- assign buy_url = cust_link -%}
+              {%- if buy_url == blank -%}{%- assign buy_url = track_link -%}{%- endif -%}
+              {%- if buy_url == blank -%}{%- assign buy_url = product.url -%}{%- endif -%}
+
+              {%- assign tab_id_prefix = 'tab-' | append: block.id -%}
+
+              <div class="rc {% if is_hl %}rc--highlight{% endif %}" id="product-{{ product.handle }}" {{ block.shopify_attributes }}>
+                {%- if is_hl -%}
+                  <div class="rc__popular-bar">
+                    <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    Most Popular
+                  </div>
+                {%- endif -%}
+
+                <div class="rc__inner">
+                  <div class="rc__left">
+                    {%- if product.featured_image -%}
+                      <div class="rc__img">
+                        <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.title | escape }}" loading="lazy" width="200" height="150">
+                      </div>
+                    {%- else -%}
+                      <div class="rc__img" style="color:#bbb;font-size:0.75rem;">No image</div>
+                    {%- endif -%}
+
+                    {%- if rating != blank -%}
+                      <!-- ★ Dynamic Star Rating -->
+                      <div class="rc__star-rating" data-rating="{{ rating }}">
+                        <div class="rc__stars-wrap">
+                          <span class="rc__stars-bg">★★★★★</span>
+                          <span class="rc__stars-fill" style="width:0%">★★★★★</span>
+                        </div>
+                        <span class="rc__star-num">{{ rating }}</span>
+                      </div>
+                    {%- endif -%}
+                  </div>
+
+                  <div class="rc__right">
+                    {%- if score_label != blank -%}
+                      <div class="rc__award-tag">
+                        <svg viewBox="0 0 24 24"><path d="M12 15.39l-3.76 2.27 1-4.28L6 10.61l4.39-.37L12 6.27l1.61 3.97 4.39.37-3.24 2.77 1 4.28L12 15.39z"/></svg>
+                        {{ score_label }}
+                      </div>
+                    {%- endif -%}
+
+                    <ul class="rc__specs">
+                      {%- if product.price > 0 -%}
+                        <li class="rc__spec"><strong>Price:</strong> {{ product.price | money }}</li>
+                      {%- endif -%}
+                      {%- if product.type != blank -%}
+                        <li class="rc__spec"><strong>Type:</strong> {{ product.type }}</li>
+                      {%- endif -%}
+                      {%- if product.vendor != blank -%}
+                        <li class="rc__spec"><strong>Brand:</strong> {{ product.vendor }}</li>
+                      {%- endif -%}
+                    </ul>
+
+                    {%- if usp_det != blank -%}
+                      <ul class="rc__usp-details">
+                        {%- assign usp_html = usp_det | strip_html -%}
+                        {%- assign usp_lines = usp_html | newline_to_br | split: '<br />' -%}
+                        {%- for line in usp_lines -%}
+                          {%- assign cl = line | strip -%}
+                          {%- if cl != blank -%}<li>{{ cl }}</li>{%- endif -%}
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+
+                    <a href="{{ buy_url }}" class="rc__buy-btn" target="_blank" rel="noopener">
+                      Shop Now <span>&#8594;</span>
+                    </a>
+                    <div class="rc__site">On {{ website_lbl | default: product.vendor }}'s Website</div>
+                  </div>
+                </div>
+
+                <div class="rc__tabs">
+                  <div class="rc__tab-nav">
+                    <button class="rc__tab-btn rc__tab-btn--active" data-target="{{ tab_id_prefix }}-rev">
+                      {{ section.settings.tab_expert_review_label | default: 'Our Expert Review' }}
+                    </button>
+                    <button class="rc__tab-btn" data-target="{{ tab_id_prefix }}-pros">
+                      {{ section.settings.tab_pros_cons_label | default: 'Pros & Cons' }}
+                    </button>
+                    <button class="rc__tab-btn" data-target="{{ tab_id_prefix }}-exp">
+                      {{ section.settings.tab_experience_label | default: 'Our Experience' }}
+                    </button>
+                  </div>
+
+                  <div class="rc__tab-panel rc__tab-panel--active" id="{{ tab_id_prefix }}-rev">
+                    <h4>{{ section.settings.tab_expert_review_label }}</h4>
+                    {% if product.metafields.custom.our_expert_review != blank %}
+                      {{ product.metafields.custom.our_expert_review | metafield_tag }}
+                    {% else %}
+                      {{ section.settings.default_expert_review_content }}
+                    {% endif %}
+                  </div>
+
+                  <div class="rc__tab-panel" id="{{ tab_id_prefix }}-pros">
+                    <h4>{{ section.settings.tab_pros_cons_label }}</h4>
+                    {% if product.metafields.custom.pros_cons != blank %}
+                      {% assign pc_text = product.metafields.custom.pros_cons | metafield_text %}
+                      {% assign lines = pc_text | newline_to_br | split: '<br />' %}
+                      {% capture pros %}{% for line in lines %}{% assign l = line | strip %}{% if l contains '✅' %}<li>{{ l | remove: '✅' | strip }}</li>{% endif %}{% endfor %}{% endcapture %}
+                      {% capture cons %}{% for line in lines %}{% assign l = line | strip %}{% if l contains '❌' %}<li>{{ l | remove: '❌' | strip }}</li>{% endif %}{% endfor %}{% endcapture %}
+                      <div class="rc__pros-cons">
+                        {% if pros != blank %}<div class="rc__pros-cons-column rc__pros-cons-column--pros"><h5>Pros</h5><ul>{{ pros }}</ul></div>{% endif %}
+                        {% if cons != blank %}<div class="rc__pros-cons-column rc__pros-cons-column--cons"><h5>Cons</h5><ul>{{ cons }}</ul></div>{% endif %}
+                      </div>
+                    {% else %}
+                      {{ section.settings.default_pros_cons_content }}
+                    {% endif %}
+                  </div>
+
+                  <div class="rc__tab-panel" id="{{ tab_id_prefix }}-exp">
+                    <h4>{{ section.settings.tab_experience_label }}</h4>
+                    {% if product.metafields.custom.our_experience != blank %}
+                      {{ product.metafields.custom.our_experience | metafield_tag }}
+                    {% else %}
+                      {{ section.settings.default_experience_content }}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if product_block_count == 0 and collection != blank -%}
+          {%- for product in collection.products limit: section.settings.products_limit -%}
+            {%- assign is_hl = false -%}
+            {%- if forloop.index == highlight_pos -%}{%- assign is_hl = true -%}{%- endif -%}
+
+            {%- assign score_label = product.metafields.custom.score_label -%}
+            {%- assign rating = product.metafields.custom.rating -%}
+            {%- assign short_det = product.metafields.custom.short_details -%}
+            {%- assign usp_det = product.metafields.custom.usp_details -%}
+            {%- assign track_link = product.metafields.custom.tracking_link -%}
+            {%- assign cust_link = product.metafields.custom.custom_tracking_link -%}
+            {%- assign website_lbl = product.metafields.custom.website_label -%}
+
+            {%- assign buy_url = cust_link -%}
+            {%- if buy_url == blank -%}{%- assign buy_url = track_link -%}{%- endif -%}
+            {%- if buy_url == blank -%}{%- assign buy_url = product.url -%}{%- endif -%}
+
+            {%- assign tab_id_prefix = 'tab-col-' | append: product.handle | append: '-' | append: forloop.index -%}
+
+            <div class="rc {% if is_hl %}rc--highlight{% endif %}" id="product-{{ product.handle }}">
+              {%- if is_hl -%}
+                <div class="rc__popular-bar">
+                  <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  Most Popular
+                </div>
+              {%- endif -%}
+
+              <div class="rc__inner">
+                <div class="rc__left">
+                  {%- if product.featured_image -%}
+                    <div class="rc__img">
+                      <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.title | escape }}" loading="lazy" width="200" height="150">
+                    </div>
+                  {%- else -%}
+                    <div class="rc__img" style="color:#bbb;font-size:0.75rem;">No image</div>
+                  {%- endif -%}
+
+                  {%- if rating != blank -%}
+                    <!-- ★ Dynamic Star Rating -->
+                    <div class="rc__star-rating" data-rating="{{ rating }}">
+                      <div class="rc__stars-wrap">
+                        <span class="rc__stars-bg">★★★★★</span>
+                        <span class="rc__stars-fill" style="width:0%">★★★★★</span>
+                      </div>
+                      <span class="rc__star-num">{{ rating }}</span>
+                    </div>
+                  {%- endif -%}
+                </div>
+
+                <div class="rc__right">
+                  {%- if score_label != blank -%}
+                    <div class="rc__award-tag">
+                      <svg viewBox="0 0 24 24"><path d="M12 15.39l-3.76 2.27 1-4.28L6 10.61l4.39-.37L12 6.27l1.61 3.97 4.39.37-3.24 2.77 1 4.28L12 15.39z"/></svg>
+                      {{ score_label }}
+                    </div>
+                  {%- endif -%}
+
+                  <ul class="rc__specs">
+                    {%- if product.price > 0 -%}
+                      <li class="rc__spec"><strong>Price:</strong> {{ product.price | money }}</li>
+                    {%- endif -%}
+                    {%- if product.type != blank -%}
+                      <li class="rc__spec"><strong>Type:</strong> {{ product.type }}</li>
+                    {%- endif -%}
+                    {%- if product.vendor != blank -%}
+                      <li class="rc__spec"><strong>Brand:</strong> {{ product.vendor }}</li>
+                    {%- endif -%}
+                  </ul>
+
+                  {%- if usp_det != blank -%}
+                    <ul class="rc__usp-details">
+                      {%- assign usp_html = usp_det | strip_html -%}
+                      {%- assign usp_lines = usp_html | newline_to_br | split: '<br />' -%}
+                      {%- for line in usp_lines -%}
+                        {%- assign cl = line | strip -%}
+                        {%- if cl != blank -%}<li>{{ cl }}</li>{%- endif -%}
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+
+                  <a href="{{ buy_url }}" class="rc__buy-btn" target="_blank" rel="noopener">
+                    Shop Now <span>&#8594;</span>
+                  </a>
+                  <div class="rc__site">On {{ website_lbl | default: product.vendor }}'s Website</div>
+                </div>
+              </div>
+
+              <div class="rc__tabs">
+                <div class="rc__tab-nav">
+                  <button class="rc__tab-btn rc__tab-btn--active" data-target="{{ tab_id_prefix }}-rev">
+                    {{ section.settings.tab_expert_review_label | default: 'Our Expert Review' }}
+                  </button>
+                  <button class="rc__tab-btn" data-target="{{ tab_id_prefix }}-pros">
+                    {{ section.settings.tab_pros_cons_label | default: 'Pros & Cons' }}
+                  </button>
+                  <button class="rc__tab-btn" data-target="{{ tab_id_prefix }}-exp">
+                    {{ section.settings.tab_experience_label | default: 'Our Experience' }}
+                  </button>
+                </div>
+
+                <div class="rc__tab-panel rc__tab-panel--active" id="{{ tab_id_prefix }}-rev">
+                  <h4>{{ section.settings.tab_expert_review_label }}</h4>
+                  {% if product.metafields.custom.our_expert_review != blank %}
+                    {{ product.metafields.custom.our_expert_review | metafield_tag }}
+                  {% else %}
+                    {{ section.settings.default_expert_review_content }}
+                  {% endif %}
+                </div>
+
+                <div class="rc__tab-panel" id="{{ tab_id_prefix }}-pros">
+                  <h4>{{ section.settings.tab_pros_cons_label }}</h4>
+                  {% if product.metafields.custom.pros_cons != blank %}
+                    {% assign pc_text = product.metafields.custom.pros_cons | metafield_text %}
+                    {% assign lines = pc_text | newline_to_br | split: '<br />' %}
+                    {% capture pros %}{% for line in lines %}{% assign l = line | strip %}{% if l contains '✅' %}<li>{{ l | remove: '✅' | strip }}</li>{% endif %}{% endfor %}{% endcapture %}
+                    {% capture cons %}{% for line in lines %}{% assign l = line | strip %}{% if l contains '❌' %}<li>{{ l | remove: '❌' | strip }}</li>{% endif %}{% endfor %}{% endcapture %}
+                    <div class="rc__pros-cons">
+                      {% if pros != blank %}<div class="rc__pros-cons-column rc__pros-cons-column--pros"><h5>Pros</h5><ul>{{ pros }}</ul></div>{% endif %}
+                      {% if cons != blank %}<div class="rc__pros-cons-column rc__pros-cons-column--cons"><h5>Cons</h5><ul>{{ cons }}</ul></div>{% endif %}
+                    </div>
+                  {% else %}
+                    {{ section.settings.default_pros_cons_content }}
+                  {% endif %}
+                </div>
+
+                <div class="rc__tab-panel" id="{{ tab_id_prefix }}-exp">
+                  <h4>{{ section.settings.tab_experience_label }}</h4>
+                  {% if product.metafields.custom.our_experience != blank %}
+                    {{ product.metafields.custom.our_experience | metafield_tag }}
+                  {% else %}
+                    {{ section.settings.default_experience_content }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- elsif product_block_count == 0 -%}
+          <p style="color:#888;font-size:0.9rem;">Add product blocks below or select a collection in the section settings to display products.</p>
+        {%- endif -%}
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_liquid' and block.settings.position == 'after_list' -%}
+            <div class="pr__custom-block" {{ block.shopify_attributes }}>
+              {%- if block.settings.block_heading != blank -%}
+                <h3 class="pr__section-heading" style="font-size:1.2rem;margin-bottom:14px;">{{ block.settings.block_heading }}</h3>
+              {%- endif -%}
+              {{ block.settings.liquid_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if section.settings.list_table != blank -%}
+          <div class="pr__custom-block" style="margin-top:24px;">{{ section.settings.list_table }}</div>
+        {%- endif -%}
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SECTION 2 — Comparison Table
+      ══════════════════════════════════════ -->
+      <div class="pr__section" id="pr-comparison-{{ section.id }}">
+        <h2 class="pr__section-heading">{{ section.settings.comparison_heading | default: 'Comparison: Best Hearing Aids' }}</h2>
+        {%- if section.settings.comparison_intro != blank -%}
+          <p class="pr__section-intro">{{ section.settings.comparison_intro }}</p>
+        {%- endif -%}
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_liquid' and block.settings.position == 'before_comparison' -%}
+            <div class="pr__custom-block" {{ block.shopify_attributes }}>
+              {%- if block.settings.block_heading != blank -%}
+                <h3 class="pr__section-heading" style="font-size:1.2rem;margin-bottom:14px;">{{ block.settings.block_heading }}</h3>
+              {%- endif -%}
+              {{ block.settings.liquid_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        <div class="pr-table-wrap">
+          <table class="pr-table" role="table">
+            <thead>
+              <tr>
+                <th>PRODUCT</th>
+                <th>RATING</th>
+                <th>CATEGORY</th>
+                <th>PRICE</th>
+                <th>BUY</th>
+              </tr>
+            </thead>
+            <tbody>
+              {%- if product_block_count > 0 -%}
+                {%- assign comp_index = 0 -%}
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'product_item' -%}
+                    {%- assign comp_index = comp_index | plus: 1 -%}
+                    {%- assign product = block.settings.product -%}
+                    {%- if product != blank -%}
+                      {%- assign comp_hl = false -%}
+                      {%- if comp_index == section.settings.comparison_highlight_position -%}{%- assign comp_hl = true -%}{%- endif -%}
+
+                      {%- assign rating = block.settings.rating -%}
+                      {%- if rating == blank -%}{%- assign rating = product.metafields.custom.rating -%}{%- endif -%}
+
+                      {%- assign score_lbl = block.settings.score_label -%}
+                      {%- if score_lbl == blank -%}{%- assign score_lbl = product.metafields.custom.score_label -%}{%- endif -%}
+
+                      {%- assign track_link = block.settings.tracking_link -%}
+                      {%- if track_link == blank -%}{%- assign track_link = product.metafields.custom.tracking_link -%}{%- endif -%}
+
+                      {%- assign cust_link = block.settings.custom_tracking_link -%}
+                      {%- if cust_link == blank -%}{%- assign cust_link = product.metafields.custom.custom_tracking_link -%}{%- endif -%}
+
+                      {%- assign website_l = block.settings.website_label -%}
+                      {%- if website_l == blank -%}{%- assign website_l = product.metafields.custom.website_label -%}{%- endif -%}
+
+                      {%- assign category_lbl = block.settings.category -%}
+                      {%- if category_lbl == blank -%}{%- assign category_lbl = product.type -%}{%- endif -%}
+
+                      {%- assign buy_url = cust_link -%}
+                      {%- if buy_url == blank -%}{%- assign buy_url = track_link -%}{%- endif -%}
+                      {%- if buy_url == blank -%}{%- assign buy_url = product.url -%}{%- endif -%}
+
+                      <tr>
+                        <td>
+                          {%- if product.featured_image -%}
+                            <img class="pr-table__product-img" src="{{ product.featured_image | image_url: width: 120 }}" alt="{{ product.title | escape }}" loading="lazy">
+                          {%- endif -%}
+                          <div class="pr-table__product-name">
+                            {{ product.title }}
+                            {%- if comp_hl -%}<span class="pr-table__popular">Most Popular</span>{%- endif -%}
+                          </div>
+                        </td>
+                        <td>
+                          {%- if rating != blank -%}
+                            <!-- ◉ Dynamic Donut Chart -->
+                            <div class="pr-table__donut" data-rating="{{ rating }}">
+                              <!-- Rendered by JS -->
+                            </div>
+                          {%- else -%}
+                            &mdash;
+                          {%- endif -%}
+                        </td>
+                        <td>{{ category_lbl | default: product.collections.first.title | default: '&mdash;' }}</td>
+                        <td>
+                          {%- if product.price > 0 -%}{{ product.price | money }}{%- else -%}&mdash;{%- endif -%}
+                        </td>
+                        <td>
+                          <a href="{{ buy_url }}" class="pr-table__btn" target="_blank" rel="noopener">Shop Now &rarr;</a>
+                          <div class="pr-table__site">On {{ website_l | default: product.vendor }}'s Website</div>
+                        </td>
+                      </tr>
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- elsif comparison_collection != blank -%}
+                {%- assign comp_limit = section.settings.comparison_products_limit | default: section.settings.products_limit -%}
+                {%- for product in comparison_collection.products limit: comp_limit -%}
+                  {%- assign comp_hl = false -%}
+                  {%- if forloop.index == section.settings.comparison_highlight_position -%}{%- assign comp_hl = true -%}{%- endif -%}
+
+                  {%- assign rating = product.metafields.custom.rating -%}
+                  {%- assign score_lbl = product.metafields.custom.score_label -%}
+                  {%- assign track_link = product.metafields.custom.tracking_link -%}
+                  {%- assign cust_link = product.metafields.custom.custom_tracking_link -%}
+                  {%- assign website_l = product.metafields.custom.website_label -%}
+
+                  {%- assign buy_url = cust_link -%}
+                  {%- if buy_url == blank -%}{%- assign buy_url = track_link -%}{%- endif -%}
+                  {%- if buy_url == blank -%}{%- assign buy_url = product.url -%}{%- endif -%}
+
+                  <tr>
+                    <td>
+                      {%- if product.featured_image -%}
+                        <img class="pr-table__product-img" src="{{ product.featured_image | image_url: width: 120 }}" alt="{{ product.title | escape }}" loading="lazy">
+                      {%- endif -%}
+                      <div class="pr-table__product-name">
+                        {{ product.title }}
+                        {%- if comp_hl -%}<span class="pr-table__popular">Most Popular</span>{%- endif -%}
+                      </div>
+                    </td>
+                    <td>
+                      {%- if rating != blank -%}
+                        <!-- ◉ Dynamic Donut Chart -->
+                        <div class="pr-table__donut" data-rating="{{ rating }}">
+                          <!-- Rendered by JS -->
+                        </div>
+                      {%- else -%}
+                        &mdash;
+                      {%- endif -%}
+                    </td>
+                    <td>{{ product.type | default: product.collections.first.title | default: '&mdash;' }}</td>
+                    <td>
+                      {%- if product.price > 0 -%}{{ product.price | money }}{%- else -%}&mdash;{%- endif -%}
+                    </td>
+                    <td>
+                      <a href="{{ buy_url }}" class="pr-table__btn" target="_blank" rel="noopener">Shop Now &rarr;</a>
+                      <div class="pr-table__site">On {{ website_l | default: product.vendor }}'s Website</div>
+                    </td>
+                  </tr>
+                {%- endfor -%}
+              {%- else -%}
+                <tr>
+                  <td colspan="5" style="text-align:center;padding:20px;color:#888;">Select a collection or add product blocks to populate this table.</td>
+                </tr>
+              {%- endif -%}
+            </tbody>
+          </table>
+        </div>
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_liquid' and block.settings.position == 'after_comparison' -%}
+            <div class="pr__custom-block" style="margin-top:24px;" {{ block.shopify_attributes }}>
+              {%- if block.settings.block_heading != blank -%}
+                <h3 class="pr__section-heading" style="font-size:1.2rem;margin-bottom:14px;">{{ block.settings.block_heading }}</h3>
+              {%- endif -%}
+              {{ block.settings.liquid_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if section.settings.comparison_table != blank -%}
+          <div class="pr__custom-block" style="margin-top:24px;">{{ section.settings.comparison_table }}</div>
+        {%- endif -%}
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SECTION 3 — Hearing Aid Features Table
+      ══════════════════════════════════════ -->
+      <div class="pr__section" id="pr-features-{{ section.id }}">
+        <h2 class="pr__section-heading">{{ section.settings.features_heading | default: 'Hearing Aid Features' }}</h2>
+        {%- if section.settings.features_intro != blank -%}
+          <p class="pr__section-intro">{{ section.settings.features_intro }}</p>
+        {%- endif -%}
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_liquid' and block.settings.position == 'before_features' -%}
+            <div class="pr__custom-block" {{ block.shopify_attributes }}>
+              {%- if block.settings.block_heading != blank -%}
+                <h3 class="pr__section-heading" style="font-size:1.2rem;margin-bottom:14px;">{{ block.settings.block_heading }}</h3>
+              {%- endif -%}
+              {{ block.settings.liquid_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_liquid' and block.settings.position == 'after_features' -%}
+            <div class="pr__custom-block" style="margin-top:24px;" {{ block.shopify_attributes }}>
+              {%- if block.settings.block_heading != blank -%}
+                <h3 class="pr__section-heading" style="font-size:1.2rem;margin-bottom:14px;">{{ block.settings.block_heading }}</h3>
+              {%- endif -%}
+              {{ block.settings.liquid_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if section.settings.features_table != blank -%}
+          <div class="pr__custom-block" style="margin-top:24px;">{{ section.settings.features_table }}</div>
+        {%- endif -%}
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SECTION 4 — How Do Hearing Aids Work?
+      ══════════════════════════════════════ -->
+      <div class="pr__section" id="pr-howwork-{{ section.id }}">
+        <h2 class="pr__section-heading">{{ section.settings.howwork_heading | default: 'How Do Hearing Aids Work?' }}</h2>
+        <div class="pr__richtext">{{ section.settings.howwork_content }}</div>
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_liquid' and block.settings.position == 'after_howwork' -%}
+            <div class="pr__custom-block" style="margin-top:24px;" {{ block.shopify_attributes }}>
+              {%- if block.settings.block_heading != blank -%}
+                <h3 class="pr__section-heading" style="font-size:1.2rem;margin-bottom:14px;">{{ block.settings.block_heading }}</h3>
+              {%- endif -%}
+              {{ block.settings.liquid_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if section.settings.howwork_table != blank -%}
+          <div class="pr__custom-block" style="margin-top:24px;">{{ section.settings.howwork_table }}</div>
+        {%- endif -%}
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SECTION 5 — Types of Hearing Aids
+      ══════════════════════════════════════ -->
+      <div class="pr__section" id="pr-types-{{ section.id }}">
+        <h2 class="pr__section-heading">{{ section.settings.types_heading | default: 'Types of Hearing Aids' }}</h2>
+        {%- if section.settings.types_intro != blank -%}
+          <div class="pr__richtext" style="margin-bottom:20px;">{{ section.settings.types_intro }}</div>
+        {%- endif -%}
+
+        <div class="pr-table-wrap" style="margin-bottom:24px;">
+          <table class="pr-table" role="table">
+            <thead>
+              <tr>
+                <th>HEARING AID TYPE</th>
+                <th>DEGREE OF HEARING LOSS</th>
+                <th>DESCRIPTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'hearing_aid_type' -%}
+                  <tr {{ block.shopify_attributes }}>
+                    <td>{{ block.settings.type_name }}</td>
+                    <td>{{ block.settings.degree }}</td>
+                    <td>{{ block.settings.description }}</td>
+                  </tr>
+                {%- endif -%}
+              {%- endfor -%}
+              {%- assign has_type_blocks = false -%}
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'hearing_aid_type' -%}{%- assign has_type_blocks = true -%}{%- endif -%}
+              {%- endfor -%}
+              {%- unless has_type_blocks -%}
+                <tr><td>Behind-the-Ear (BTE)</td><td>Mild to profound</td><td>Plastic case sits outside of the ear and delivers sound to earmold</td></tr>
+                <tr><td>Mini Behind-the-Ear (mBTE)</td><td>Mild to profound</td><td>Small speaker wire connects canal earmold to plastic case worn outside of the ear</td></tr>
+                <tr><td>Receiver-in-Canal (RIC)</td><td>Mild to severe</td><td>Speaker rests inside ear canal connected to discrete speaker wire</td></tr>
+                <tr><td>In-the-Ear (ITE)</td><td>Mild to severe</td><td>All components contained in hard plastic case that sits in the ear canal</td></tr>
+                <tr><td>Completely-in-Canal (CIC)</td><td>Mild to severe</td><td>Custom-made to sit entirely in the ear canal</td></tr>
+              {%- endunless -%}
+            </tbody>
+          </table>
+        </div>
+
+        {%- if section.settings.types_content != blank -%}
+          <div class="pr__richtext">{{ section.settings.types_content }}</div>
+        {%- endif -%}
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_liquid' and block.settings.position == 'after_types' -%}
+            <div class="pr__custom-block" style="margin-top:24px;" {{ block.shopify_attributes }}>
+              {%- if block.settings.block_heading != blank -%}
+                <h3 class="pr__section-heading" style="font-size:1.2rem;margin-bottom:14px;">{{ block.settings.block_heading }}</h3>
+              {%- endif -%}
+              {{ block.settings.liquid_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if section.settings.types_table != blank -%}
+          <div class="pr__custom-block" style="margin-top:24px;">{{ section.settings.types_table }}</div>
+        {%- endif -%}
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SECTION 6 — How to Choose
+      ══════════════════════════════════════ -->
+      <div class="pr__section" id="pr-choose-{{ section.id }}">
+        <h2 class="pr__section-heading">{{ section.settings.choose_heading | default: 'How to Choose the Best Hearing Aids' }}</h2>
+        <div class="pr__richtext">{{ section.settings.choose_content }}</div>
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_liquid' and block.settings.position == 'after_choose' -%}
+            <div class="pr__custom-block" style="margin-top:24px;" {{ block.shopify_attributes }}>
+              {%- if block.settings.block_heading != blank -%}
+                <h3 class="pr__section-heading" style="font-size:1.2rem;margin-bottom:14px;">{{ block.settings.block_heading }}</h3>
+              {%- endif -%}
+              {{ block.settings.liquid_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if section.settings.choose_table != blank -%}
+          <div class="pr__custom-block" style="margin-top:24px;">{{ section.settings.choose_table }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var section = document.getElementById('pr-section-{{ section.id }}');
+    if (!section) return;
+
+    /* ════════════════════════════════════════════════
+       Rating scale: read from data-rating-max attribute
+       Default = 10  (set to 5 in section settings if your
+       ratings are entered as e.g. "4.7" out of 5)
+    ════════════════════════════════════════════════ */
+    var RATING_MAX = parseFloat(section.getAttribute('data-rating-max')) || 10;
+
+    /* ────────────────────────────────────────────
+       ★  STAR RATINGS — product cards
+       Stars always use a /5 scale:
+         4.7  → 4.7/5 = 94% filled
+         9.4  → treated as 9.4/10 → 4.7/5 = 94% filled
+    ──────────────────────────────────────────── */
+    section.querySelectorAll('.rc__star-rating[data-rating]').forEach(function (el) {
+      var rating = parseFloat(el.getAttribute('data-rating'));
+      if (isNaN(rating)) return;
+
+      // Normalise to a /5 value then convert to %
+      // If the rating scale is /10, halve it first so it maps to /5
+      // Rating is always out of 5 — rating 4.7 = 94%, rating 5 = 100%
+      var pct = Math.min(Math.max((rating / 5) * 100, 0), 100);
+
+      var fillEl = el.querySelector('.rc__stars-fill');
+      if (fillEl) {
+        requestAnimationFrame(function () {
+          setTimeout(function () {
+            fillEl.style.width = pct + '%';
+          }, 80);
+        });
+      }
+    });
+
+    /* ────────────────────────────────────────────
+       ◉  DONUT CHARTS — comparison table
+    ──────────────────────────────────────────── */
+    section.querySelectorAll('.pr-table__donut[data-rating]').forEach(function (el) {
+      var rating = parseFloat(el.getAttribute('data-rating'));
+      if (isNaN(rating)) return;
+
+      // Rating is always out of 5 — rating 4.7 = 94%, rating 5 = full circle
+      var pct = Math.min(Math.max(rating / 5, 0), 1);
+      var pctInt = Math.round(pct * 100);
+
+      // SVG donut geometry
+      var cx = 28, cy = 28, r = 20;
+      var circ   = 2 * Math.PI * r;            // ~125.66
+      var filled = pct * circ;
+      var empty  = circ - filled;
+
+      // Arc starts at 12 o'clock: achieved via transform rotate(-90)
+      var svg =
+        '<svg width="56" height="56" viewBox="0 0 56 56" aria-label="Rating ' + rating + ' out of ' + RATING_MAX + '">' +
+          // Track (dark grey full ring)
+          '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '"' +
+          ' fill="none" stroke="#2d2d2d" stroke-width="6"/>' +
+          // Progress arc (yellow)
+          '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '"' +
+          ' fill="none"' +
+          ' stroke="#f5c518"' +
+          ' stroke-width="6"' +
+          ' stroke-linecap="round"' +
+          ' stroke-dasharray="0 ' + circ + '"' +
+          ' transform="rotate(-90 ' + cx + ' ' + cy + ')"' +
+          ' class="pr-donut-arc"' +
+          ' data-filled="' + filled + '"' +
+          ' data-circ="' + circ + '"/>' +
+          // Rating number + percent label
+          '<text x="' + cx + '" y="' + (cy - 5) + '"' +
+          ' text-anchor="middle" dominant-baseline="central"' +
+          ' font-family="Inter,sans-serif" font-size="11" font-weight="800" fill="#1a1a1a">' + rating + '</text>' +
+          
+        '</svg>';
+
+      el.innerHTML = svg;
+
+      // Animate the arc in after paint
+      var arc = el.querySelector('.pr-donut-arc');
+      if (arc) {
+        var filledVal = parseFloat(arc.getAttribute('data-filled'));
+        var circVal   = parseFloat(arc.getAttribute('data-circ'));
+        requestAnimationFrame(function () {
+          setTimeout(function () {
+            arc.style.transition = 'stroke-dasharray 0.9s cubic-bezier(0.4,0,0.2,1)';
+            arc.setAttribute('stroke-dasharray', filledVal + ' ' + (circVal - filledVal));
+          }, 100);
+        });
+      }
+    });
+
+    /* ────────────────────────────────────────────
+       Tab switching — review cards
+    ──────────────────────────────────────────── */
+    section.querySelectorAll('.rc__tab-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var wrapper = btn.closest('.rc__tabs');
+        wrapper.querySelectorAll('.rc__tab-btn').forEach(function (b) { b.classList.remove('rc__tab-btn--active'); });
+        wrapper.querySelectorAll('.rc__tab-panel').forEach(function (p) { p.classList.remove('rc__tab-panel--active'); });
+        btn.classList.add('rc__tab-btn--active');
+        var t = document.getElementById(btn.getAttribute('data-target'));
+        if (t) t.classList.add('rc__tab-panel--active');
+      });
+    });
+
+    /* ────────────────────────────────────────────
+       Sidebar active-section tracking
+    ──────────────────────────────────────────── */
+    var toc = section.querySelector('.pr__toc');
+    if (!toc) return;
+
+    var tocItems = section.querySelectorAll('.pr__toc-item[data-toc-target]');
+    var targets  = Array.from(tocItems).map(function (item) {
+      return document.getElementById(item.getAttribute('data-toc-target'));
+    }).filter(Boolean);
+
+    var lastActiveId = null;
+    function updateActiveTocItem() {
+      var scrollY = window.scrollY + 80;
+      var active  = targets[0];
+      targets.forEach(function (t) { if (t && t.offsetTop <= scrollY) active = t; });
+      tocItems.forEach(function (item) {
+        var isActive = item.getAttribute('data-toc-target') === active.id;
+        item.classList.toggle('pr__toc-item--active', isActive);
+        var arrowSpan = item.querySelector('.pr__toc-arrow');
+        if (arrowSpan) {
+          arrowSpan.textContent = isActive ? '→' : '↙';
+          arrowSpan.classList.toggle('pr__toc-arrow--right', isActive);
+        }
+      });
+
+      // On mobile (horizontal tab bar) keep the active tab centred in view
+      if (active.id !== lastActiveId) {
+        lastActiveId = active.id;
+        if (window.matchMedia('(max-width: 900px)').matches && toc.scrollWidth > toc.clientWidth) {
+          var activeEl = section.querySelector('.pr__toc-item--active');
+          if (activeEl) {
+            var target = activeEl.offsetLeft - (toc.clientWidth / 2) + (activeEl.offsetWidth / 2);
+            toc.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+          }
+        }
+      }
+    }
+
+    /* ────────────────────────────────────────────
+       Fixed-on-scroll (desktop sidebar)
+       • Add  .pr__toc--fixed  when the sidebar's top reaches the top of the page
+       • Remove it when the section's bottom reaches the top of the page
+       Uses position:fixed (set via the class) instead of position:sticky,
+       which can be silently broken by an ancestor with overflow set.
+    ──────────────────────────────────────────── */
+    var TOP_OFFSET = {{ section.settings.sticky_top_offset | default: 0 }}; // px gap from the top when fixed (theme setting)
+    var desktopMq  = window.matchMedia('(min-width: 901px)');
+    var colLeft = 0, colWidth = 0, tocOffsetInSection = 0;
+
+    function measureToc() {
+      // Measure column geometry in the natural (unfixed) state.
+      // Vertical triggers are read live on every scroll (see applyTocState),
+      // so they never go stale when the section height changes.
+      toc.classList.remove('pr__toc--fixed');
+      toc.style.left = '';
+      toc.style.width = '';
+      toc.style.top = '';
+      toc.style.maxHeight = '';
+      var r  = toc.getBoundingClientRect();
+      var sr = section.getBoundingClientRect();
+      colLeft  = r.left;
+      colWidth = r.width;
+      tocOffsetInSection = r.top - sr.top;   // sidebar's natural distance below the section top
+      applyTocState();
+    }
+
+    function applyTocState() {
+      if (!desktopMq.matches) {           // mobile uses the sticky horizontal tab bar
+        toc.classList.remove('pr__toc--fixed');
+        toc.style.left = '';
+        toc.style.width = '';
+        toc.style.top = '';
+        toc.style.maxHeight = '';
+        return;
+      }
+      // Live, viewport-relative position of THIS section (self-corrects for any
+      // layout change). Section height is driven by .pr__main, so this reads the
+      // same whether the sidebar is fixed or not.
+      var sr = section.getBoundingClientRect();
+      var pinReached  = (sr.top + tocOffsetInSection) <= TOP_OFFSET; // sidebar top hits the line
+      var sectionLeft = sr.bottom > TOP_OFFSET;                      // section bottom still below the line
+      var shouldFix = pinReached && sectionLeft;
+      if (shouldFix) {
+        toc.classList.add('pr__toc--fixed');
+        toc.style.left  = colLeft + 'px';
+        toc.style.width = colWidth + 'px';
+        toc.style.top   = TOP_OFFSET + 'px';
+        toc.style.maxHeight = 'calc(100vh - ' + TOP_OFFSET + 'px)';
+      } else if (toc.classList.contains('pr__toc--fixed')) {
+        toc.classList.remove('pr__toc--fixed');
+        toc.style.left  = '';
+        toc.style.width = '';
+        toc.style.top   = '';
+        toc.style.maxHeight = '';
+      }
+    }
+
+    function onScroll() {
+      applyTocState();
+      updateActiveTocItem();
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', measureToc);
+    if (window.ResizeObserver) { new ResizeObserver(measureToc).observe(section); }
+    window.addEventListener('load', measureToc);
+
+    measureToc();
+    updateActiveTocItem();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product Reviews",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section 1 — Product List"
+    },
+    {
+      "type": "text",
+      "id": "list_heading",
+      "label": "Heading",
+      "default": "8 Best Hearing Aids"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Products Collection (Optional)",
+      "info": "Select a collection OR add individual product blocks below. Product blocks take priority."
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max Products (for collection)",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "highlight_position",
+      "label": "Highlight Card Position (1 = first)",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "liquid",
+      "id": "list_table",
+      "label": "Custom Table / HTML (below this section)",
+      "info": "Paste table HTML or Liquid here to show it directly under the Product List — no separate block needed. Tables are auto-styled to match the design."
+    },
+    {
+      "type": "header",
+      "content": "Rating Display Settings"
+    },
+    {
+      "type": "select",
+      "id": "rating_max",
+      "label": "Rating Scale (max value)",
+      "info": "Choose 10 if your ratings are like '9.2', choose 5 if like '4.7' out of 5.",
+      "options": [
+        { "value": "5",  "label": "Out of 5  (e.g. 4.7/5)" },
+        { "value": "10", "label": "Out of 10 (e.g. 9.2/10)" }
+      ],
+      "default": "10"
+    },
+    {
+      "type": "header",
+      "content": "Sticky Sidebar (Desktop)"
+    },
+    {
+      "type": "range",
+      "id": "sticky_top_offset",
+      "label": "Sticky top offset (px)",
+      "info": "Distance from the top of the screen where the sidebar pins when scrolling. Increase this if a sticky header overlaps it.",
+      "min": 0,
+      "max": 300,
+      "step": 4,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Tab Settings"
+    },
+    {
+      "type": "text",
+      "id": "tab_expert_review_label",
+      "label": "Expert Review Tab Label",
+      "default": "Our Expert Review"
+    },
+    {
+      "type": "text",
+      "id": "tab_pros_cons_label",
+      "label": "Pros & Cons Tab Label",
+      "default": "Pros & Cons"
+    },
+    {
+      "type": "text",
+      "id": "tab_testing_label",
+      "label": "Testing Tab Label",
+      "default": "Proprietary Testing"
+    },
+    {
+      "type": "text",
+      "id": "tab_experience_label",
+      "label": "Experience Tab Label",
+      "default": "Our Experience"
+    },
+    {
+      "type": "header",
+      "content": "Default Tab Content (when metafields are empty)"
+    },
+    {
+      "type": "richtext",
+      "id": "default_expert_review_content",
+      "label": "Default Expert Review Content",
+      "default": "<p>Our team of audiologists and hearing experts have thoroughly tested this device. It offers exceptional sound quality and features that make it stand out in its category.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "default_pros_cons_content",
+      "label": "Default Pros & Cons Content",
+      "default": "<p>Pros and cons information coming soon.</p>",
+      "info": "Fallback when no pros/cons metafield exists."
+    },
+    {
+      "type": "richtext",
+      "id": "default_experience_content",
+      "label": "Default Experience Content",
+      "default": "<p>After wearing this device for 30 days, our testers reported significant improvement in speech understanding and overall satisfaction with the comfort and features.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Section 2 — Comparison Table"
+    },
+    {
+      "type": "text",
+      "id": "comparison_heading",
+      "label": "Heading",
+      "default": "Comparison: Best Hearing Aids"
+    },
+    {
+      "type": "textarea",
+      "id": "comparison_intro",
+      "label": "Intro Text"
+    },
+    {
+      "type": "collection",
+      "id": "comparison_collection",
+      "label": "Comparison Collection",
+      "info": "Pick a dedicated collection for this table. Leave blank to reuse the Section 1 collection."
+    },
+    {
+      "type": "range",
+      "id": "comparison_products_limit",
+      "label": "Max Products in Comparison Table",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "comparison_highlight_position",
+      "label": "Most Popular Row (1 = first row)",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "liquid",
+      "id": "comparison_table",
+      "label": "Custom Table / HTML (below this section)",
+      "info": "Paste table HTML or Liquid here to show it directly under the Comparison Table — no separate block needed. Tables are auto-styled to match the design."
+    },
+    {
+      "type": "header",
+      "content": "Section 3 — Hearing Aid Features Table"
+    },
+    {
+      "type": "text",
+      "id": "features_heading",
+      "label": "Heading",
+      "default": "Hearing Aid Features"
+    },
+    {
+      "type": "textarea",
+      "id": "features_intro",
+      "label": "Intro Text",
+      "default": "The table below outlines the defining features of our top hearing aids including its type, availability, hearing loss range and battery life."
+    },
+    {
+      "type": "liquid",
+      "id": "features_table",
+      "label": "Custom Table / HTML (below this section)",
+      "info": "Paste table HTML or Liquid here to show it directly under the Features Table — no separate block needed. Tables are auto-styled to match the design."
+    },
+    {
+      "type": "header",
+      "content": "Section 4 — How Do Hearing Aids Work?"
+    },
+    {
+      "type": "text",
+      "id": "howwork_heading",
+      "label": "Heading",
+      "default": "How Do Hearing Aids Work?"
+    },
+    {
+      "type": "richtext",
+      "id": "howwork_content",
+      "label": "Content"
+    },
+    {
+      "type": "liquid",
+      "id": "howwork_table",
+      "label": "Custom Table / HTML (below this section)",
+      "info": "Paste table HTML or Liquid here to show it directly under the How Do Hearing Aids Work? content — no separate block needed. Tables are auto-styled to match the design."
+    },
+    {
+      "type": "header",
+      "content": "Section 5 — Types of Hearing Aids"
+    },
+    {
+      "type": "text",
+      "id": "types_heading",
+      "label": "Heading",
+      "default": "Types of Hearing Aids"
+    },
+    {
+      "type": "richtext",
+      "id": "types_intro",
+      "label": "Intro Text (above table)",
+      "info": "Appears above the types table."
+    },
+    {
+      "type": "richtext",
+      "id": "types_content",
+      "label": "Additional Content (below table)"
+    },
+    {
+      "type": "liquid",
+      "id": "types_table",
+      "label": "Custom Table / HTML (below this section)",
+      "info": "Paste table HTML or Liquid here to show it directly under the Types of Hearing Aids section — no separate block needed. Tables are auto-styled to match the design."
+    },
+    {
+      "type": "header",
+      "content": "Section 6 — How to Choose"
+    },
+    {
+      "type": "text",
+      "id": "choose_heading",
+      "label": "Heading",
+      "default": "How to Choose the Best Hearing Aids"
+    },
+    {
+      "type": "richtext",
+      "id": "choose_content",
+      "label": "Content"
+    },
+    {
+      "type": "liquid",
+      "id": "choose_table",
+      "label": "Custom Table / HTML (below this section)",
+      "info": "Paste table HTML or Liquid here to show it directly under the How to Choose content — no separate block needed. Tables are auto-styled to match the design."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_item",
+      "name": "⭐ Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Select Product"
+        },
+        {
+          "type": "header",
+          "content": "Override Product Metafields (Optional)"
+        },
+        {
+          "type": "paragraph",
+          "content": "The fields below let you override product metafields. Leave blank to use the product's metafield values."
+        },
+        { "type": "text",     "id": "score_label",            "label": "Award Label (e.g., 'Best Overall')" },
+        { "type": "text",     "id": "rating",                 "label": "Rating (e.g., '9.2')" },
+        { "type": "textarea", "id": "short_details",          "label": "Short Details" },
+        { "type": "textarea", "id": "usp_details",            "label": "USP Details (one per line)" },
+        { "type": "url",      "id": "tracking_link",          "label": "Tracking Link" },
+        { "type": "url",      "id": "custom_tracking_link",   "label": "Custom Tracking Link (overrides tracking link)" },
+        { "type": "text",     "id": "website_label",          "label": "Website Label (e.g., 'Phonak')" },
+        { "type": "text",     "id": "category",               "label": "Category (shown in comparison table)", "info": "Leave blank to use the product's Type field from Shopify." },
+        {
+          "type": "header",
+          "content": "Tab Content Overrides"
+        },
+        { "type": "richtext", "id": "expert_review",  "label": "Our Expert Review" },
+        {
+          "type": "richtext",
+          "id": "pros_cons",
+          "label": "Pros & Cons",
+          "info": "Use ✅ for pros and ❌ for cons (one per line). They will auto-split into two columns."
+        },
+        { "type": "richtext", "id": "our_experience", "label": "Our Experience" }
+      ]
+    },
+    {
+      "type": "hearing_aid_type",
+      "name": "Hearing Aid Type Row",
+      "settings": [
+        { "type": "text",     "id": "type_name",    "label": "Type Name",               "default": "Behind-the-Ear (BTE)" },
+        { "type": "text",     "id": "degree",       "label": "Degree of Hearing Loss",  "default": "Mild to profound" },
+        { "type": "textarea", "id": "description",  "label": "Description" }
+      ]
+    },
+    {
+      "type": "feature_row",
+      "name": "Feature Table Row",
+      "settings": [
+        { "type": "text", "id": "product_name",  "label": "Product Name" },
+        { "type": "text", "id": "availability",  "label": "Availability (OTC / Prescription)" },
+        { "type": "text", "id": "ha_type",        "label": "Hearing Aid Type (RIC/ITE etc.)" },
+        { "type": "text", "id": "loss_range",     "label": "Hearing Loss Range" },
+        { "type": "text", "id": "battery_life",   "label": "Battery Life" }
+      ]
+    },
+    {
+      "type": "custom_liquid",
+      "name": "Custom Liquid Block",
+      "settings": [
+        {
+          "type": "select",
+          "id": "position",
+          "label": "Insert After / Before",
+          "info": "Choose where on the page this block appears.",
+          "options": [
+            { "value": "before_list",        "label": "Before Product List" },
+            { "value": "after_list",         "label": "After Product List" },
+            { "value": "before_comparison",  "label": "Before Comparison Table" },
+            { "value": "after_comparison",   "label": "After Comparison Table" },
+            { "value": "before_features",    "label": "Before Features Table" },
+            { "value": "after_features",     "label": "After Features Table" },
+            { "value": "after_howwork",      "label": "After How Do Hearing Aids Work?" },
+            { "value": "after_types",        "label": "After Types of Hearing Aids" },
+            { "value": "after_choose",       "label": "After How to Choose" }
+          ],
+          "default": "after_comparison"
+        },
+        {
+          "type": "text",
+          "id": "block_heading",
+          "label": "Optional Heading",
+          "info": "Leave blank for no heading above the content."
+        },
+        {
+          "type": "liquid",
+          "id": "liquid_content",
+          "label": "Liquid / HTML Content",
+          "info": "Paste any Liquid or HTML. Tables are auto-styled to match the section design."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Reviews"
+    }
+  ]
+}
+{% endschema %}

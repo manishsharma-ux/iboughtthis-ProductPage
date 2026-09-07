@@ -1,0 +1,12 @@
+<a style="border-radius:10px;background:#1C4EAD !important;color:white"
+  href="{{ product.metafields.custom.tracking_link.value }}"
+  class="twoBtn btn btn-theme gradient-theme-vertical product-card__overlay-btn js-btn-quickview w-100" id="purchaseBuy"
+>
+ Shop on Amazon
+</a>
+
+<script>
+document.getElementById('purchaseBuy').addEventListener('click', function() {
+    fbq('track', 'Purchase');
+});
+</script>

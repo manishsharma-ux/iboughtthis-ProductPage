@@ -1,0 +1,755 @@
+<section class="collection-custom-deal">
+   <div class="page-width">
+      {% for product in collection.products %}
+      {% assign product_image = product.featured_image %}
+      {% assign rating = product.metafields.custom.rating | default: 5 %}
+      {% assign rating_percent = rating | times: 20 %}
+      {% assign badge_text = product.metafields.custom.badge %}
+        {% if product.metafields.custom.custom_tracking_link == blank %}
+      {% assign tracking_link = product.metafields.custom.tracking_link %}
+        {% else %}
+        {% assign tracking_link = product.metafields.custom.custom_tracking_link %}
+      {% endif %}
+      {%- assign discount = blank -%}
+      {% if product.compare_at_price and product.compare_at_price > product.price %}
+      {% assign discount = product.compare_at_price
+      | minus: product.price
+      | times: 100
+      | divided_by: product.compare_at_price
+      | round
+      %}
+      {% endif %}
+      
+      <div class="deal-card-main">
+        <div class="deal-rank mbl">{{ forloop.index }}</div>
+         <div class="deal-card">
+            <!-- BADGE -->
+            {% if badge_text != blank %}
+            <span class="deal-badge">{{ badge_text }}</span>
+            {% endif %}
+            <!-- % OFF RIBBON -->
+            {% assign discount = blank %}
+            {% if product.compare_at_price != blank and product.compare_at_price > product.price %}
+            {% assign discount = product.compare_at_price
+            | minus: product.price
+            | times: 100
+            | divided_by: product.compare_at_price
+            | round
+            %}
+            {% endif %}
+            {% if discount != blank %}
+            <span class="ribbon-off">{{ discount }}% OFF</span>
+            {% endif %}
+            <!-- LEFT -->
+            <div class="deal-left">
+                  <div class="deal-rank dst">{{ forloop.index }}</div>
+               <a href="{{ product.url }}" class="deal-image-link">
+               <img src="{{ product_image | image_url: width: 240 }}" alt="{{ product.title }}">
+               </a>
+                 <div class="rating-wrap two">
+                  <svg viewBox="0 0 36 36">
+                     <path
+                        class="bg"
+                        d="M18 2.5
+                        a 15.5 15.5 0 1 1 0 31
+                        a 15.5 15.5 0 1 1 0 -31"
+                        />
+                     <path
+                        class="progress"
+                        stroke-dasharray="{{ rating_percent }},100"
+                        d="M18 2.5
+                        a 15.5 15.5 0 1 1 0 31
+                        a 15.5 15.5 0 1 1 0 -31"
+                        />
+                     <text x="18" y="21">{{ rating }}</text>
+                  </svg>
+               </div>
+            </div>
+            <!-- CENTER -->
+            <div class="deal-center">
+               <h3 class="deal-title">
+                  <a class="d-block product-card__name" href="{{ product.url }}">{{ product.title }}</a>
+               </h3>
+               {% if product.metafields.custom.rating.value != blank %}
+                     {% assign rating = product.metafields.custom.rating.value | plus: 0 %}
+                     {% assign rating_percentage = rating | times: 20 %}
+                     <div class="product-card__reviews-inline">
+                        <span class="product-card__rating-number">
+                           {% comment %} {{ rating }} {% endcomment %}
+                           {% if product.metafields.custom.number_of_reviews.value != blank %}
+                           <div
+                              class="star-rating"
+                              aria-label="Rated {{ rating }} out of 5{% if product.metafields.custom.number_of_reviews.value != blank %} based on {{ product.metafields.custom.number_of_reviews.value }} reviews{% endif %}"
+                              >
+                              <div class="star-rating__base">
+                                 {% for i in (1..5) %}
+                                 <span>★</span>
+                                 {% endfor %}
+                              </div>
+                              <div class="star-rating__fill" style="width: {{ rating_percentage }}%;">
+                                 {% for i in (1..5) %}
+                                 <span>★</span>
+                                 {% endfor %}
+                              </div>
+                           </div>
+                           <p>({{ product.metafields.custom.number_of_reviews.value }} reviews)</p>
+                           {% endif %}
+                        </span>
+                     </div>
+               {% endif %}
+               <style>
+                  .star-rating {
+                  position: relative;
+                  display: inline-block;
+                  font-size: 20px;
+                  line-height: 1;
+                  margin: 0 4px;
+                  }
+                  .star-rating__base,
+                  .star-rating__fill {
+                  display: flex;
+                  }
+                  .star-rating__base span,
+                  .star-rating__fill span {
+                  font-size: 20px;
+                  }
+                  .star-rating__base {
+                  color: #ddd;
+                  /* grey stars */
+                  }
+                  .star-rating__fill {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  overflow: hidden;
+                  white-space: nowrap;
+                  color: #ffc107;
+                  /* yellow stars */
+                  }
+                  .product-card__rating-number {
+                  font-size: 17px;
+                  font-weight: bold;
+                  line-height: 0;
+                  display: flex;
+                  }
+                  .product-card__rating-number p {
+                  font-size: 13px;
+                  }
+                  .product-card__reviews-inline {
+                  display: inline-flex;
+                  align-items: center;
+                  margin-bottom: 10px;
+                  }
+               </style>
+               {% if product.vendor %}
+               <div class="deal-brand">{{ product.vendor }}</div>
+               {% endif %}
+               <div class="product-card__price">
+                  {{ product.price | money }}
+                  {% if product.compare_at_price != blank and product.compare_at_price > product.price %}
+                  {% assign discount = product.compare_at_price
+                  | minus: product.price
+                  | times: 100
+                  | divided_by: product.compare_at_price
+                  | round
+                  %}
+                  <s class="product-card__regular-price">{{ product.compare_at_price | money }}</s>
+                  <span class="compair_price">({{ discount }}% off)</span>
+                  {% endif %}
+               </div>
+            </div>
+            <!-- RIGHT -->
+            <div class="deal-right">
+               <div class="rating-wrap one">
+                  <svg viewBox="0 0 36 36">
+                     <path
+                        class="bg"
+                        d="M18 2.5
+                        a 15.5 15.5 0 1 1 0 31
+                        a 15.5 15.5 0 1 1 0 -31"
+                        />
+                     <path
+                        class="progress"
+                        stroke-dasharray="{{ rating_percent }},100"
+                        d="M18 2.5
+                        a 15.5 15.5 0 1 1 0 31
+                        a 15.5 15.5 0 1 1 0 -31"
+                        />
+                     <text x="18" y="21">{{ rating }}</text>
+                  </svg>
+               </div>
+               {% if tracking_link %}
+               {% comment %}
+               <a href="{{ tracking_link }}" target="_blank" class="deal-btn"> VIEW DEAL </a>
+               {% endcomment %}
+               <a
+                  style="border-radius: 25px; background: #1c4ead !important; color: white"
+                  href="{{ tracking_link }}"
+                  class="mbtn-1 twoBtn btn btn-theme gradient-theme-vertical product-card__overlay-btn js-btn-quickview w-100"
+                  >
+                  <svg
+                     aria-hidden="true"
+                     focusable="false"
+                     data-prefix="fal"
+                     data-icon="plus"
+                     role="img"
+                     xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 384 512"
+                     class="svg-inline--fa fa-plus fa-w-12 fa-3x"
+                     >
+                     <path
+                        fill="currentColor"
+                        d="M376 232H216V72c0-4.42-3.58-8-8-8h-32c-4.42 0-8 3.58-8 8v160H8c-4.42 0-8 3.58-8 8v32c0 4.42 3.58 8 8 8h160v160c0 4.42 3.58 8 8 8h32c4.42 0 8-3.58 8-8V280h160c4.42 0 8-3.58 8-8v-32c0-4.42-3.58-8-8-8z"
+                        class
+                        ></path>
+                  </svg>
+                  VIEW DEAL
+               </a>
+               <div class="amazon-img">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon">
+               </div>
+               {% endif %}
+            </div>
+            {% if tracking_link %}
+            {% comment %}
+            <a href="{{ tracking_link }}" target="_blank" class="deal-btn"> VIEW DEAL </a>
+            {% endcomment %}
+            <a
+               style="border-radius: 25px; background: #1c4ead !important; color: white"
+               href="{{ tracking_link }}"
+               class="mbtn-2 mt-2 twoBtn btn btn-theme gradient-theme-vertical product-card__overlay-btn js-btn-quickview w-100"
+               >
+               <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fal"
+                  data-icon="plus"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 384 512"
+                  class="svg-inline--fa fa-plus fa-w-12 fa-3x"
+                  >
+                  <path
+                     fill="currentColor"
+                     d="M376 232H216V72c0-4.42-3.58-8-8-8h-32c-4.42 0-8 3.58-8 8v160H8c-4.42 0-8 3.58-8 8v32c0 4.42 3.58 8 8 8h160v160c0 4.42 3.58 8 8 8h32c4.42 0 8-3.58 8-8V280h160c4.42 0 8-3.58 8-8v-32c0-4.42-3.58-8-8-8z"
+                     class
+                     ></path>
+               </svg>
+               VIEW DEAL
+            </a>
+            {% endif %}
+         </div>
+         <!-- ACCORDION -->
+         <div class="deal-accordion">
+            <button class="deal-toggle" type="button">
+               <span class="more">MORE DETAILS</span>
+               <span class="less">LESS DETAILS</span>
+               <span class="arrow">
+                  <svg
+                     fill="#000000"
+                     version="1.1"
+                     id="Capa_1"
+                     xmlns="http://www.w3.org/2000/svg"
+                     xmlns:xlink="http://www.w3.org/1999/xlink"
+                     width="800px"
+                     height="800px"
+                     viewBox="0 0 30.727 30.727"
+                     xml:space="preserve"
+                     >
+                     <g>
+                        <path
+                           d="M29.994,10.183L15.363,24.812L0.733,10.184c-0.977-0.978-0.977-2.561,0-3.536c0.977-0.977,2.559-0.976,3.536,0
+                           l11.095,11.093L26.461,6.647c0.977-0.976,2.559-0.976,3.535,0C30.971,7.624,30.971,9.206,29.994,10.183z"
+                           />
+                     </g>
+                  </svg>
+               </span>
+            </button>
+            <div class="deal-content">
+               <div class="deal-desc">
+                  <p class="main_highlights">Main highlights</p>
+                  {{ product.description }}
+               </div>
+               {% if tracking_link %}
+               {% comment %}
+               <a href="{{ tracking_link }}" target="_blank" class="amazon-box">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" />
+                  <div class="amazon-price">{{ product.price | money }}</div>
+                  <span class="amazon-btn">VIEW</span>
+               </a>
+               {% endcomment %}
+               <div class="amazon-box">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon">
+                  <div class="product-card__price mb-1 mt-1">
+                     {{ product.price | money }}
+                     {% if product.compare_at_price != blank and product.compare_at_price > product.price %}
+                     {% assign discount = product.compare_at_price
+                     | minus: product.price
+                     | times: 100
+                     | divided_by: product.compare_at_price
+                     | round
+                     %}
+                     <div>
+                        <s class="product-card__regular-price">{{ product.compare_at_price | money }}</s>
+                        <span class="compair_price">({{ discount }}% off)</span>
+                     </div>
+                     {% endif %}
+                  </div>
+                  <a
+                     style="border-radius: 25px; background: #1c4ead !important; color: white"
+                     href="{{ tracking_link }}"
+                     class="twoBtn btn btn-theme gradient-theme-vertical product-card__overlay-btn js-btn-quickview w-100"
+                     >
+                     <svg
+                        aria-hidden="true"
+                        focusable="false"
+                        data-prefix="fal"
+                        data-icon="plus"
+                        role="img"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 384 512"
+                        class="svg-inline--fa fa-plus fa-w-12 fa-3x"
+                        >
+                        <path
+                           fill="currentColor"
+                           d="M376 232H216V72c0-4.42-3.58-8-8-8h-32c-4.42 0-8 3.58-8 8v160H8c-4.42 0-8 3.58-8 8v32c0 4.42 3.58 8 8 8h160v160c0 4.42 3.58 8 8 8h32c4.42 0 8-3.58 8-8V280h160c4.42 0 8-3.58 8-8v-32c0-4.42-3.58-8-8-8z"
+                           class
+                           ></path>
+                     </svg>
+                     VIEW DEAL
+                  </a>
+               </div>
+               {% endif %}
+            </div>
+         </div>
+      </div>
+      {% endfor %}
+   </div>
+</section>
+<style>
+   .d-block.product-card__name {
+   display: -webkit-box !important;
+   -webkit-line-clamp: 1;
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+   padding-bottom: 3px;
+   }
+   .product-card__image-wr.overflow-hidden {
+   height: 300px;
+   }
+   .product-card__image img {
+   height: 300px !important;
+   object-fit: contain !important;
+   }
+   .product-card__price.mb-1 {
+   font-weight: bold;
+   color: #32a852;
+   margin-bottom: 12px !important;
+   font-size: 18px;
+   }
+   .product-card {
+   border: 1px solid #e5e5e5;
+   height: auto;
+   margin-bottom: 20px;
+   }
+   p.main_highlights {
+   color: #1c4ead;
+   font-weight: bold;
+   margin: 11px 0 !important;
+   }
+   .collection-custom-deal {
+   padding: 0 40px 0;
+   }
+   .deal-card-main {
+   background: #fff;
+   border-radius: 16px;
+   padding: 20px 25px 20px 20px;
+   margin-bottom: 30px;
+   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+   border:1px solid #ddd;
+   position: relative;
+   }
+   .deal-card {
+   display: flex;
+   gap: 32px;
+   align-items: center;
+   }
+
+
+   {% comment %} .ribbon-off::after {
+   content: "";
+   position: absolute;
+   right: 0;
+   bottom: -5px;
+   border-top: 6px solid #b71c1c;
+   border-right: 6px solid transparent;
+   }
+   .ribbon-off::before {
+   content: "";
+   position: absolute;
+   left: -9px;
+   top: 0;
+   border-top: 14px solid transparent;
+   border-bottom: 17px solid transparent;
+   border-right: 10px solid #e53935;
+   } {% endcomment %}
+   /* LEFT */
+   .deal-left {
+   display: flex;
+   align-items: center;
+   gap: 16px;
+   min-width: 220px;
+   }
+   .deal-left img {
+   width: 140px;
+   object-fit: contain;
+   }
+   .deal-rank {
+   width: 38px;
+   height: 38px;
+   border: 2px solid #0b3b4a;
+   border-radius: 50%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-weight: 700;
+   position: relative;
+   bottom: -10px;
+   left: -18px;
+   z-index: 99;
+   background: #fff;
+   }
+   /* CENTER */
+   .deal-center {
+   flex: 1;
+   }
+   .deal-title a {
+   text-decoration: none;
+   color: inherit;
+   }
+   .deal-title {
+   font-size: 22px;
+   font-weight: 700;
+   }
+   .deal-brand {
+   font-weight: 600;
+   }
+   .deal-price {
+   font-size: 20px;
+   font-weight: 700;
+   }
+   .deal-price s {
+   font-size: 15px;
+   color: #999;
+   margin-left: 6px;
+   }
+   span.compair_price {
+   font-size: 14px;
+   color: red;
+   }
+   /* RIGHT */
+   .deal-right {
+   width: 180px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 14px;
+   }
+   .rating-wrap svg {
+   width: 96px;
+   height: 96px;
+   }
+   .rating-wrap .bg {
+   fill: none;
+   stroke: #eee;
+   stroke-width: 3;
+   }
+   .rating-wrap .progress {
+   fill: none;
+   stroke: #ffd800;
+   stroke-width: 3;
+   }
+   .rating-wrap text {
+   text-anchor: middle;
+   font-size: 10px;
+   font-weight: 700;
+   }
+   .deal-btn {
+   background: #1c4ead;
+   color: #fff;
+   padding: 10px 24px;
+   border-radius: 24px;
+   text-decoration: none;
+   width: 100%;
+   text-align: center;
+   transition: all ease 0.3s;
+   }
+   .deal-btn:hover {
+   color: #ffffffc2;
+   }
+   .amazon-text {
+   font-size: 18px;
+   font-weight: 700;
+   }
+   /* ACCORDION */
+   .deal-toggle {
+   background: none;
+   border: none;
+   font-weight: 700;
+   cursor: pointer;
+   font-size: 13px;
+   }
+   .deal-toggle .less {
+   display: none;
+   }
+   .deal-accordion.open .more {
+   display: none;
+   }
+   .deal-accordion.open .less {
+   display: inline;
+   }
+   .deal-content {
+   max-height: 0;
+   overflow: hidden;
+   transition: max-height 0.45s ease;
+   display: flex;
+   }
+   .deal-accordion.open .deal-content {
+   max-height: 2000px;
+   }
+   .deal-desc {
+   margin-top: 16px;
+   font-size: 14px;
+   line-height: 1.6;
+   }
+   .amazon-box {
+   margin: 20px 0 20px 15px;
+   border: 1px solid #ddd;
+   padding: 16px;
+   border-radius: 12px;
+   text-align: center;
+   width: 50%;
+   height: fit-content;
+   }
+   .amazon-img {
+   width: 80px;
+   }
+   .amazon-box img {
+   width: 80px;
+   }
+   .amazon-price {
+   font-size: 21px;
+   font-weight: bold;
+   margin: 15px 0;
+   }
+   .mbtn-2 {
+   display: none;
+   }
+
+   .rating-wrap.two{
+  display:none}
+  .deal-rank.mbl{
+  display:none}
+   /* MOBILE */
+   @media (max-width: 768px) {
+      .deal-rank.mbl{
+  display:block}
+  .rating-wrap.two  {display:block}
+  .deal-rank.dst{
+  display:none
+}
+   .rating-wrap.one{
+  display:none
+}
+.deal-left a,.deal-left .rating-wrap{
+width:50%;
+
+}
+.deal-left .rating-wrap{
+text-align:center}
+
+
+
+
+   .deal-rank{
+   bottom:inherit;
+   left:inherit
+   }
+   {% comment %} .deal-rank::before{
+   content:'';
+   position:absolute;
+   left: 50px;
+   z-index: 0;
+   width: 129px;
+   height:1px;
+   background:#000
+   }
+   .deal-rank::after {
+   content: '';
+   position: absolute;
+   right: 50px;
+   z-index: 0;
+   width: 129px;
+   height: 1px;
+   background: #000;
+   } {% endcomment %}
+
+   .mbtn-1 {
+   display: none;
+   }
+   .mbtn-2 {
+   display: block;
+   }
+   .deal-right {
+   padding: 0 10px;
+   }
+   .mbtn-2 {
+   width: 94% !important;
+   }
+   .product-card__price {
+   font-size: 26px !important;
+   }
+   .deal-card {
+   flex-direction: column;
+   gap: 0px;
+   }
+   .deal-left {
+   display: flex;
+   align-items: center;
+   padding: 10px;
+   min-width: 100%;
+   }
+   .deal-left img {
+   width: 100%;
+   object-fit: contain;
+   border-radius: 10px;
+   }
+
+   .deal-rank {
+        border: 2px solid #32a852;
+        background: #32a852;
+        color: #fff;
+        margin: 10px auto 5px;
+        text-align: center;
+        line-height: 34px;
+   }
+   .deal-card-main {
+   padding: 0;
+   }
+   .deal-right {
+   width: 100%;
+   flex-direction: row;
+   justify-content: center;
+   padding:20px 0
+   }
+   .rating-wrap svg {
+   width: 100px;
+   height: 100%;
+   }
+
+   .deal-center {
+   flex: 1;
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   padding: 10px 10px 0 10px;
+   }
+   .deal-btn {
+   width: 60%;
+   }
+   .deal-accordion {
+   margin-top: 10px;
+   padding-bottom: 10px;
+   text-align: center;
+   }
+   .product-card__overlay-btn {
+   margin: 0;
+   }
+   .deal-content {
+   flex-direction: column;
+   }
+   .amazon-box {
+   width: 100%;
+   margin: 0;
+   }
+   }
+   span.arrow {
+   margin-left: 4px;
+   }
+   span.arrow svg {
+   width: 15px;
+   height: 13px;
+   }
+
+
+
+
+
+
+   .ribbon-off{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  background-image:url("https://cdn.shopify.com/s/files/1/0777/3654/2462/files/discount-red_430x.webp?v=1770887302");
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  background-position:center;
+
+  color:#fff;
+  font-weight:700;
+  font-size:13px;
+
+  height:34px;
+  padding:0 18px;
+  min-width:90px;
+
+  text-align:center;
+  white-space:nowrap;
+     position: absolute;
+   top: -8px;
+   right: 15px;
+   color: #fff;
+   font-size: 12px;
+   font-weight: 700;
+   padding: 6px 14px;
+   border-radius: 0 10px 0 0;
+}
+.deal-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  background-image:url("https://cdn.shopify.com/s/files/1/0777/3654/2462/files/badge-value_430x.webp?v=1770887285");
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  background-position:center;
+
+  color:#fff;
+  font-weight:600;
+  font-size:14px;
+
+  height:36px;
+  padding:0 22px;
+  min-width:140px;
+
+  text-align:center;
+  white-space:nowrap;
+     position: absolute;
+    top: 18px;
+    left: -17px;
+   color: #fff;
+   font-size: 12px;
+   padding: 6px 10px;
+   border-radius: 10px 0 0 0;
+}
+
+</style>
+<script>
+   document.querySelectorAll('.deal-toggle').forEach((btn) => {
+     btn.addEventListener('click', () => {
+       btn.closest('.deal-accordion').classList.toggle('open');
+     });
+   });
+</script>

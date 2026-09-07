@@ -1,0 +1,377 @@
+{% comment %}
+  sections/article-product-ranking.liquid
+
+  Displays a ranked list of products pulled from a collection.
+  Product metafields used:
+    custom.rating           – numeric score (e.g. 9.9)
+    custom.review_count     – number of reviews
+    custom.short_description – one-liner shown under title
+    custom.usp_details      – rich-text bullet list
+    custom.tracking_link    – affiliate / external CTA URL
+    custom.badge_text       – optional ribbon label
+    custom.score_label      – e.g. "Excellent", "Very Good"
+{% endcomment %}
+
+{%- assign ranking_collection = collections[section.settings.collection] -%}
+
+{%- if ranking_collection != blank and ranking_collection.products_count > 0 -%}
+<section class="rl-ranking-section">
+  <div class="rl-page-width">
+
+    {%- if section.settings.section_title != blank -%}
+      <h2 class="rl-section-title">{{ section.settings.section_title }}</h2>
+    {%- endif -%}
+
+    <div class="rl-ranking-list">
+      {%- for product in ranking_collection.products -%}
+        {%- assign rank        = forloop.index -%}
+        {%- assign rating      = product.metafields.custom.rating      | default: 9.0 -%}
+        {%- assign score_label = product.metafields.custom.score_label | default: "Excellent" -%}
+        {%- assign review_count= product.metafields.custom.review_count -%}
+        {%- assign short_desc  = product.metafields.custom.short_description -%}
+        {%- assign usp_details = product.metafields.custom.usp_details -%}
+        {%- assign badge_text  = product.metafields.custom.badge_text -%}
+        {%- assign tracking_link = product.metafields.custom.tracking_link -%}
+        {%- assign cta_label   = section.settings.cta_label | default: "Learn More" -%}
+
+        <div class="rl-rank-card{% if rank == 1 %} rl-rank-card--first{% endif %}">
+
+          {%- comment -%} Optional badge ribbon {%- endcomment -%}
+          {%- if badge_text != blank -%}
+            <div class="rl-rank-badge">{{ badge_text }}</div>
+          {%- endif -%}
+
+          {%- comment -%} Rank number {%- endcomment -%}
+          <div class="rl-rank-number">{{ rank }}</div>
+
+          {%- comment -%} Product image {%- endcomment -%}
+          <div class="rl-rank-image">
+            {%- if product.featured_image -%}
+              <img
+                src="{{ product.featured_image | image_url: width: 220 }}"
+                alt="{{ product.title | escape }}"
+                width="220"
+                height="160"
+                loading="lazy"
+              >
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Product name + features {%- endcomment -%}
+          <div class="rl-rank-content">
+            {%- if short_desc != blank -%}
+              <p class="rl-rank-short-desc">{{ short_desc }}</p>
+            {%- endif -%}
+            <h3 class="rl-rank-title">{{ product.title }}</h3>
+
+            {%- if usp_details != blank -%}
+              <div class="rl-rank-features">
+                {{ usp_details | metafield_tag }}
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Score + CTA box {%- endcomment -%}
+          <div class="rl-rank-cta-box">
+            <div class="rl-rank-score">
+              <span class="rl-score-number">{{ rating }}</span>
+              <span class="rl-score-label">{{ score_label }}</span>
+              <div class="rl-score-stars" aria-label="{{ rating }} out of 10">
+                {%- assign full_stars = rating | divided_by: 2 | floor -%}
+                {%- for i in (1..5) -%}
+                  {%- if i <= full_stars -%}
+                    <span class="rl-star rl-star--full">★</span>
+                  {%- else -%}
+                    <span class="rl-star rl-star--empty">★</span>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+              {%- if review_count != blank -%}
+                <span class="rl-review-count">{{ review_count }} reviews</span>
+              {%- endif -%}
+            </div>
+
+            {%- if tracking_link != blank -%}
+              <a
+                href="{{ tracking_link }}"
+                target="_blank"
+                rel="noopener sponsored"
+                class="rl-rank-cta-btn"
+                onclick="if(typeof fbq !== 'undefined') fbq('track', 'AddToCart');"
+              >
+                {{ cta_label }}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <p class="rl-cta-domain">On {{ product.title | split: ' ' | first }}'s Website</p>
+            {%- endif -%}
+          </div>
+
+        </div>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</section>
+{%- endif -%}
+
+<style>
+  .rl-ranking-section {
+    background: #f9fafb;
+    padding: 48px 0;
+  }
+  .rl-section-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 700;
+    color: #0b2a4a;
+    margin: 0 0 32px;
+  }
+
+  /* Card */
+  .rl-rank-card {
+    position: relative;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+  .rl-rank-card:hover {
+    border-color: #0b2a4a;
+    box-shadow: 0 8px 32px rgba(11,42,74,0.10);
+  }
+  .rl-rank-card--first {
+    border: 2px solid #f59e0b;
+  }
+  .rl-rank-card--first:hover {
+    border-color: #d97706;
+  }
+
+  /* Badge ribbon */
+  .rl-rank-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #f59e0b;
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 12px 3px 8px;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    z-index: 2;
+    line-height: 1.8;
+  }
+
+  /* Rank number */
+  .rl-rank-number {
+    width: 52px;
+    min-width: 52px;
+    background: #0b2a4a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Georgia, serif;
+    font-size: 26px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .rl-rank-card--first .rl-rank-number {
+    background: #f59e0b;
+    color: #000;
+  }
+
+  /* Image */
+  .rl-rank-image {
+    width: 160px;
+    min-width: 160px;
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: #fafafa;
+  }
+  .rl-rank-image img {
+    max-width: 100%;
+    max-height: 130px;
+    object-fit: contain;
+  }
+
+  /* Content */
+  .rl-rank-content {
+    flex: 1;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .rl-rank-short-desc {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    margin: 0;
+  }
+  .rl-rank-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+    line-height: 1.3;
+  }
+  .rl-rank-features {
+    margin-top: 4px;
+  }
+  .rl-rank-features p,
+  .rl-rank-features li {
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.6;
+    margin: 0 0 4px;
+    padding-left: 18px;
+    position: relative;
+  }
+  .rl-rank-features p::before,
+  .rl-rank-features li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #16a34a;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  /* CTA Box */
+  .rl-rank-cta-box {
+    width: 180px;
+    min-width: 180px;
+    border-left: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    gap: 12px;
+    background: #f9fafb;
+  }
+
+  /* Score */
+  .rl-rank-score {
+    text-align: center;
+  }
+  .rl-score-number {
+    display: block;
+    font-size: 36px;
+    font-weight: 800;
+    color: #0b2a4a;
+    line-height: 1;
+  }
+  .rl-rank-card--first .rl-score-number { color: #d97706; }
+  .rl-score-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 600;
+    color: #6b7280;
+    margin: 2px 0 4px;
+  }
+  .rl-score-stars { color: #f59e0b; font-size: 16px; letter-spacing: 1px; }
+  .rl-star--empty { color: #d1d5db; }
+  .rl-review-count { display: block; font-size: 11px; color: #9ca3af; margin-top: 4px; }
+
+  /* CTA button */
+  .rl-rank-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1d4ed8;
+    color: #fff;
+    padding: 11px 18px;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    width: 100%;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .rl-rank-cta-btn:hover { background: #1e40af; color: #fff; }
+  .rl-cta-domain {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 0;
+    text-align: center;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .rl-rank-card {
+      flex-direction: column;
+    }
+    .rl-rank-number {
+      width: 100%;
+      min-width: unset;
+      height: 36px;
+      font-size: 18px;
+      flex-direction: row;
+      gap: 8px;
+    }
+    .rl-rank-number::before { content: "#"; font-size: 14px; opacity: 0.7; }
+    .rl-rank-image {
+      width: 100%;
+      min-width: unset;
+      border-right: none;
+      border-bottom: 1px solid #e5e7eb;
+      height: 180px;
+    }
+    .rl-rank-cta-box {
+      width: 100%;
+      min-width: unset;
+      border-left: none;
+      border-top: 1px solid #e5e7eb;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .rl-rank-score { text-align: left; }
+    .rl-rank-cta-btn { width: auto; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Product Ranking",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Ranking Collection"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Top Picks"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA Button Label",
+      "default": "Learn More"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Ranking"
+    }
+  ]
+}
+{% endschema %}

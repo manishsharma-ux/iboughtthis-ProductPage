@@ -1,0 +1,53 @@
+{% comment %}
+  sections/article-intro.liquid
+  Displays introductory paragraph below the author row.
+  Content comes from section setting OR article.metafields.custom.intro_text.
+{% endcomment %}
+
+{%- assign intro_content = article.metafields.custom.intro_text -%}
+{%- if section.settings.intro_text != blank -%}
+  {%- assign intro_content = section.settings.intro_text -%}
+{%- endif -%}
+
+{%- if intro_content != blank -%}
+<section class="rl-article-intro">
+  <div class="rl-page-width">
+    <div class="rl-intro-body">
+      {{ intro_content }}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+<style>
+  .rl-article-intro {
+    background: #fff;
+    padding: 32px 0 20px;
+  }
+  .rl-intro-body {
+    max-width: 820px;
+    font-size: 16px;
+    color: #374151;
+    line-height: 1.75;
+  }
+  .rl-intro-body p { margin: 0 0 14px; }
+  .rl-intro-body strong { color: #111; }
+  .rl-intro-body a {
+    color: #0b2a4a;
+    text-decoration: underline;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Article Intro",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "Intro Text",
+      "info": "Overrides article.metafields.custom.intro_text if filled."
+    }
+  ]
+}
+{% endschema %}

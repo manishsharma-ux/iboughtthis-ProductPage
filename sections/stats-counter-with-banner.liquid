@@ -1,0 +1,672 @@
+<!-- stats-counter.liquid -->
+<style>
+  .customstyle{{ section.id }} {
+    position: relative;
+    z-index: {{ section.settings.zindex | default: 1 }};
+    background-color: {{ section.settings.bgsection }};
+    background-position: {{ section.settings.e_pos }} !important;
+    background-repeat: {{ section.settings.e_repeat }} !important;
+    background-size: {{ section.settings.e_size }} !important;
+    overflow: hidden;
+  }
+
+  /* ===== Background Image Overlay ===== */
+  .stats-counter-section {
+    position: relative;
+    min-height: {{ section.settings.section_min_height }}px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: {{ section.settings.paddingsection }};
+  }
+
+  .stats-counter-section__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: {{ section.settings.bg_image_position }};
+    display: block;
+    z-index: 0;
+  }
+
+  .stats-counter-section__overlay {
+    position: absolute;
+    inset: 0;
+    background: {{ section.settings.overlay_color }};
+    opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    z-index: 1;
+  }
+
+  /* ===== Content Layer ===== */
+  .stats-counter-section__inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: inherit;
+    gap: 40px;
+  }
+
+  /* ===== Heading ===== */
+  .stats-counter-section__heading {
+    max-width: {{ section.settings.heading_max_width }}px;
+    text-align: {{ section.settings.heading_align }};
+  }
+
+  .stats-counter-section__heading h2 {
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    color: {{ section.settings.heading_color }};
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  /* ===== Stats Row ===== */
+  .stats-counter-section__stats {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding-right: 40px;
+    position: relative;
+  }
+
+  .stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 20px;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: {{ section.settings.divider_color }};
+    opacity: 0.5;
+  }
+
+  .stat-item__number {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-item__count {
+    font-size: {{ section.settings.number_size }}px;
+    font-weight: {{ section.settings.number_weight }};
+    color: {{ section.settings.number_color }};
+    line-height: 1;
+    font-family: {{ section.settings.number_font }};
+  }
+
+  .stat-item__suffix {
+    font-size: {{ section.settings.suffix_size }}px;
+    font-weight: {{ section.settings.number_weight }};
+    color: {{ section.settings.number_color }};
+    line-height: 1;
+  }
+
+  .stat-item__label {
+    font-size: {{ section.settings.label_size }}px;
+    color: {{ section.settings.label_color }};
+    font-weight: {{ section.settings.label_weight }};
+    line-height: 1.5;
+    max-width: 280px;
+  }
+
+  /* ===== Animate in ===== */
+  .stat-item__count {
+    transition: none;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .stats-counter-section {
+      padding: {{ section.settings.paddingmobile }};
+      min-height: auto;
+    }
+    .stats-counter-section__stats {
+      flex-direction: column;
+      gap: 30px;
+    }
+    .stat-item {
+      padding-right: 0;
+      padding-bottom: 24px;
+    }
+    .stat-item:not(:last-child)::after {
+      right: auto;
+      top: auto;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 1px;
+    }
+    .stats-counter-section__heading h2 {
+      font-size: {{ section.settings.heading_size | times: 0.65 | round }}px;
+    }
+    .stat-item__count {
+      font-size: {{ section.settings.number_size | times: 0.7 | round }}px;
+    }
+    .stat-item__suffix {
+      font-size: {{ section.settings.suffix_size | times: 0.7 | round }}px;
+    }
+  }
+</style>
+
+<section
+  class="customstyle{{ section.id }} lazyload"
+  data-aos="{{ section.settings.animation }}"
+  data-bgset="{% render 'bgset', image: section.settings.image_bg %}"
+  data-sizes="auto"
+  data-parent-fit="cover"
+>
+  {%- render 'style-section' -%}
+
+  <div class="stats-counter-section" id="stats-section-{{ section.id }}">
+
+    {%- if section.settings.bg_image != blank -%}
+      {%- assign bg_img_url = section.settings.bg_image | image_url: width: 1 | replace: 'width=1', 'width={width}' -%}
+      <img
+        class="stats-counter-section__bg lazyload"
+        src="{{ section.settings.bg_image | image_url: width: 20 }}"
+        data-src="{{ bg_img_url }}"
+        data-widths="[600, 800, 1000, 1200, 1400, 1600, 1920, 2400]"
+        data-sizes="auto"
+        alt=""
+        aria-hidden="true"
+      >
+    {%- endif -%}
+
+    {%- if section.settings.overlay_opacity > 0 -%}
+      <div class="stats-counter-section__overlay"></div>
+    {%- endif -%}
+
+    <div class="stats-counter-section__inner {{ section.settings.setwidth }}">
+
+      {%- if section.settings.heading != blank -%}
+        <div class="stats-counter-section__heading">
+          <h2>{{ section.settings.heading }}</h2>
+        </div>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="stats-counter-section__stats">
+          {%- for block in section.blocks -%}
+            <div class="stat-item" {{ block.shopify_attributes }}>
+              <div class="stat-item__number">
+                <span
+                  class="stat-item__count"
+                  data-target="{{ block.settings.stat_number }}"
+                  data-duration="{{ section.settings.count_duration }}"
+                >0</span>
+                {%- if block.settings.stat_suffix != blank -%}
+                  <span class="stat-item__suffix">{{ block.settings.stat_suffix }}</span>
+                {%- endif -%}
+              </div>
+              {%- if block.settings.stat_label != blank -%}
+                <p class="stat-item__label">{{ block.settings.stat_label }}</p>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var section = document.getElementById('stats-section-{{ section.id }}');
+  if (!section) return;
+
+  var counters = section.querySelectorAll('.stat-item__count');
+  var hasAnimated = false;
+
+  function easeOutQuad(t) {
+    return t * (2 - t);
+  }
+
+  function animateCounter(el) {
+    var target = parseFloat(el.getAttribute('data-target'));
+    var duration = parseInt(el.getAttribute('data-duration')) || 2000;
+    var isDecimal = target % 1 !== 0;
+    var startTime = null;
+
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      var elapsed = timestamp - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      var eased = easeOutQuad(progress);
+      var current = eased * target;
+
+      el.textContent = isDecimal
+        ? current.toFixed(1)
+        : Math.floor(current).toString();
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = isDecimal ? target.toFixed(1) : Math.floor(target).toString();
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  function runCounters() {
+    if (hasAnimated) return;
+    hasAnimated = true;
+    counters.forEach(function(el) {
+      animateCounter(el);
+    });
+  }
+
+  // IntersectionObserver — triggers when section scrolls into view
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          runCounters();
+          observer.disconnect();
+        }
+      });
+    }, { threshold: {{ section.settings.trigger_threshold | divided_by: 100.0 }} });
+
+    observer.observe(section);
+  } else {
+    // Fallback for older browsers
+    runCounters();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Stats Counter With Banner",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "animation",
+      "label": "Select Animation",
+      "options": [
+        { "value": "", "label": "None" },
+        { "value": "fade", "label": "Fade" },
+        { "value": "fade-up", "label": "Fade Up" },
+        { "value": "fade-down", "label": "Fade Down" },
+        { "value": "fade-left", "label": "Fade Left" },
+        { "value": "fade-right", "label": "Fade Right" },
+        { "value": "zoom-in", "label": "Zoom In" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "setwidth",
+      "label": "Container Width",
+      "default": "container",
+      "options": [
+        { "value": "container", "label": "Box" },
+        { "value": "container-fluid", "label": "Container Fluid" },
+        { "value": "full", "label": "Full" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "section_min_height",
+      "label": "Section Min Height (px)",
+      "min": 300,
+      "max": 900,
+      "step": 20,
+      "default": 520
+    },
+    {
+      "type": "header",
+      "content": "Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "select",
+      "id": "bg_image_position",
+      "label": "Image Position",
+      "default": "center center",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "top center", "label": "Top Center" },
+        { "value": "bottom center", "label": "Bottom Center" },
+        { "value": "center left", "label": "Center Left" },
+        { "value": "center right", "label": "Center Right" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity (%)",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "bgsection",
+      "label": "Fallback Background Color",
+      "default": "#6b7c5e"
+    },
+    {
+      "type": "select",
+      "id": "e_size",
+      "label": "Background Size",
+      "default": "cover",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "e_repeat",
+      "label": "Background Repeat",
+      "default": "no-repeat",
+      "options": [
+        { "value": "no-repeat", "label": "No-repeat" },
+        { "value": "repeat", "label": "Repeat" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "e_pos",
+      "label": "Background Position (CSS)",
+      "default": "center center",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "top center", "label": "Top Center" },
+        { "value": "bottom center", "label": "Bottom Center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading Text",
+      "default": "Proven by Science, Verified by Users"
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading Alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Font Size (px)",
+      "min": 18,
+      "max": 72,
+      "step": 2,
+      "default": 36
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading Font Weight",
+      "default": "700",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "heading_max_width",
+      "label": "Heading Max Width (px)",
+      "min": 200,
+      "max": 800,
+      "step": 20,
+      "default": 400
+    },
+    {
+      "type": "header",
+      "content": "Counter Numbers"
+    },
+    {
+      "type": "range",
+      "id": "number_size",
+      "label": "Number Font Size (px)",
+      "min": 40,
+      "max": 140,
+      "step": 4,
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "suffix_size",
+      "label": "Suffix Font Size (px)",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "default": 48
+    },
+    {
+      "type": "select",
+      "id": "number_weight",
+      "label": "Number Font Weight",
+      "default": "700",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "number_font",
+      "label": "Number Font Family",
+      "default": "inherit",
+      "info": "e.g. 'Georgia', 'Arial', or leave as inherit"
+    },
+    {
+      "type": "header",
+      "content": "Counter Labels"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Label Font Size (px)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "label_weight",
+      "label": "Label Font Weight",
+      "default": "400",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Counter Animation"
+    },
+    {
+      "type": "range",
+      "id": "count_duration",
+      "label": "Count Duration (ms)",
+      "min": 500,
+      "max": 5000,
+      "step": 100,
+      "default": 2000
+    },
+    {
+      "type": "range",
+      "id": "trigger_threshold",
+      "label": "Trigger When Visible (%)",
+      "min": 0,
+      "max": 80,
+      "step": 10,
+      "default": 20,
+      "info": "How much of the section must be visible before counters start (0 = as soon as any part is visible)"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "text",
+      "id": "paddingsection",
+      "label": "Padding (Desktop)",
+      "default": "60px 40px 60px 40px",
+      "info": "Top Right Bottom Left"
+    },
+    {
+      "type": "text",
+      "id": "paddingmobile",
+      "label": "Padding (Mobile)",
+      "default": "40px 20px 40px 20px",
+      "info": "Top Right Bottom Left"
+    },
+    {
+      "type": "header",
+      "content": "Section Margin"
+    },
+    {
+      "type": "text",
+      "id": "marginsection",
+      "label": "Margin Section",
+      "default": "0px 0px 0px 0px",
+      "info": "Margin: Top Right Bottom Left"
+    },
+    {
+      "type": "text",
+      "id": "marginmobile",
+      "label": "Margin Mobile",
+      "default": "0px 0px 0px 0px",
+      "info": "Margin: Top Right Bottom Left"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "stat_number",
+          "label": "Number (digits only)",
+          "default": "93",
+          "info": "Enter a number e.g. 93 or 4.8"
+        },
+        {
+          "type": "text",
+          "id": "stat_suffix",
+          "label": "Suffix",
+          "default": "%",
+          "info": "e.g. %, +, K, M"
+        },
+        {
+          "type": "textarea",
+          "id": "stat_label",
+          "label": "Label / Description",
+          "default": "experienced significant pain relief after just 20 minutes."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Stats Counter With Banner",
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": {
+            "stat_number": "93",
+            "stat_suffix": "%",
+            "stat_label": "experienced significant pain relief after just 20 minutes."
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "stat_number": "87",
+            "stat_suffix": "%",
+            "stat_label": "gained enhanced joint mobility and flexibility."
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "stat_number": "79",
+            "stat_suffix": "%",
+            "stat_label": "Reported noticeably quicker recovery post workouts."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

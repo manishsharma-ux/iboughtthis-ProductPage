@@ -1,0 +1,449 @@
+{% comment %}
+  FILE: sections/product-carousel.liquid
+  PLACE IN THEME: sections/product-carousel.liquid
+  CHANGES v2:
+    • Fully working JS slider (prev/next + dot indicators)
+    • Schema settings: cards shown on desktop / tablet / mobile
+    • Schema setting: which card position to highlight as "Most Popular"
+    • Dynamic collection + metafield population
+{% endcomment %}
+
+<style>
+  .pc-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px 48px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .pc-heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 22px;
+  }
+
+  /* ── Slider shell ── */
+  .pc-slider {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pc-track {
+    display: flex;
+    gap: 34px;
+    transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    will-change: transform;
+    padding:20px 0 20px 20px
+  }
+
+  /* ── Card ── */
+  .pc-card {
+    background: #f7f7f7;
+    border: 1px solid #e4e4e4;
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+    /* width set by JS via CSS var */
+    width: var(--pc-card-width, 220px);
+    box-sizing: border-box;
+  }
+
+.pc-card--highlight {
+    background: #fefae8;
+    border: 2px solid #c8a400;
+    scale: 1.1;
+}
+  .pc-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: #7a5f00;
+    text-transform: uppercase;
+  }
+
+  .pc-badge svg { width: 13px; height: 13px; fill: #c8a400; flex-shrink: 0; }
+
+  .pc-brand {
+    font-size: 0.78rem;
+    color: #0057a8;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .pc-award {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.3;
+  }
+
+  .pc-desc {
+    font-size: 0.77rem;
+    color: #444;
+    line-height: 1.55;
+    flex-grow: 1;
+    font-family: 'Source Serif 4', Georgia, serif;
+  }
+
+  .pc-actions {
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .pc-btn {
+    background: #005bd4;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 9px 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .pc-btn:hover { background: #003faa; }
+
+  .pc-img-wrap {
+    background: #fff;
+    border: 1px solid #e4e4e4;
+    border-radius: 6px;
+    width: 66px;
+    height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .pc-img-wrap img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+
+  .pc-site { font-size: 0.7rem; color: #6b6b6b; }
+
+  /* ── Controls ── */
+  .pc-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .pc-arrow {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid #d0d0d0;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #333;
+    flex-shrink: 0;
+    transition: background 0.15s;
+    line-height: 1;
+  }
+
+  .pc-arrow:hover { background: #f0f0f0; }
+  .pc-arrow:disabled, .pc-arrow[disabled] { opacity: 0.3; cursor: not-allowed; }
+
+  .pc-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .pc-dot--active {
+    background: #1a1a1a;
+    transform: scale(1.25);
+  }
+</style>
+
+{%- assign collection = collections[section.settings.collection] -%}
+{%- assign highlight_pos = section.settings.highlight_position | plus: 0 -%}
+
+<section class="page-width mb-4" id="best-hearing-aids">
+  <h2 class="pc-heading">{{ section.settings.heading }}</h2>
+
+  <div class="pc-slider" id="pc-slider-{{ section.id }}">
+    <div class="pc-track" id="pc-track-{{ section.id }}">
+      {%- if collection != blank -%}
+        {%- for product in collection.products limit: section.settings.products_limit -%}
+          {%- assign is_hl = false -%}
+          {%- if forloop.index == highlight_pos -%}{%- assign is_hl = true -%}{%- endif -%}
+
+          {%- assign score_label  = product.metafields.custom.score_label -%}
+          {%- assign short_det    = product.metafields.custom.short_details -%}
+          {%- assign track_link   = product.metafields.custom.tracking_link -%}
+          {%- assign custom_link  = product.metafields.custom.custom_tracking_link -%}
+          {%- assign website_lbl  = product.metafields.custom.website_label -%}
+
+          {%- assign buy_url = track_link -%}
+          {%- if custom_link != blank -%}{%- assign buy_url = custom_link -%}{%- endif -%}
+          {%- if buy_url == blank -%}{%- assign buy_url = product.url -%}{%- endif -%}
+
+          <div class="pc-card {% if is_hl %}pc-card--highlight{% endif %}">
+            {%- if is_hl -%}
+              <div class="pc-badge">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                Most Popular
+              </div>
+            {%- endif -%}
+
+            <div class="pc-brand">{{ product.vendor }}</div>
+            <div class="pc-award">
+              {%- if score_label != blank -%}{{ score_label }}{%- else -%}{{ product.title }}{%- endif -%}
+            </div>
+
+            <p class="pc-desc">
+              {%- if short_det != blank -%}
+                {{ short_det | strip_html | truncate: 110 }}
+              {%- else -%}
+                {{ product.description | strip_html | truncate: 110 }}
+              {%- endif -%}
+            </p>
+
+            <div class="pc-actions">
+              <a href="{{ buy_url }}" class="pc-btn" target="_blank" rel="noopener">Shop Now</a>
+              {%- if product.featured_image -%}
+                <div class="pc-img-wrap">
+                  <img src="{{ product.featured_image | image_url: width: 120 }}" alt="{{ product.title | escape }}" loading="lazy" width="66" height="66">
+                </div>
+              {%- endif -%}
+            </div>
+
+            <div class="pc-site">
+              On {{ website_lbl | default: product.vendor }}'s Website
+            </div>
+          </div>
+        {%- endfor -%}
+
+      {%- else -%}
+        {%- for block in section.blocks -%}
+          {%- assign is_hl = false -%}
+          {%- if forloop.index == highlight_pos -%}{%- assign is_hl = true -%}{%- endif -%}
+          <div class="pc-card {% if is_hl %}pc-card--highlight{% endif %}" {{ block.shopify_attributes }}>
+            {%- if is_hl -%}
+              <div class="pc-badge">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                Most Popular
+              </div>
+            {%- endif -%}
+            <div class="pc-brand">{{ block.settings.brand }}</div>
+            <div class="pc-award">{{ block.settings.award_label }}</div>
+            <p class="pc-desc">{{ block.settings.description }}</p>
+            <div class="pc-actions">
+              <a href="{{ block.settings.buy_link }}" class="pc-btn" target="_blank">Shop Now</a>
+            </div>
+            <div class="pc-site">On {{ block.settings.website_label }}</div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="pc-controls" id="pc-controls-{{ section.id }}">
+    <button class="pc-arrow" id="pc-prev-{{ section.id }}" aria-label="Previous slide">&#8249;</button>
+    <div class="pc-dots" id="pc-dots-{{ section.id }}"></div>
+    <button class="pc-arrow" id="pc-next-{{ section.id }}" aria-label="Next slide">&#8250;</button>
+  </div>
+</section>
+
+<script>
+(function() {
+  var SID      = '{{ section.id }}';
+  var DESKTOP  = {{ section.settings.cards_desktop | default: 4 }};
+  var TABLET   = {{ section.settings.cards_tablet  | default: 2 }};
+  var MOBILE   = {{ section.settings.cards_mobile  | default: 3 }};
+  var GAP      = 14; // px, matches CSS gap
+
+  var slider   = document.getElementById('pc-slider-' + SID);
+  var track    = document.getElementById('pc-track-' + SID);
+  var prevBtn  = document.getElementById('pc-prev-' + SID);
+  var nextBtn  = document.getElementById('pc-next-' + SID);
+  var dotsWrap = document.getElementById('pc-dots-' + SID);
+
+  if (!slider || !track) return;
+
+  var cards   = Array.from(track.children);
+  var total   = cards.length;
+  var current = 0;
+  var perPage = DESKTOP;
+
+  /* ── Responsive: cards per page ── */
+  function getPerPage() {
+    var w = window.innerWidth;
+    if (w <= 600) return MOBILE;
+    if (w <= 900) return TABLET;
+    return DESKTOP;
+  }
+
+  /* ── Set card widths dynamically ── */
+  function setCardWidths() {
+    perPage = getPerPage();
+    var sliderW = slider.offsetWidth;
+    var cardW   = (sliderW - GAP * (perPage - 1)) / perPage;
+    cards.forEach(function(c) {
+      c.style.width    = cardW + 'px';
+      c.style.minWidth = cardW + 'px';
+    });
+    buildDots();
+    goTo(Math.min(current, maxIndex()));
+  }
+
+  /* ── Max index ── */
+  function maxIndex() {
+    return Math.max(0, total - perPage);
+  }
+
+  /* ── Dots ── */
+  function buildDots() {
+    dotsWrap.innerHTML = '';
+    var count = maxIndex() + 1;
+    for (var i = 0; i < count; i++) {
+      var d = document.createElement('button');
+      d.className = 'pc-dot' + (i === current ? ' pc-dot--active' : '');
+      d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+      (function(idx) {
+        d.addEventListener('click', function() { goTo(idx); });
+      })(i);
+      dotsWrap.appendChild(d);
+    }
+  }
+
+  /* ── Go to index ── */
+  function goTo(idx) {
+    current = Math.max(0, Math.min(idx, maxIndex()));
+    var sliderW = slider.offsetWidth;
+    var cardW   = (sliderW - GAP * (perPage - 1)) / perPage;
+    var offset  = current * (cardW + GAP);
+    track.style.transform = 'translateX(-' + offset + 'px)';
+
+    /* update dots */
+    var dots = dotsWrap.querySelectorAll('.pc-dot');
+    dots.forEach(function(d, i) {
+      d.classList.toggle('pc-dot--active', i === current);
+    });
+
+    /* update arrows */
+    prevBtn.disabled = (current === 0);
+    nextBtn.disabled = (current >= maxIndex());
+  }
+
+  prevBtn.addEventListener('click', function() { goTo(current - 1); });
+  nextBtn.addEventListener('click', function() { goTo(current + 1); });
+
+  /* ── Touch / swipe ── */
+  var startX = 0;
+  track.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend', function(e) {
+    var diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) goTo(diff > 0 ? current + 1 : current - 1);
+  });
+
+  /* ── Init + resize ── */
+  setCardWidths();
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(setCardWidths, 120);
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Product Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "The Best Hearing Aids"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Products Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max Products to Load",
+      "min": 2, "max": 20, "step": 1, "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Cards Visible Per Page"
+    },
+    {
+      "type": "range",
+      "id": "cards_desktop",
+      "label": "Desktop (> 900px)",
+      "min": 1, "max": 6, "step": 1, "default": 4
+    },
+    {
+      "type": "range",
+      "id": "cards_tablet",
+      "label": "Tablet (601–900px)",
+      "min": 1, "max": 4, "step": 1, "default": 2
+    },
+    {
+      "type": "range",
+      "id": "cards_mobile",
+      "label": "Mobile (≤ 600px)",
+      "min": 1, "max": 3, "step": 1, "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Highlight Card"
+    },
+    {
+      "type": "range",
+      "id": "highlight_position",
+      "label": "Highlight Card at Position (1 = first)",
+      "info": "This card gets the golden 'Most Popular' border and badge.",
+      "min": 1, "max": 20, "step": 1, "default": 2
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Manual Product Card",
+      "settings": [
+        { "type": "text", "id": "brand", "label": "Brand Name" },
+        { "type": "text", "id": "award_label", "label": "Award / Category" },
+        { "type": "textarea", "id": "description", "label": "Short Description" },
+        { "type": "url", "id": "buy_link", "label": "Buy Link" },
+        { "type": "text", "id": "website_label", "label": "Website Label" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Product Carousel" }]
+}
+{% endschema %}

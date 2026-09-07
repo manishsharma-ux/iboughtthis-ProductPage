@@ -1,0 +1,123 @@
+{% comment %}
+  sections/article-sticky-layout-end.liquid
+
+  Closes the two-column grid opened by article-sticky-layout.liquid.
+  This section MUST be the last section in the template order.
+
+  It also renders the RIGHT sidebar column containing the sticky widget,
+  because in CSS Grid the sidebar needs to be a sibling of the main column —
+  both must be direct children of .rl-layout-grid.
+
+  The product/link data is read from the sibling section's settings via
+  Shopify's section.settings — but since sections are independent, we
+  re-read the same metafield values here using a data attribute written
+  by article-sticky-layout.liquid into the DOM, then picked up by JS.
+
+  Simpler approach used here: duplicate the widget HTML using the SAME
+  section settings (product picker / URL / label). Both sections share
+  the same Customizer settings group.
+{% endcomment %}
+
+{%- comment -%}
+  Read settings from THIS section (mirrors the Open section settings).
+  In the Customizer, configure EITHER this section OR the Open section —
+  they are intentionally kept in sync by the merchant.
+  Recommended: configure the Open section; leave this one as-is.
+{%- endcomment -%}
+
+{%- assign fp_enabled = section.settings.show_featured_product -%}
+{%- assign fp_product = section.settings.featured_product -%}
+{%- assign fp_link    = section.settings.featured_product_link -%}
+{%- assign fp_cta     = section.settings.featured_cta_label | default: "Learn More" -%}
+{%- assign fp_top     = section.settings.sticky_top_offset | default: 100 -%}
+
+{%- if fp_link == blank and fp_product != blank -%}
+  {%- assign fp_link = fp_product.metafields.custom.tracking_link | default: fp_product.url -%}
+{%- endif -%}
+
+    </div>
+    {%- comment -%} /.rl-layout-grid__main — closed here after all content sections {%- endcomment -%}
+
+    {%- comment -%} ── RIGHT: sticky sidebar column ── {%- endcomment -%}
+    {%- if fp_enabled and fp_product != blank -%}
+      <aside class="rl-layout-grid__sidebar" aria-label="Featured product">
+        <div class="rl-sticky-widget">
+          <div class="rl-sticky-widget__img">
+            {%- if fp_product.featured_image -%}
+              <img
+                src="{{ fp_product.featured_image | image_url: width: 400 }}"
+                alt="{{ fp_product.title | escape }}"
+                width="220"
+                height="200"
+                loading="lazy"
+              >
+            {%- endif -%}
+          </div>
+          <a
+            href="{{ fp_link }}"
+            target="_blank"
+            rel="noopener sponsored"
+            class="rl-sticky-widget__btn"
+            onclick="if(typeof fbq !== 'undefined') fbq('track', 'AddToCart');"
+          >
+            {{ fp_cta }}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </aside>
+    {%- endif -%}
+
+  </div>
+  {%- comment -%} /.rl-layout-grid — fully closed {%- endcomment -%}
+
+{% schema %}
+{
+  "name": "Sticky Layout (Close)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Sticky Product Widget"
+    },
+    {
+      "type": "paragraph",
+      "content": "Configure the widget settings in the 'Sticky Layout (Open)' section above. These settings here mirror them — fill in both or use Liquid metafield overrides."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_product",
+      "label": "Enable sticky product widget",
+      "default": false
+    },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Featured Product"
+    },
+    {
+      "type": "url",
+      "id": "featured_product_link",
+      "label": "Override CTA URL (optional)"
+    },
+    {
+      "type": "text",
+      "id": "featured_cta_label",
+      "label": "Button Label",
+      "default": "Learn More"
+    },
+    {
+      "type": "range",
+      "id": "sticky_top_offset",
+      "label": "Sticky top offset (px)",
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "default": 100
+    }
+  ],
+  "presets": [
+    { "name": "Sticky Layout (Close)" }
+  ]
+}
+{% endschema %}

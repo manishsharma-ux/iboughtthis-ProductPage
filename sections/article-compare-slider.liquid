@@ -1,0 +1,344 @@
+{% comment %}
+  sections/article-compare-slider.liquid
+
+  Displays 3–5 product cards in a Swiper.js carousel.
+  Product metafields used:
+    custom.rating
+    custom.score_label
+    custom.short_description
+    custom.tracking_link
+    custom.badge_text
+{% endcomment %}
+
+{%- assign compare_collection = collections[section.settings.collection] -%}
+
+{%- if compare_collection != blank and compare_collection.products_count > 0 -%}
+<section class="rl-compare-section">
+  <div class="rl-page-width">
+
+    {%- if section.settings.section_title != blank -%}
+      <h2 class="rl-section-title">{{ section.settings.section_title }}</h2>
+    {%- endif -%}
+
+    <div class="rl-swiper-wrapper">
+      <!-- Navigation arrows -->
+      <button class="rl-swiper-prev" aria-label="Previous">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="rl-swiper-next" aria-label="Next">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="swiper rl-compare-swiper">
+        <div class="swiper-wrapper">
+          {%- for product in compare_collection.products limit: 8 -%}
+            {%- assign rank         = forloop.index -%}
+            {%- assign rating       = product.metafields.custom.rating      | default: 9.0 -%}
+            {%- assign score_label  = product.metafields.custom.score_label | default: "Excellent" -%}
+            {%- assign short_desc   = product.metafields.custom.short_description -%}
+            {%- assign tracking_link= product.metafields.custom.tracking_link -%}
+            {%- assign badge_text   = product.metafields.custom.badge_text -%}
+            {%- assign cta_label    = section.settings.cta_label | default: "Shop Now" -%}
+            {%- assign full_stars   = rating | divided_by: 2 | floor -%}
+
+            <div class="swiper-slide">
+              <div class="rl-compare-card">
+
+                {%- if badge_text != blank -%}
+                  <div class="rl-compare-badge">{{ badge_text }}</div>
+                {%- endif -%}
+
+                <div class="rl-compare-rank">{{ rank }}</div>
+
+                <div class="rl-compare-img">
+                  {%- if product.featured_image -%}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 200 }}"
+                      alt="{{ product.title | escape }}"
+                      width="140"
+                      height="100"
+                      loading="lazy"
+                    >
+                  {%- endif -%}
+                </div>
+
+                <h3 class="rl-compare-title">{{ product.title }}</h3>
+
+                {%- if short_desc != blank -%}
+                  <p class="rl-compare-desc">{{ short_desc }}</p>
+                {%- endif -%}
+
+                <div class="rl-compare-score">
+                  <span class="rl-compare-score-num">{{ rating }}</span>
+                  <div>
+                    <span class="rl-compare-score-label">{{ score_label }}</span>
+                    <div class="rl-compare-stars" aria-hidden="true">
+                      {%- for i in (1..5) -%}
+                        <span class="{% if i <= full_stars %}rl-star--full{% else %}rl-star--empty{% endif %}">★</span>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                </div>
+
+                {%- if tracking_link != blank -%}
+                  <a
+                    href="{{ tracking_link }}"
+                    target="_blank"
+                    rel="noopener sponsored"
+                    class="rl-compare-cta"
+                    onclick="if(typeof fbq !== 'undefined') fbq('track', 'AddToCart');"
+                  >
+                    {{ cta_label }}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
+                {%- endif -%}
+
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <!-- Pagination dots -->
+        <div class="swiper-pagination rl-compare-pagination"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{%- endif -%}
+
+<style>
+  .rl-compare-section {
+    background: #e8f4f0;
+    padding: 48px 0 56px;
+  }
+  .rl-swiper-wrapper {
+    position: relative;
+    padding: 0 48px;
+  }
+  @media (max-width: 480px) {
+    .rl-swiper-wrapper { padding: 0 36px; }
+  }
+
+  /* Navigation arrows */
+  .rl-swiper-prev,
+  .rl-swiper-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    color: #374151;
+  }
+  .rl-swiper-prev:hover,
+  .rl-swiper-next:hover {
+    background: #0b2a4a;
+    border-color: #0b2a4a;
+    color: #fff;
+  }
+  .rl-swiper-prev { left: 0; }
+  .rl-swiper-next { right: 0; }
+  .rl-swiper-prev.swiper-button-disabled,
+  .rl-swiper-next.swiper-button-disabled { opacity: 0.35; pointer-events: none; }
+
+  /* Pagination */
+  .rl-compare-pagination {
+    margin-top: 20px;
+    text-align: center;
+  }
+  .rl-compare-pagination .swiper-pagination-bullet {
+    background: #0b2a4a;
+    opacity: 0.25;
+  }
+  .rl-compare-pagination .swiper-pagination-bullet-active {
+    opacity: 1;
+  }
+
+  /* Card */
+  .rl-compare-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px 16px 18px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    height: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .rl-compare-card:hover {
+    border-color: #0b2a4a;
+    box-shadow: 0 6px 24px rgba(11,42,74,0.09);
+  }
+
+  .rl-compare-badge {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f59e0b;
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 12px;
+    border-radius: 0 0 8px 8px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .rl-compare-rank {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #0b2a4a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rl-compare-img {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rl-compare-img img {
+    max-width: 140px;
+    max-height: 100px;
+    object-fit: contain;
+  }
+
+  .rl-compare-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .rl-compare-desc {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .rl-compare-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .rl-compare-score-num {
+    font-size: 30px;
+    font-weight: 800;
+    color: #0b2a4a;
+    line-height: 1;
+  }
+  .rl-compare-score-label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 600;
+    color: #6b7280;
+  }
+  .rl-compare-stars { color: #f59e0b; font-size: 14px; letter-spacing: 1px; }
+  .rl-star--empty { color: #d1d5db; }
+
+  .rl-compare-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #111827;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    width: 100%;
+    justify-content: center;
+    margin-top: auto;
+    transition: background 0.2s;
+  }
+  .rl-compare-cta:hover { background: #0b2a4a; color: #fff; }
+</style>
+
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var swiperEl = document.querySelector('.rl-compare-swiper');
+    if (!swiperEl) return;
+
+    var swiper = new Swiper('.rl-compare-swiper', {
+      slidesPerView: 1.2,
+      spaceBetween: 16,
+      centeredSlides: false,
+      grabCursor: true,
+      pagination: {
+        el: '.rl-compare-pagination',
+        clickable: true
+      },
+      navigation: {
+        prevEl: '.rl-swiper-prev',
+        nextEl: '.rl-swiper-next'
+      },
+      breakpoints: {
+        480: { slidesPerView: 2, spaceBetween: 16 },
+        768: { slidesPerView: 3, spaceBetween: 20 },
+        1024: { slidesPerView: 3.5, spaceBetween: 20 }
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Compare Slider",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Comparison Collection"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Our Top Recommendations"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA Button Label",
+      "default": "Shop Now"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Compare Slider"
+    }
+  ]
+}
+{% endschema %}

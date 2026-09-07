@@ -1,0 +1,206 @@
+{% comment %}
+  sections/article-sticky-layout.liquid
+
+  Opens a two-column CSS Grid wrapper:
+    • Left column  — all article content sections flow here automatically
+    • Right column — sticky product widget (position: sticky)
+
+  This section must be placed BEFORE article-author in the template order.
+  Its closing counterpart (article-sticky-layout-end.liquid) must be placed
+  AFTER main-article.
+
+  Section settings:
+    show_featured_product  — toggle widget on/off
+    featured_product       — product picker
+    featured_product_link  — optional override URL
+    featured_cta_label     — button label (default "Learn More")
+    sticky_top_offset      — px offset from viewport top (default 100)
+{% endcomment %}
+
+{%- assign fp_enabled = section.settings.show_featured_product -%}
+{%- assign fp_product = section.settings.featured_product -%}
+{%- assign fp_link    = section.settings.featured_product_link -%}
+{%- assign fp_cta     = section.settings.featured_cta_label | default: "Learn More" -%}
+{%- assign fp_top     = section.settings.sticky_top_offset | default: 100 -%}
+
+{%- if fp_link == blank and fp_product != blank -%}
+  {%- assign fp_link = fp_product.metafields.custom.tracking_link | default: fp_product.url -%}
+{%- endif -%}
+
+{%- comment -%}
+  We output TWO things here:
+  1. The global CSS that makes every .rl-page-width section sit inside the left column
+  2. The sticky sidebar column (right side of the grid)
+  The grid wrapper <div> is opened here and closed in article-sticky-layout-end.liquid
+{%- endcomment -%}
+
+{%- if fp_enabled and fp_product != blank -%}
+  {%- comment -%} ── Open the outer grid wrapper ── {%- endcomment -%}
+  <div class="rl-layout-grid" id="rl-layout-grid">
+
+    {%- comment -%} ── Left content column (all sections render inside this naturally) ── {%- endcomment -%}
+    <div class="rl-layout-grid__main">
+{%- else -%}
+  {%- comment -%} No widget — open a passthrough wrapper so the end section still closes correctly {%- endcomment -%}
+  <div class="rl-layout-grid rl-layout-grid--no-sidebar" id="rl-layout-grid">
+    <div class="rl-layout-grid__main">
+{%- endif -%}
+
+<style>
+  /* ── Two-column grid layout ── */
+  .rl-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    grid-template-rows: auto;
+    align-items: start;
+    column-gap: 0;
+    max-width: 1340px;
+    margin: 0 auto;
+  }
+
+  /* When no sidebar, collapse to single column */
+  .rl-layout-grid--no-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  /* Left column stretches full height */
+  .rl-layout-grid__main {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  /* All sections inside the left column keep their own full-width backgrounds
+     but constrain their inner .rl-page-width to leave sidebar room */
+  .rl-layout-grid__main .rl-page-width {
+    max-width: 960px;
+  }
+
+  /* ── Right sticky sidebar column ── */
+  .rl-layout-grid__sidebar {
+    grid-column: 2;
+    grid-row: 1 / -1;           /* spans all rows — crucial for sticky to work */
+    padding: 0 20px 0 12px;
+    align-self: start;
+  }
+
+  /* ── Sticky widget card ── */
+  .rl-sticky-widget {
+    position: sticky;
+    top: {{ fp_top }}px;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #dde3ea;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rl-sticky-widget__img {
+    width: 100%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    min-height: 180px;
+  }
+  .rl-sticky-widget__img img {
+    max-width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .rl-sticky-widget__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    padding: 14px 16px;
+    background: #3d5a73;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    transition: background 0.2s;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    box-sizing: border-box;
+  }
+  .rl-sticky-widget__btn:hover {
+    background: #0b2a4a;
+    color: #fff;
+  }
+  .rl-sticky-widget__btn svg {
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .rl-sticky-widget__btn:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* ── Responsive: hide sidebar on narrow screens ── */
+  @media (max-width: 1100px) {
+    .rl-layout-grid {
+      grid-template-columns: 1fr;
+    }
+    .rl-layout-grid__sidebar {
+      display: none;
+    }
+    .rl-layout-grid__main .rl-page-width {
+      max-width: 1100px; /* restore full width on mobile */
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Sticky Layout (Open)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Sticky Product Widget"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_product",
+      "label": "Enable sticky product widget",
+      "default": false
+    },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Featured Product",
+      "info": "Displays the product image. CTA uses custom.tracking_link metafield if set, otherwise the product URL."
+    },
+    {
+      "type": "url",
+      "id": "featured_product_link",
+      "label": "Override CTA URL (optional)"
+    },
+    {
+      "type": "text",
+      "id": "featured_cta_label",
+      "label": "Button Label",
+      "default": "Learn More"
+    },
+    {
+      "type": "range",
+      "id": "sticky_top_offset",
+      "label": "Sticky top offset (px)",
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "default": 100,
+      "info": "Distance from top of viewport when widget sticks. Increase if your theme has a tall header."
+    }
+  ],
+  "presets": [
+    { "name": "Sticky Layout (Open)" }
+  ]
+}
+{% endschema %}

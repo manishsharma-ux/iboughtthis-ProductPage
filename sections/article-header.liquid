@@ -1,0 +1,157 @@
+{% comment %}
+  sections/article-header.liquid
+  Displays: breadcrumb, article title, publish date, verified badge
+{% endcomment %}
+
+<section class="rl-article-header{% if article.image %} rl-article-header--has-bg{% endif %}"
+  {%- if article.image -%}
+    style="background-image: url('{{ article.image | img_url: '1800x' }}');"
+  {%- endif -%}>
+
+  {%- if article.image -%}
+    <div class="rl-article-header__overlay"></div>
+  {%- endif -%}
+
+  <div class="rl-page-width rl-article-header__inner">
+
+    {%- comment -%} Breadcrumb {%- endcomment -%}
+    <nav class="rl-breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        {%- if blog != blank -%}
+          <li><a href="{{ blog.url }}">{{ blog.title }}</a></li>
+        {%- endif -%}
+        <li aria-current="page">{{ article.title | truncate: 40 }}</li>
+      </ol>
+    </nav>
+
+    {%- comment -%} Title {%- endcomment -%}
+    <h1 class="rl-article-title">{{ article.title }}</h1>
+
+    {%- comment -%} Meta row {%- endcomment -%}
+    <div class="rl-article-meta">
+      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        {{ article.published_at | date: "%b %d, %Y, %I:%M%P" }}
+      </time>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .rl-article-header {
+    position: relative;
+    background: #0b2a4a;
+    padding: 28px 0 36px;
+    color: #fff;
+  }
+
+  /* ── Has background image ── */
+  .rl-article-header--has-bg {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  /* Dark gradient so text stays readable over any photo */
+  .rl-article-header__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.08) 0%,
+      rgba(0, 0, 0, 0.72) 100%
+    );
+    z-index: 0;
+  }
+
+  .rl-article-header__inner {
+    position: relative;
+    z-index: 1;
+    padding-top: 28px;
+    padding-bottom: 36px;
+    align-items: flex-start;
+  }
+
+  .rl-page-width {
+    max-width: 1100px;
+    margin: 0;
+    padding: 0 40px;
+  }
+
+  /* Breadcrumb */
+  .rl-breadcrumb ol {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .rl-breadcrumb li + li::before {
+    content: "›";
+    margin-right: 6px;
+    color: rgba(255,255,255,0.4);
+  }
+  .rl-breadcrumb a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .rl-breadcrumb a:hover { color: #fff; }
+
+  /* Title */
+  .rl-article-title {
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 1.18;
+    margin: 0 0 16px;
+    color: #fff;
+    max-width: 820px;
+    text-align: left;
+  }
+
+  /* Meta row */
+  .rl-article-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    justify-content: flex-start;
+  }
+  .rl-meta-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #5bc4a0;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .rl-meta-verified svg { flex-shrink: 0; }
+
+  @media (max-width: 768px) {
+    .rl-article-header--has-bg { min-height: 260px; }
+  }
+
+  @media (max-width: 600px) {
+    nav.rl-breadcrumb { display: none; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Article Header",
+  "settings": []
+}
+{% endschema %}

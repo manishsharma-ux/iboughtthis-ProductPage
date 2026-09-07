@@ -1,0 +1,726 @@
+<section class="collection-custom-deal pt-5">
+  <div class="page-width">
+    {% for product in collection.products %}
+      {% assign rating = product.metafields.custom.rating | default: 4.9 %}
+      {% assign badge_text = product.metafields.custom.badge %}
+      {% if product.metafields.custom.custom_tracking_link == blank %}
+        {% assign tracking_link = product.metafields.custom.tracking_link %}
+      {% else %}
+        {% assign tracking_link = product.metafields.custom.custom_tracking_link %}
+      {% endif %}
+      {% assign discount = blank %}
+      {% if product.compare_at_price and product.compare_at_price > product.price %}
+        {% assign discount = product.compare_at_price
+          | minus: product.price
+          | times: 100
+          | divided_by: product.compare_at_price
+          | round
+        %}
+      {% endif %}
+      <div class="deal-card-main">
+        <span
+          class="deal-card-link-overlay purchaseBtnCard"
+          data-href="{{ tracking_link }}"
+          id=""
+        ></span>
+        {% if badge_text != blank %}
+          <div class="deal-badge">{{ badge_text }}</div>
+        {% endif %}
+
+        <div class="deal-card new-layout">
+          <div class="deal-count dst">{{ forloop.index }}</div>
+
+          <!-- CENTER CONTENT -->
+          <div class="deal-content-col mobile_view">
+            <!-- Rating -->
+            <div class="rating-line">
+              <div class="deal-count mbl">{{ forloop.index }}</div>
+              {% render 'star_rating', product: product %}
+            </div>
+            <!-- Title -->
+            <h3 class="deal-title">
+              {% comment %} <a href="{{ product.url }}">{{ product.title }}</a> {% endcomment %}
+              {{ product.title }}
+            </h3>
+            <!-- USP DETAILS -->
+            {% if product.metafields.custom.usp_details != blank %}
+              <div class="feature-list desktop_view">
+                {{ product.metafields.custom.usp_details | metafield_tag }}
+              </div>
+            {% endif %}
+          </div>
+          <!-- LEFT IMAGE COLUMN -->
+          <div class="deal-image-col">
+            <div class="main-image">
+              <img
+                id="main-img-{{ forloop.index }}"
+                src="{{ product.featured_image | image_url: width: 600 }}"
+                alt="{{ product.title }}"
+              >
+            </div>
+            <!-- SLICK THUMBNAILS -->
+            <div class="thumb-wrapper slider-{{ forloop.index }}">
+              {% for image in product.images %}
+                <div>
+                  <img
+                    src="{{ image | image_url: width: 120 }}"
+                    class="thumb-img"
+                    data-full="{{ image | image_url: width: 600 }}"
+                    data-index="{{ forloop.parentloop.index }}"
+                  >
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          <!-- CENTER CONTENT -->
+          <div class="deal-content-col desktop_view">
+            <!-- Rating -->
+            <div class="rating-line">
+              {% render 'star_rating', product: product %}
+            </div>
+            <!-- Title -->
+            <h3 class="deal-title">
+              {% comment %} <a href="{{ product.url }}">{{ product.title }}</a> {% endcomment %}
+              {{ product.title }}
+            </h3>
+            <!-- USP DETAILS -->
+            {% if product.metafields.custom.usp_details != blank %}
+              <div class="feature-list desktop_view">
+                {{ product.metafields.custom.usp_details | metafield_tag }}
+              </div>
+            {% endif %}
+            <!-- ===== NEW: Read Full Review Button (desktop) ===== -->
+            {% if product.metafields.custom.short_details != blank %}
+              <button
+                class="quick-details-btn"
+                data-target="quick-details-{{ forloop.index }}"
+                aria-expanded="false"
+              >
+                <span class="quick-details-btn__text">Read Full Review</span>
+                <span class="quick-details-btn__icon">&#9660;</span>
+              </button>
+            {% endif %}
+            <!-- ===== END NEW ===== -->
+          </div>
+          {% if product.metafields.custom.usp_details != blank %}
+            <div class="feature-list mobile_view">
+              {{ product.metafields.custom.usp_details | metafield_tag }}
+            </div>
+          {% endif %}
+          <!-- ===== NEW: Read Full Review Button (mobile) ===== -->
+          {% if product.metafields.custom.short_details != blank %}
+            <button
+              class="quick-details-btn mobile_view"
+              data-target="quick-details-{{ forloop.index }}"
+              aria-expanded="false"
+            >
+              <span class="quick-details-btn__text">Read Full Review</span>
+              <span class="quick-details-btn__icon">&#9660;</span>
+            </button>
+          {% endif %}
+          <!-- ===== END NEW ===== -->
+          <!-- RIGHT CTA BOX -->
+          <div class="deal-cta-col-main">
+            <div class="deal-cta-col">
+              <div class="price-box">
+                <span class="current-price">{{ product.price | money }}</span>
+
+                {% if product.compare_at_price > product.price %}
+                  <span class="old-price">{{ product.compare_at_price | money }}</span>
+                {% endif %}
+              </div>
+
+              {% if discount != blank %}
+                <div class="discount-ribbon">{{ discount }}% OFF</div>
+              {% endif %}
+              {% if product.metafields.custom.deals_text != blank %}
+                <div class="deal-text">
+                  {{ product.metafields.custom.deals_text | metafield_tag }}
+                </div>
+              {% endif %}
+              {% if tracking_link != blank %}
+                <a
+                  href="{{ tracking_link }}"
+                  target="_blank"
+                  class="check-price-btn purchaseBtn"
+                  onclick="fbq('track', 'AddToCart');"
+                >
+                  Claim Deal
+                </a>
+              {% endif %}
+              <div class="amazon-logo">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
+                >
+              </div>
+            </div>
+            {% if product.metafields.custom.total_buyers != blank %}
+              <div class="total-buyers">
+                {{ product.metafields.custom.total_buyers }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- ===== NEW: Full-width Accordion Panel (below the card row) ===== -->
+        {% if product.metafields.custom.short_details != blank %}
+          <div
+            class="quick-details-panel"
+            id="quick-details-{{ forloop.index }}"
+            aria-hidden="true"
+          >
+            <div class="quick-details-panel__inner">
+              {{ product.metafields.custom.short_details | metafield_tag }}
+            </div>
+          </div>
+        {% endif %}
+        <!-- ===== END NEW ===== -->
+      </div>
+    {% endfor %}
+  </div>
+</section>
+<style>
+            .collection-custom-deal {
+              background: #f5f5f5;
+            }
+            .deal-card-main {
+              background: #fff;
+              margin-bottom: 60px;
+              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            }
+            .new-layout {
+              display: flex;
+            }
+            /* LEFT */
+            .deal-image-col {
+              width: 260px;
+              padding: 20px;
+              border-right: 1px solid #ddd;
+            }
+            .main-image img {
+              width: 100%;
+              border-radius: 10px;
+            }
+            .thumb-wrapper {
+              margin-top: 10px;
+              margin-bottom:  0px;
+            }
+            .thumb-wrapper .slick-slide {
+              padding: 0 4px;
+            }
+            .thumb-img {
+              width: 100%;
+              height: 60px;
+              object-fit: cover;
+              border-radius: 6px;
+              cursor: pointer;
+              border: 1px solid #ddd;
+              transition: 0.3s;
+            }
+            .thumb-img:hover {
+              border: 2px solid #32A852;
+            }
+            /* CENTER */
+            .deal-content-col {
+              flex: 1;
+            }
+            .rating-line {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              font-weight: 700;
+              margin-bottom: 10px;
+              border-bottom: 1px solid #ddd;
+              padding: 0px 15px;
+            }
+            .rating-score {
+              font-size: 32px;
+            }
+            .stars {
+              color: #f5b400;
+              font-size: 20px;
+            }
+            .deal-title {
+              font-size: 20px;
+              font-weight: 700;
+              margin-bottom: 15px;
+              padding-left: 15px;
+            }
+            .deal-title a {
+              text-decoration: none;
+              color: #222;
+            }
+            .feature-list p {
+              margin-bottom: 8px;
+              font-size: 15px;
+              position: relative;
+              padding-left: 18px;
+              margin-left: 15px;
+            }
+            .feature-list p strong::before {
+              content: "✔";
+              position: absolute;
+              left: 0;
+              color: #2e7d32;
+              font-weight: bold;
+            }
+            .feature-list strong {
+              font-weight: 700;
+            }
+            /* RIGHT */
+            .deal-cta-col {
+              width: 260px;
+              background: #f1f1f1;
+              border: 1px solid #ddd;
+              padding: 20px;
+              border-radius: 0;
+              text-align: center;
+              position: relative;
+              align-self: center;
+              margin-right: 20px;
+            }
+            .discount-badge {
+              font-size: 18px;
+              font-weight: 700;
+              color: #e60023;
+            }
+            .price-box {
+              /* margin-top: 40px; */
+              margin-bottom: 15px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 13px;
+            }
+            .current-price {
+              font-size: 22px;
+              font-weight: 700;
+              display: block;
+            }
+            .old-price {
+              font-size: 14px;
+              color: #888;
+              text-decoration: line-through;
+            }
+            .check-price-btn {
+              display: block;
+              background: #FFA41C ;
+              color: #000;
+              padding: 14px;
+              border-radius: 6px;
+              font-weight: 700;
+              text-decoration: none;
+              margin: 15px 0;
+              border: 2px solid transparent;
+              transition: all ease 0.3s;
+            }
+
+            .check-price-btn:hover {
+              border: 2px solid #FFA41C ;
+              color: #FFA41C ;
+              background: transparent;
+            }
+            .amazon-logo img {
+              width: 90px;
+              margin: 10px 0;
+            }
+            .picked-text {
+              font-size: 14px;
+              color: #666;
+            }
+            .slick-prev:before,
+            .slick-next:before {
+              color: #32A852;
+            }
+            .thumb-wrapper.slider-1.slick-initialized.slick-slider {
+              margin-bottom: 0;
+            }
+            .mobile_view {
+              display: none;
+            }
+            .deal-count.mbl {
+              display: block;
+              position: inherit;
+              border: 0;
+              height: 100%;
+              min-height: 53px;
+              width: inherit;
+              transform: inherit;
+              align-self: center;
+              display: flex;
+              align-items: center;
+              border-right: 1px solid #ddd;
+              border-radius: 0;
+              padding-right: 18px;
+              padding-left: 5px;
+              color: #32A852;
+              font-size: 22px;
+            }
+           .deal-cta-col-main {
+              margin: 10px 0 10px;
+              align-self: center;
+              }
+              .total-buyers {
+              font-size: 14px;
+              font-weight: 600;
+              color: #333;
+              margin-top: 8px;
+              text-align:center
+            }
+            {% comment %} Responosive CSS Start {% endcomment %}
+
+            @media (max-width: 768px) {
+
+              .deal-count.dst {
+                display: none;
+              }
+              .desktop_view {
+                display: none;
+              }
+              .mobile_view {
+                display: block;
+              }
+              .new-layout {
+                flex-direction: column;
+              }
+              .deal-image-col,
+              .deal-cta-col {
+                width: 100%;
+              }
+
+
+              .deal-cta-col {
+                margin: 0px;
+                padding: 10px 10px 5px;
+              }
+
+              .check-price-btn {
+                margin: 8px 0;
+                padding: 10px;
+              }
+
+              .deal-title {
+                padding-right: 15px;
+                margin-bottom:0
+              }
+              .thumb-wrapper {
+                margin-bottom: 0;
+              }
+              .main-image{
+                height:280px !important
+             }
+          .rating-score {
+              font-size: 24px;
+          }
+             .deal-cta-col-main {
+              width:90%
+              }
+
+
+
+            }
+
+            {% comment %} Responosive CSS end {% endcomment %}
+             .deal-cta-col{
+              position:relative;
+            }
+           .discount-ribbon {
+    position: absolute;
+    top: -8px;
+    right: -4px;
+    background: url("https://cdn.shopify.com/s/files/1/0777/3654/2462/files/discount-red_430x.webp?v=1770887302");
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 110px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+}
+            .main-image {
+              width: 100%;
+              height: 200px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background: #fff;
+              border-radius: 10px;
+              overflow: hidden;
+            }
+            .main-image img {
+              max-width: 100%;
+              max-height: 100%;
+              object-fit: contain;
+            }
+            .deal-card-main {
+              position: relative;
+              border: 1px solid #ddd;
+            }
+            .deal-card-main:hover {
+              border: 1px solid #FFA41C ;
+            }
+
+            .deal-badge {
+              position: absolute;
+              top: -29px;
+              left: 0;
+              background: #FECE14;
+              color: #000;
+              font-size: 13px;
+              font-weight: 600;
+              padding: 4px 14px;
+            }
+
+            .deal-badge::before {
+              content: "";
+              position: absolute;
+              bottom: 0;
+              right: -32px;
+              width: 33px;
+              height: 29px;
+              background: #FECE14;
+              clip-path: polygon(0 100%, 0 0, 100% 100%);
+            }
+
+            .thumb-wrapper {
+          position: relative;
+          padding: 0 17px;
+        }
+
+
+        .thumb-wrapper .slick-prev,
+        .thumb-wrapper .slick-next {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 32px;
+          height: 32px;
+          background: #fff;
+          border: 1px solid #ddd;
+          border-radius: 50%;
+          z-index: 55;
+          font-size: 0;
+          box-shadow: none;
+          display: flex !important;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+
+        .thumb-wrapper .slick-prev {
+          left: -15px;
+        }
+
+        .thumb-wrapper .slick-next {
+          right: -15px;
+        }
+
+            .deal-count {
+              width: 38px;
+              height: 38px;
+              border: 2px solid #0b3b4a;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: 700;
+              position: absolute;
+              top: 50%;
+              transform: translateY(-50%);
+              left: -18px;
+              z-index: 99;
+              background: #fff;
+            }
+
+            /* ===== NEW: Read Full Review Button ===== */
+            .quick-details-btn {
+              align-items: center;
+              gap: 10px;
+              margin: 12px 0 10px 15px;
+              padding: 8px 16px;
+              background: #f7f7f7;
+              border: 1px solid #ddd;
+              border-radius: 6px;
+              font-size: 13px;
+              font-weight: 600;
+              color: #333;
+              cursor: pointer;
+              transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+              outline: none;
+              width: auto;
+            }
+            .quick-details-btn:hover {
+              background: #edf7f0;
+              border-color: #32A852;
+              color: #32A852;
+            }
+            .quick-details-btn[aria-expanded="true"] {
+              background: #edf7f0;
+              border-color: #32A852;
+              color: #32A852;
+            }
+            .quick-details-btn__icon {
+              font-size: 10px;
+              transition: transform 0.3s ease;
+              display: inline-block;
+            }
+            .quick-details-btn[aria-expanded="true"] .quick-details-btn__icon {
+              transform: rotate(180deg);
+            }
+            @media (max-width: 768px) {
+              .quick-details-btn {
+                margin-left: 0;
+                width: calc(100% - 30px);
+                margin: 10px 15px;
+                justify-content: space-between;
+              }
+            }
+
+            /* ===== NEW: Read Full Review Panel (full-width accordion) ===== */
+            .quick-details-panel {
+              max-height: 0;
+              overflow: hidden;
+              transition: max-height 0.4s ease, padding 0.3s ease;
+              border-top: 0px solid #32A852;
+              background: #fafffe;
+            }
+            .quick-details-panel.is-open {
+              max-height: 600px;
+              border-top: 2px solid #32A852;
+            }
+            .quick-details-panel__inner {
+              padding: 0 20px;
+              max-height: 0;
+              overflow: hidden;
+              transition: max-height 0.4s ease, padding 0.35s ease;
+            }
+            .quick-details-panel.is-open .quick-details-panel__inner {
+              padding: 18px 20px 20px;
+              max-height: 600px;
+            }
+            /* Style content inside the panel */
+            .quick-details-panel__inner p,
+            .quick-details-panel__inner li {
+              font-size: 14px;
+              color: #444;
+              line-height: 1.7;
+              margin-bottom: 6px;
+            }
+            .quick-details-panel__inner strong {
+              color: #222;
+            }
+            .quick-details-panel__inner table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 14px;
+            }
+            .quick-details-panel__inner table td,
+            .quick-details-panel__inner table th {
+              padding: 8px 12px;
+              border: 1px solid #e0e0e0;
+              text-align: left;
+            }
+            .quick-details-panel__inner table tr:nth-child(even) {
+              background: #f5f5f5;
+            }
+            /* ===== END NEW ===== */
+            .deal-card-main {
+          position: relative;
+        }
+
+        .deal-card-main .deal-card-link-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          cursor: pointer;
+        }
+
+        .deal-card-main .deal-cta-col,
+        .deal-card-main .deal-title a,
+        .deal-card-main button {
+          position: relative;
+          z-index: 2;
+        }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+
+    {% for product in collection.products %}
+      $('.slider-{{ forloop.index }}').slick({
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        arrows: true,
+        dots: false,
+        infinite: false,
+        responsive: [
+          {
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 4
+            }
+          }
+        ]
+      });
+    {% endfor %}
+
+    // Change main image on thumbnail click
+    $(document).on('click', '.thumb-img', function(){
+      var newImg = $(this).data('full');
+      var index = $(this).data('index');
+      $('#main-img-' + index).attr('src', newImg);
+    });
+
+    // ===== NEW: Read Full Review Accordion =====
+    document.querySelectorAll('.quick-details-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var targetId = btn.getAttribute('data-target');
+        var panel = document.getElementById(targetId);
+        if (!panel) return;
+
+        var isOpen = panel.classList.contains('is-open');
+
+        // Close all panels first
+        document.querySelectorAll('.quick-details-panel.is-open').forEach(function(openPanel) {
+          openPanel.classList.remove('is-open');
+          var openBtn = document.querySelector('[data-target="' + openPanel.id + '"]');
+          if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
+        });
+
+        // Toggle clicked panel
+        if (!isOpen) {
+          panel.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+    // ===== END NEW =====
+
+  });
+</script>
+
+<script>
+  /*document.getElementById('. purchaseBtn').addEventListener('click', function () {
+    console.log('add-to-cart pixel');
+    fbq('track', 'AddToCart');
+  }); */
+
+  const button = document.querySelector('span.purchaseBtnCard');
+
+  if (button) {
+    button.addEventListener(
+      'click',
+      function () {
+        fbq('track', 'AddToCart');
+
+        if (this.dataset.href) {
+          window.open(this.dataset.href, '_blank');
+        }
+      },
+      { once: true }
+    );
+  }
+</script>

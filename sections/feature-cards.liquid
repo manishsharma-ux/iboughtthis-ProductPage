@@ -1,0 +1,506 @@
+<!-- feature-cards.liquid -->
+<style>
+  .customstyle{{ section.id }} {
+    position: relative;
+    z-index: {{ section.settings.zindex }};
+    background-position: {{ section.settings.e_pos }} !important;
+    background-repeat: {{ section.settings.e_repeat }} !important;
+    background-size: {{ section.settings.e_size }} !important;
+  }
+
+  /* ===== ALL rules scoped under unique section ID — safe for multiple uses on one page ===== */
+
+  .customstyle{{ section.id }} .feature-cards-grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+    gap: {{ section.settings.card_gap }}px;
+  }
+
+  @media (max-width: 991px) {
+    .customstyle{{ section.id }} .feature-cards-grid {
+      grid-template-columns: repeat({{ section.settings.columns_tablet }}, 1fr);
+    }
+  }
+
+  @media (max-width: 575px) {
+    .customstyle{{ section.id }} .feature-cards-grid {
+      grid-template-columns: repeat({{ section.settings.columns_mobile }}, 1fr);
+    }
+  }
+
+  .customstyle{{ section.id }} .feature-card {
+    display: flex;
+    flex-direction: column;
+    background-color: {{ section.settings.card_bg }};
+    padding: 15px;
+    border-radius: {{ section.settings.card_radius }}px;
+  }
+
+  .customstyle{{ section.id }} .feature-card__image-wrap {
+    overflow: hidden;
+    aspect-ratio: {{ section.settings.image_ratio }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: {{ section.settings.content_gap }}px;
+  }
+
+  .customstyle{{ section.id }} .feature-card__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.image_fit }};
+    display: block;
+  }
+
+  .customstyle{{ section.id }} .feature-card__image-wrap .placeholder-svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .customstyle{{ section.id }} .feature-card__title {
+    font-size: {{ section.settings.title_size_px }}px;
+    font-weight: {{ section.settings.title_weight }};
+    color: {{ section.settings.title_color }};
+    margin: 0 0 {{ section.settings.title_mb }}px 0;
+    line-height: 1.3;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .customstyle{{ section.id }} .feature-card__desc {
+    font-size: {{ section.settings.desc_size_px }}px;
+    color: {{ section.settings.desc_color }};
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .customstyle{{ section.id }} .feature-card__content {
+    text-align: {{ section.settings.text_align }};
+  }
+</style>
+
+<section
+  class="customstyle{{ section.id }} lazyload"
+  data-aos="{{ section.settings.animation }}"
+  data-bgset="{% render 'bgset', image: section.settings.image_bg %}"
+  data-sizes="auto"
+  data-parent-fit="cover"
+>
+  {%- render 'style-section' -%}
+
+  <div class="{{ section.settings.setwidth }}">
+    {%- render 'section-heading' -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="feature-cards-grid">
+        {%- for block in section.blocks -%}
+          <div class="feature-card" data-aos="{{ section.settings.animation }}" data-aos-duration="{{ 400 | plus: forloop.index0 | times: 100 }}" {{ block.shopify_attributes }}>
+
+            <div class="feature-card__image-wrap">
+              {%- if block.settings.card_image != blank -%}
+                {%- assign img_url = block.settings.card_image | image_url: width: 1 | replace: 'width=1', 'width={width}' -%}
+                <img
+                  class="lazyload"
+                  src="{{ block.settings.card_image | image_url: width: 1, height: 1 }}"
+                  data-src="{{ img_url }}"
+                  data-widths="[180, 360, 540, 720, 900, 1080]"
+                  data-aspectratio="{{ block.settings.card_image.aspect_ratio }}"
+                  data-sizes="auto"
+                  loading="lazy"
+                  width="{{ block.settings.card_image.width }}"
+                  height="{{ block.settings.card_image.height }}"
+                  alt="{{ block.settings.card_image.alt | default: block.settings.card_title }}">
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+
+            <div class="feature-card__content">
+              {%- if block.settings.card_title != blank -%}
+                <{{ section.settings.title_tag }} class="feature-card__title">
+                  {{ block.settings.card_title }}
+                </{{ section.settings.title_tag }}>
+              {%- endif -%}
+              {%- if block.settings.card_desc != blank -%}
+                <p class="feature-card__desc">{{ block.settings.card_desc }}</p>
+              {%- endif -%}
+            </div>
+
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      {%- render 'no-blocks' -%}
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Feature Cards",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "animation",
+      "label": "Select Animation",
+      "options": [
+        { "value": "", "label": "None" },
+        { "value": "fade", "label": "Fade" },
+        { "value": "fade-up", "label": "Fade Up" },
+        { "value": "fade-down", "label": "Fade Down" },
+        { "value": "fade-left", "label": "Fade Left" },
+        { "value": "fade-right", "label": "Fade Right" },
+        { "value": "zoom-in", "label": "Zoom In" },
+        { "value": "zoom-out", "label": "Zoom Out" },
+        { "value": "flip-up", "label": "Flip Up" },
+        { "value": "flip-left", "label": "Flip Left" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "setwidth",
+      "label": "Container Width",
+      "default": "container",
+      "options": [
+        { "value": "container", "label": "Box" },
+        { "value": "container-fluid", "label": "Container Fluid" },
+        { "value": "full", "label": "Full" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Columns (Desktop)",
+      "default": "4",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "Columns (Tablet)",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns (Mobile)",
+      "default": "1",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Gap Between Cards (px)",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Card Style"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card Border Radius (px)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background Color",
+      "default": "#f0ece4"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image Aspect Ratio",
+      "default": "1 / 1",
+      "options": [
+        { "value": "1 / 1", "label": "Square (1:1)" },
+        { "value": "4 / 3", "label": "Landscape (4:3)" },
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "16 / 9", "label": "Wide (16:9)" },
+        { "value": "5 / 4", "label": "5:4" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image Fit",
+      "default": "cover",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" },
+        { "value": "fill", "label": "Fill" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "label": "Gap: Image to Text (px)",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Card Text"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "title_tag",
+      "label": "Title HTML Tag",
+      "default": "h3",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "title_size_px",
+      "label": "Title Font Size (px)",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Title Font Weight",
+      "default": "700",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "title_mb",
+      "label": "Title Bottom Spacing (px)",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "desc_size_px",
+      "label": "Description Font Size (px)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "desc_color",
+      "label": "Description Color",
+      "default": "#555555"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color",
+      "id": "bgsection",
+      "label": "Background Section",
+      "default": "#ffffff"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_bg",
+      "label": "Background Image"
+    },
+    {
+      "type": "select",
+      "id": "e_size",
+      "label": "Background Size",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "e_repeat",
+      "label": "Background Repeat",
+      "default": "no-repeat",
+      "options": [
+        { "value": "no-repeat", "label": "No-repeat" },
+        { "value": "repeat", "label": "Repeat" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "e_pos",
+      "label": "Background Position",
+      "default": "center center",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "top center", "label": "Top Center" },
+        { "value": "bottom center", "label": "Bottom Center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text Heading"
+    },
+    {
+      "type": "text",
+      "id": "title_top",
+      "label": "Sub Title Top",
+      "default": "Sub Title Top"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Feature Cards"
+    },
+    {
+      "type": "textarea",
+      "id": "des",
+      "label": "HTML / Description"
+    },
+    {
+      "type": "select",
+      "id": "align-heading",
+      "label": "Align Heading",
+      "default": "center",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "text",
+      "id": "paddingsection",
+      "label": "Padding Section",
+      "default": "60px 0px 60px 0px",
+      "info": "Padding: Top Right Bottom Left"
+    },
+    {
+      "type": "text",
+      "id": "paddingmobile",
+      "label": "Padding Section Mobile",
+      "default": "40px 0px 40px 0px",
+      "info": "Padding: Top Right Bottom Left"
+    },
+    {
+      "type": "header",
+      "content": "Section Margin"
+    },
+    {
+      "type": "text",
+      "id": "marginsection",
+      "label": "Margin Section",
+      "default": "0px 0px 0px 0px",
+      "info": "Margin: Top Right Bottom Left"
+    },
+    {
+      "type": "text",
+      "id": "marginmobile",
+      "label": "Margin Mobile",
+      "default": "0px 0px 0px 0px",
+      "info": "Margin: Top Right Bottom Left"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature_card",
+      "name": "Feature Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "card_image",
+          "label": "Card Image"
+        },
+        {
+          "type": "text",
+          "id": "card_title",
+          "label": "Card Title",
+          "default": "Feature Title"
+        },
+        {
+          "type": "textarea",
+          "id": "card_desc",
+          "label": "Card Description",
+          "default": "Short description of this feature goes here."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature Cards",
+      "blocks": [
+        { "type": "feature_card", "settings": { "card_title": "Dynamic Suction Technology", "card_desc": "Rhythmic pressure patterns reach deep tissues to release tension and break up adhesions" } },
+        { "type": "feature_card", "settings": { "card_title": "Therapeutic Heat (up to 107°F)", "card_desc": "Increases circulation and relaxes tight muscles for deeper, more effective relief" } },
+        { "type": "feature_card", "settings": { "card_title": "Red Light Therapy (660nm)", "card_desc": "Penetrates tissue to promote cellular regeneration and reduce inflammation" } },
+        { "type": "feature_card", "settings": { "card_title": "12 Customizable Settings", "card_desc": "Adjust heat and suction intensity up to 12 levels" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

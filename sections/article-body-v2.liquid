@@ -1,0 +1,1186 @@
+{%- assign author_name = article.metafields.custom.author_name | default: article.author -%}
+{%- assign author_role = article.metafields.custom.author_role | default: 'Staff Editor' -%}
+{%- assign author_image = article.metafields.custom.author_image -%}
+{%- assign author_bio = article.metafields.custom.author_bio -%}
+{%- assign author_li = article.metafields.custom.author_linkedin -%}
+{%- assign reviewer_name = article.metafields.custom.reviewer_name -%}
+{%- assign reviewer_role = article.metafields.custom.reviewer_role | default: 'Medical Reviewer' -%}
+{%- assign reviewer_image = article.metafields.custom.reviewer_image -%}
+{%- assign reviewer_bio = article.metafields.custom.reviewer_bio -%}
+{%- assign reviewer_li = article.metafields.custom.reviewer_linkedin -%}
+{%- comment -%} ── Author/Reviewer bio overrides from section settings ── {%- endcomment -%}
+{%- if section.settings.author_bio_override != blank -%}
+  {%- assign author_bio = section.settings.author_bio_override -%}
+{%- endif -%}
+{%- if section.settings.author_name_override != blank -%}
+  {%- assign author_name = section.settings.author_name_override -%}
+{%- endif -%}
+{%- if section.settings.author_role_override != blank -%}
+  {%- assign author_role = section.settings.author_role_override -%}
+{%- endif -%}
+{%- if section.settings.reviewer_name_override != blank -%}
+  {%- assign reviewer_name = section.settings.reviewer_name_override -%}
+{%- endif -%}
+{%- if section.settings.reviewer_role_override != blank -%}
+  {%- assign reviewer_role = section.settings.reviewer_role_override -%}
+{%- endif -%}
+{%- if section.settings.reviewer_bio_override != blank -%}
+  {%- assign reviewer_bio = section.settings.reviewer_bio_override -%}
+{%- endif -%}
+{%- comment -%} ── Author image override from section settings ── {%- endcomment -%}
+{%- if section.settings.author_image_override != blank -%}
+  {%- assign author_image = section.settings.author_image_override -%}
+{%- endif -%}
+{%- if section.settings.reviewer_image_override != blank -%}
+  {%- assign reviewer_image = section.settings.reviewer_image_override -%}
+{%- endif -%}
+{%- comment -%} ── Intro ── {%- endcomment -%}
+{%- assign intro_content = article.metafields.custom.intro_text -%}
+{%- if section.settings.intro_text != blank -%}
+  {%- assign intro_content = section.settings.intro_text -%}
+{%- endif -%}
+{%- comment -%} ── Collections ── {%- endcomment -%}
+{%- assign ranking_collection = collections[section.settings.ranking_collection] -%}
+{%- assign compare_collection = collections[section.settings.compare_collection] -%}
+{%- comment -%} ── Sticky widget ── {%- endcomment -%}
+{%- assign fp_enabled = section.settings.show_featured_product -%}
+{%- assign fp_product = section.settings.featured_product -%}
+{%- assign fp_link = section.settings.featured_product_link -%}
+{%- assign fp_cta = section.settings.featured_cta_label | default: 'Learn More' -%}
+{%- assign fp_top = section.settings.sticky_top_offset | default: 100 -%}
+{%- if fp_link == blank and fp_product != blank -%}
+  {%- assign fp_link = fp_product.metafields.custom.tracking_link | default: fp_product.url -%}
+{%- endif -%}
+<div class="rl-body-wrap{% if fp_enabled and fp_product != blank %} rl-body-wrap--has-sidebar{% endif %}">
+  {%- comment -%} ═══════ LEFT COLUMN ═══════ {%- endcomment -%}
+  <div class="rl-body-main">
+    {%- comment -%} ── 1. AUTHOR ROW ── {%- endcomment -%}
+    <section class="rl-article-author">
+      <div class="rl-page-width">
+        <div class="rl-author-row">
+          <!-- AUTHOR ITEM -->
+          <div class="rl-author-item" tabindex="0">
+            <div class="rl-author-avatar">
+              {%- if author_image != blank -%}
+                <img
+                  src="{{ author_image | image_url: width: 80 }}"
+                  alt="{{ author_name }}"
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                >
+              {%- else -%}
+                <div class="rl-avatar-placeholder">{{ author_name | slice: 0 }}</div>
+              {%- endif -%}
+            </div>
+            <div class="rl-author-text">
+              <span class="rl-author-label">Written By</span>
+              <span class="rl-author-name">{{ author_name }}</span>
+              <span class="rl-author-role">{{ author_role }}</span>
+            </div>
+            <!-- Mobile collapse toggle button -->
+            <button class="rl-author-toggle" aria-label="Show author info" aria-expanded="false">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="rl-author-popup" role="dialog" aria-modal="true">
+              <!-- Mobile close (X) button — only visible on mobile when popup is open -->
+              <button class="rl-popup-close" aria-label="Close">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="rl-popup-inner">
+                <div class="rl-popup-top">
+                  {%- if author_image != blank -%}
+                    <img
+                      src="{{ author_image | image_url: width: 120 }}"
+                      alt="{{ author_name }}"
+                      class="rl-popup-avatar"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    <div class="rl-avatar-placeholder rl-popup-avatar">{{ author_name | slice: 0 }}</div>
+                  {%- endif -%}
+                  <div>
+                    <p class="rl-popup-name">{{ author_name }}</p>
+                    <p class="rl-popup-role">{{ author_role }}</p>
+                  </div>
+                </div>
+                {%- if author_bio != blank -%}
+                  <p class="rl-popup-bio">{{ author_bio }}</p>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+          {%- if reviewer_name != blank -%}
+            <!-- REVIEWER ITEM -->
+            <div class="rl-author-item rl-reviewer-item" tabindex="0">
+              <div class="rl-author-avatar">
+                {%- if reviewer_image != blank -%}
+                  <img
+                    src="{{ reviewer_image | image_url: width: 80 }}"
+                    alt="{{ reviewer_name }}"
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                  >
+                {%- else -%}
+                  <div class="rl-avatar-placeholder">{{ reviewer_name | slice: 0 }}</div>
+                {%- endif -%}
+              </div>
+              <div class="rl-author-text">
+                <span class="rl-author-name">{{ reviewer_name }}</span>
+                <div>
+                  <span class="rl-author-label rl-reviewer-label">
+                    <span>
+                      <svg
+                        fill="none"
+                        width="23"
+                        height="21"
+                        viewBox="0 0 23 21"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="badge-icon-svg relative medical-review"
+                      >
+                        <rect width="23" height="21"></rect>
+                        <path d="M20.141 7.70375C20.1412 6.78472 19.8504 5.88577 19.3046 5.11799C18.7588 4.35022 17.9818 3.74727 17.0697 3.38368C16.1576 3.02009 15.1504 2.91178 14.1725 3.07215C13.1946 3.23252 12.2889 3.65453 11.5674 4.28602C11.0781 3.85941 10.5023 3.52686 9.87318 3.30763C9.24409 3.08839 8.57424 2.98683 7.90244 3.00882C7.23064 3.03081 6.57022 3.17592 5.95944 3.43575C5.34866 3.69557 4.79965 4.06495 4.34421 4.52248C3.88876 4.98002 3.53593 5.51662 3.30614 6.10122C3.07635 6.68583 2.97418 7.3068 3.00553 7.9282C3.03689 8.5496 3.20114 9.15906 3.4888 9.7213C3.77645 10.2835 4.18178 10.7874 4.68132 11.2037L6.84182 13.2697L11.5623 17.7841L16.628 12.965L18.9083 10.7745C19.705 9.9215 20.1427 8.83124 20.141 7.70375Z" fill="#007AC8"></path>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M11.5623 17.7841L4.68132 11.2037C4.18178 10.7874 3.77645 10.2835 3.4888 9.7213C3.20115 9.15906 3.03689 8.54959 3.00553 7.92819C2.97418 7.3068 3.07635 6.68582 3.30614 6.10122C3.53593 5.51662 3.88876 4.98001 4.34421 4.52248C4.79965 4.06494 5.34866 3.69557 5.95944 3.43574C6.57022 3.17592 7.23064 3.03081 7.90244 3.00882C8.57424 2.98682 9.24409 3.08839 9.87318 3.30762C10.5023 3.52686 11.0781 3.85941 11.5674 4.28602C12.2889 3.65452 13.1946 3.23251 14.1725 3.07215C15.1504 2.91178 16.1576 3.02008 17.0697 3.38368C17.9818 3.74727 18.7588 4.35021 19.3046 5.11799C19.8504 5.88576 20.1412 6.78472 20.141 7.70375C20.1427 8.83124 19.705 9.92149 18.9083 10.7745L16.628 12.9649L11.5623 17.7841ZM22.141 7.70426C22.1426 9.35778 21.499 10.9308 20.3699 12.1397L20.3329 12.1793L18.0066 14.414L11.5586 20.548L5.45955 14.7152L3.34428 12.6924C2.66931 12.1176 2.11123 11.4198 1.7083 10.6322C1.29388 9.82222 1.05389 8.93707 1.00807 8.02898C0.962249 7.1208 1.11199 6.21621 1.44477 5.36958C1.77736 4.52344 2.28396 3.75726 2.92676 3.11151C3.56923 2.46609 4.33537 1.95318 5.17654 1.59534C6.01756 1.23758 6.92151 1.03986 7.837 1.00989C8.75249 0.979917 9.66777 1.11807 10.5313 1.41902C10.888 1.54331 11.2338 1.69466 11.5652 1.87171C12.2741 1.49147 13.0469 1.23001 13.8488 1.09851C15.1819 0.879892 16.5573 1.02636 17.8103 1.52585C19.064 2.02563 20.156 2.86392 20.9346 3.95913C21.7148 5.05649 22.1413 6.35875 22.141 7.70426Z" fill="white"></path>
+                        <path d="M9.95714 6.90795C9.95714 6.43077 10.344 6.04395 10.8211 6.04395H11.8884C12.3656 6.04395 12.7525 6.43077 12.7525 6.90795V13.0068C12.7525 13.484 12.3656 13.8708 11.8884 13.8708H10.8211C10.344 13.8708 9.95714 13.484 9.95714 13.0068V6.90795Z" fill="white"></path>
+                        <path d="M14.3111 8.65283C14.7882 8.65283 15.1751 9.03966 15.1751 9.51684L15.1751 10.5841C15.1751 11.0613 14.7882 11.4481 14.3111 11.4481L8.2122 11.4481C7.73503 11.4481 7.3482 11.0613 7.3482 10.5841L7.3482 9.51684C7.3482 9.03966 7.73503 8.65283 8.2122 8.65283L14.3111 8.65283Z" fill="white"></path>
+                      </svg>
+                      Medically Reviewed
+                    </span>
+                    <span class="rl-author-role">{{ reviewer_role }}</span>
+                  </span>
+                </div>
+              </div>
+              <!-- Mobile collapse toggle button -->
+              <button class="rl-author-toggle" aria-label="Show reviewer info" aria-expanded="false">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="rl-author-popup" role="dialog" aria-modal="true">
+                <!-- Mobile close (X) button -->
+                <button class="rl-popup-close" aria-label="Close">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <div class="rl-popup-inner">
+                  <div class="rl-popup-top">
+                    {%- if reviewer_image != blank -%}
+                      <img
+                        src="{{ reviewer_image | image_url: width: 120 }}"
+                        alt="{{ reviewer_name }}"
+                        class="rl-popup-avatar"
+                        loading="lazy"
+                      >
+                    {%- else -%}
+                      <div class="rl-avatar-placeholder rl-popup-avatar">{{ reviewer_name | slice: 0 }}</div>
+                    {%- endif -%}
+                    <div>
+                      <p class="rl-popup-name">{{ reviewer_name }}</p>
+                      <p class="rl-popup-role">{{ reviewer_role }}</p>
+                    </div>
+                  </div>
+                  {%- if reviewer_bio != blank -%}
+                    <p class="rl-popup-bio">{{ reviewer_bio }}</p>
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </section>
+    {%- comment -%} ── 2. INTRO ── {%- endcomment -%}
+    {%- if intro_content != blank -%}
+      <section class="rl-article-intro">
+        <div class="rl-page-width">
+          <div class="rl-intro-body">{{ intro_content }}</div>
+        </div>
+      </section>
+    {%- endif -%}
+    {%- comment -%} ── 3. FULL-WIDTH BANNER IMAGE ── {%- endcomment -%}
+    {%- assign fw_image = section.settings.fullwidth_image -%}
+    {%- if fw_image != blank -%}
+      <div class="rl-fullwidth-banner">
+        <img
+          src="{{ fw_image | image_url: width: 1400 }}"
+          alt="{{ section.settings.fullwidth_image_alt | default: '' }}"
+          loading="lazy"
+          width="1400"
+          height="auto"
+          class="rl-fullwidth-banner__img"
+        >
+      </div>
+    {%- endif -%}
+    {%- comment -%} ── 4. PRODUCT RANKING ── {%- endcomment -%}
+    {%- if ranking_collection != blank and ranking_collection.products_count > 0 -%}
+      <section class="rl-ranking-section">
+        <div class="rl-page-width">
+          {%- if section.settings.ranking_title != blank -%}
+            <h2 class="rl-section-title">{{ section.settings.ranking_title }}</h2>
+          {%- endif -%}
+          <div class="rl-ranking-list">
+            {%- for product in ranking_collection.products -%}
+              {%- assign rank = forloop.index -%}
+              {%- assign rating = product.metafields.custom.rating | default: 9.0 -%}
+              {%- assign score_label = product.metafields.custom.score_label | default: 'Excellent' -%}
+              {%- assign review_count = product.metafields.custom.review_count -%}
+              {%- assign short_desc = product.metafields.custom.short_description -%}
+              {%- assign usp_details = product.metafields.custom.usp_details -%}
+              {%- assign badge_text = product.metafields.custom.badge -%}
+              {%- assign tracking_link = product.metafields.custom.tracking_link -%}
+              {%- assign rank_cta = section.settings.ranking_cta | default: 'Learn More' -%}
+              {%- if section.settings.rating_scale == '10' -%}
+                {%- assign stars_exact = rating | times: 1.0 | divided_by: 2.0 -%}
+              {%- else -%}
+                {%- assign stars_exact = rating | times: 1.0 -%}
+              {%- endif -%}
+              {%- assign stars_exact = stars_exact | at_most: 5.0 -%}
+              {%- assign full_stars = stars_exact | floor -%}
+              {%- assign partial_pct = stars_exact | minus: full_stars | times: 100 | round -%}
+              {%- assign star_uid = product.id | append: '-rank' -%}
+              <div class="rl-rank-card{% if rank == 1 %} {% endif %}">
+                {%- if badge_text != blank -%}
+                  <div class="deal-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 2l2.09 6.26L20 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l5.91-.91L12 2z"/>
+                    </svg>
+                    {{ badge_text }}
+                  </div>
+                {%- endif -%}
+                <div class="rl-rank-number">{{ rank }}</div>
+                <div class="rl-rank-image">
+                  {%- if product.featured_image -%}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 220 }}"
+                      alt="{{ product.title | escape }}"
+                      width="220"
+                      height="160"
+                      loading="lazy"
+                    >
+                  {%- endif -%}
+                </div>
+                <div class="rl-rank-content">
+                  {%- if short_desc != blank -%}
+                    <p class="rl-rank-short-desc">{{ short_desc }}</p>
+                  {%- endif -%}
+                  <h3 class="rl-rank-title">{{ product.title }}</h3>
+                  {%- if usp_details != blank -%}
+                    <div class="rl-rank-features rl-rank-features--parsed">
+                      {{- usp_details | metafield_tag -}}
+                    </div>
+                  {%- endif -%}
+                </div>
+                <div class="rl-rank-cta-box">
+                  <div class="rl-rank-score">
+                    <span class="rl-score-number">{{ rating }}</span>
+                    <div class="rl-score-label-box">
+                      <span class="rl-score-label">{{ score_label }}</span>
+                      <div class="rl-score-stars" aria-label="{{ rating }} out of 10" role="img">
+                        <svg width="0" height="0" style="position:absolute">
+                          <defs>
+                             {%- assign partial_star = full_stars | plus: 1 -%}
+                             {%- for i in (1..5) -%}
+                             {%- if i <= full_stars -%}{%- assign fill_stop = 100 -%}
+                             {%- elsif i == partial_star -%}{%- assign fill_stop = partial_pct -%}
+                             {%- else -%}{%- assign fill_stop = 0 -%}
+                             {%- endif -%}
+                             <linearGradient id="star-{{ star_uid }}-{{ i }}" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="{{ fill_stop }}%" stop-color="#f59e0b"/>
+                                <stop offset="{{ fill_stop }}%" stop-color="#d1d5db"/>
+                             </linearGradient>
+                             {%- endfor -%}
+                          </defs>
+                        </svg>
+                        {%- for i in (1..5) -%}
+                          <svg
+                            class="rl-star-svg"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                          >
+                            <polygon points="10,1 12.9,7 19.5,7.6 14.5,12 16.2,18.5 10,15 3.8,18.5 5.5,12 0.5,7.6 7.1,7" fill="url(#star-{{ star_uid }}-{{ i }})"/>
+                          </svg>
+                        {%- endfor -%}
+                      </div>
+                    </div>
+                    {%- if review_count != blank -%}
+                      <span class="rl-review-count">{{ review_count }} reviews</span>
+                    {%- endif -%}
+                  </div>
+                  {%- if tracking_link != blank -%}
+                    <a
+                      href="{{ tracking_link }}"
+                      target="_blank"
+                      rel="noopener sponsored"
+                      class="rl-rank-cta-btn"
+                      onclick="if(typeof fbq!=='undefined')fbq('track','AddToCart');"
+                    >
+                      {{ rank_cta }}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    <section class="rl-main-article">
+      <div class="rl-page-width">
+        <div class="rl-article-content">{{ article.content }}</div>
+        {%- if article.tags.size > 0 -%}
+          <div class="rl-article-tags">
+            <span class="rl-tags-label">Topics:</span>
+            {%- for tag in article.tags -%}
+              <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="rl-tag">{{ tag }}</a>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+        {%- assign sources_content = article.metafields.custom.sources -%}
+        {%- if sources_content != blank -%}
+          <div class="rl-article-sources">
+            <h4>Sources</h4>
+            {{ sources_content | metafield_tag }}
+          </div>
+        {%- endif -%}
+      </div>
+    </section>
+        {%- comment -%} ── 5. COMPARE SLIDER ── {%- endcomment -%}
+    {%- if compare_collection != blank and compare_collection.products_count > 0 -%}
+      {%- if section.settings.compare_title != blank -%}
+        <h2 class="rl-section-title">{{ section.settings.compare_title }}</h2>
+      {%- endif -%}
+      <section class="rl-compare-section">
+        <div class="rl-page-width">
+          <div class="rl-swiper-wrapper">
+            <button class="rl-swiper-prev" aria-label="Previous">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="rl-swiper-next" aria-label="Next">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="swiper rl-compare-swiper">
+              <div class="swiper-wrapper">
+                {%- for product in compare_collection.products limit: 8 -%}
+                  {%- assign rating = product.metafields.custom.rating | default: 9.0 -%}
+                  {%- assign score_label = product.metafields.custom.score_label | default: 'Excellent' -%}
+                  {%- assign c_short_desc = product.metafields.custom.short_description -%}
+                  {%- assign c_usp_details = product.metafields.custom.usp_details -%}
+                  {%- assign c_link = product.metafields.custom.tracking_link -%}
+                  {%- assign badge_text = product.metafields.custom.badge -%}
+                  {%- assign c_cta = section.settings.compare_cta | default: 'Shop Now' -%}
+                  {%- if section.settings.rating_scale == '10' -%}
+                    {%- assign stars_exact = rating | times: 1.0 | divided_by: 2.0 -%}
+                  {%- else -%}
+                    {%- assign stars_exact = rating | times: 1.0 -%}
+                  {%- endif -%}
+                  {%- assign stars_exact = stars_exact | at_most: 5.0 -%}
+                  {%- assign full_stars = stars_exact | floor -%}
+                  {%- assign partial_pct = stars_exact | minus: full_stars | times: 100 | round -%}
+                  {%- assign partial_star = full_stars | plus: 1 -%}
+                  {%- assign star_uid = product.id | append: '-cmp' -%}
+                  <div class="swiper-slide">
+                    <div class="rl-compare-card">
+                      {%- if c_badge != blank -%}
+                        <div class="rl-compare-badge">{{ c_badge }}</div>
+                      {%- endif -%}
+                      <div class="rl-compare-rank">{{ forloop.index }}</div>
+                      <div class="rl-compare-img">
+                        {%- if product.featured_image -%}
+                          <img
+                            src="{{ product.featured_image | image_url: width: 200 }}"
+                            alt="{{ product.title | escape }}"
+                            width="140"
+                            height="100"
+                            loading="lazy"
+                          >
+                        {%- endif -%}
+                      </div>
+                      <h3 class="rl-compare-title">{{ product.title }}</h3>
+                      {%- if c_short_desc != blank -%}
+                        <p class="rl-compare-desc">{{ c_short_desc }}</p>
+                      {%- endif -%}
+                      {%- if c_usp_details != blank -%}
+                        <div class="rl-rank-features rl-rank-features--parsed rl-compare-features">
+                          {{- c_usp_details | metafield_tag -}}
+                        </div>
+                      {%- endif -%}
+                      <div class="rl-rank-score">
+                        <span class="rl-score-number">{{ rating }}</span>
+                        <div class="rl-score-label-box">
+                          <span class="rl-score-label">{{ score_label }}</span>
+                          <div class="rl-score-stars ss" aria-label="{{ rating }} out of 10" role="img">
+                            <svg width="0" height="0" style="position:absolute">
+                              <defs>
+                                 {%- assign partial_star = full_stars | plus: 1 -%}
+                                 {%- for i in (1..5) -%}
+                                 {%- if i <= full_stars -%}{%- assign fill_stop = 100 -%}
+                                 {%- elsif i == partial_star -%}{%- assign fill_stop = partial_pct -%}
+                                 {%- else -%}{%- assign fill_stop = 0 -%}
+                                 {%- endif -%}
+                                 <linearGradient id="star-{{ star_uid }}-{{ i }}" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="{{ fill_stop }}%" stop-color="#f59e0b"/>
+                                    <stop offset="{{ fill_stop }}%" stop-color="#d1d5db"/>
+                                 </linearGradient>
+                                 {%- endfor -%}
+                              </defs>
+                            </svg>
+                            {%- for i in (1..5) -%}
+                              <svg
+                                class="rl-star-svg"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true"
+                              >
+                                <polygon points="10,1 12.9,7 19.5,7.6 14.5,12 16.2,18.5 10,15 3.8,18.5 5.5,12 0.5,7.6 7.1,7" fill="url(#star-{{ star_uid }}-{{ i }})"/>
+                              </svg>
+                            {%- endfor -%}
+                          </div>
+                        </div>
+                        {%- if review_count != blank -%}
+                          <span class="rl-review-count">{{ review_count }} reviews</span>
+                        {%- endif -%}
+                      </div>
+                      {%- if c_link != blank -%}
+                        <a
+                          href="{{ c_link }}"
+                          target="_blank"
+                          rel="noopener sponsored"
+                          class="rl-compare-cta"
+                          onclick="if(typeof fbq!=='undefined')fbq('track','AddToCart');"
+                        >
+                          {{ c_cta }}
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </a>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+              <div class="swiper-pagination rl-compare-pagination"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+    {%- comment -%} ── 6. ARTICLE CONTENT ── {%- endcomment -%}
+  </div>
+  {%- comment -%} /.rl-body-main {%- endcomment -%}
+  {%- comment -%} ═══════ RIGHT COLUMN — sticky widget ═══════ {%- endcomment -%}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const widget = document.querySelector('.rl-sticky-widget');
+      const sidebar = document.querySelector('.rl-body-sidebar');
+      if (!widget || !sidebar) return;
+      const topOffset = parseInt(getComputedStyle(widget).getPropertyValue('--sticky-top')) || 370;
+      const sidebarTop = sidebar.offsetTop;
+      const sidebarHeight = sidebar.offsetHeight;
+      const widgetHeight = widget.offsetHeight;
+      window.addEventListener('scroll', function () {
+        const scrollY = window.scrollY;
+        if (scrollY + topOffset > sidebarTop) {
+          if (scrollY + widgetHeight + topOffset < sidebarTop + sidebarHeight) {
+            widget.style.position = 'fixed';
+            widget.style.top = topOffset + 'px';
+            widget.style.width = sidebar.offsetWidth + 'px';
+          } else {
+            widget.style.position = 'absolute';
+            widget.style.top = sidebarHeight - widgetHeight + 'px';
+          }
+        } else {
+          widget.style.position = 'static';
+          widget.style.width = 'auto';
+        }
+      });
+    });
+  </script>
+  <style>
+    .sec-rgt-text1 { font-size: 16px; line-height: 20px; color: #000; position: relative; width: 95%; text-align: center; }
+    .sec-rgt-text1 span { display: inline-block; vertical-align: top; background: #fff; padding: 0 15px; position: relative; color: red; font-weight: 700; }
+    .sec-rgt-text1:before { content: ""; position: absolute; top: 10px; border-top: 1px solid red; width: 100%; left: 0; }
+    h2.sec-rgt-title { font-size: 15px; font-weight: 700; text-align: center; line-height: normal; }
+    .sec-rgt-title { animation: smoothScale 1.5s ease-in-out infinite; display: inline-block; transform-origin: center; }
+    @keyframes smoothScale { 0% { transform: scale(1); } 40% { transform: scale(1.06); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+    span.rl-author-label.rl-reviewer-label span.rl-author-role { border-left: 1px solid #00000017; padding-left: 5px; }
+    span.rl-author-label.rl-reviewer-label svg { fill: none; }
+  </style>
+  {%- if fp_enabled and fp_product != blank -%}
+    <aside class="rl-body-sidebar" aria-label="Featured product">
+      <div class="rl-sticky-widget">
+        <p class="sec-rgt-text1"><span>Limited Time Offer</span></p>
+        <h2 class="sec-rgt-title">Save Up To 50% Only On This Page</h2>
+        <div class="rl-sticky-widget__img">
+          {%- if fp_product.featured_image -%}
+            <img
+              src="{{ fp_product.featured_image | image_url: width: 400 }}"
+              alt="{{ fp_product.title | escape }}"
+              width="220"
+              height="200"
+              loading="lazy"
+            >
+          {%- endif -%}
+        </div>
+        <a
+          href="{{ fp_link }}"
+          target="_blank"
+          rel="noopener sponsored"
+          class="rl-sticky-widget__btn"
+          onclick="if(typeof fbq!=='undefined')fbq('track','AddToCart');"
+        >
+          {{ fp_cta }}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </aside>
+  {%- endif -%}
+</div>
+{%- comment -%} /.rl-body-wrap {%- endcomment -%}
+{%- comment -%} ══ SWIPER ══ {%- endcomment -%}
+{%- if compare_collection != blank and compare_collection.products_count > 0 -%}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (!document.querySelector('.rl-compare-swiper')) return;
+      new Swiper('.rl-compare-swiper', {
+        slidesPerView: 1,
+        spaceBetween: 16,
+        grabCursor: true,
+        centeredSlides: false,
+        pagination: { el: '.rl-compare-pagination', clickable: true },
+        navigation: { prevEl: '.rl-swiper-prev', nextEl: '.rl-swiper-next' },
+        breakpoints: { 640: { slidesPerView: 2, spaceBetween: 16 }, 1024: { slidesPerView: 3, spaceBetween: 20 } },
+      });
+    });
+  </script>
+{%- endif -%}
+{%- comment -%} ══ MOBILE AUTHOR TOGGLE JS ══ {%- endcomment -%}
+<script>
+  (function () {
+    /* ── helpers ── */
+    function getBackdrop() {
+      return document.querySelector('.rl-popup-backdrop');
+    }
+
+    function closeAll() {
+      document.querySelectorAll('.rl-author-popup.is-open').forEach(function (p) {
+        p.classList.remove('is-open');
+      });
+      var bd = getBackdrop();
+      if (bd) {
+        bd.classList.remove('is-visible');
+        /* remove after fade-out transition */
+        setTimeout(function () {
+          if (bd.parentNode) bd.parentNode.removeChild(bd);
+        }, 220);
+      }
+      document.querySelectorAll('.rl-author-toggle[aria-expanded="true"]').forEach(function (btn) {
+        btn.setAttribute('aria-expanded', 'false');
+        var isReviewer = btn.closest('.rl-reviewer-item');
+        btn.setAttribute('aria-label', isReviewer ? 'Show reviewer info' : 'Show author info');
+      });
+      document.body.style.overflow = '';
+    }
+
+    function openPopup(item) {
+      closeAll();
+
+      var popup = item.querySelector('.rl-author-popup');
+      var btn = item.querySelector('.rl-author-toggle');
+      if (!popup) return;
+
+      /* backdrop */
+      var bd = document.createElement('div');
+      bd.className = 'rl-popup-backdrop';
+      bd.addEventListener('click', closeAll);
+      document.body.appendChild(bd);
+      /* trigger transition on next frame */
+      requestAnimationFrame(function () {
+        bd.classList.add('is-visible');
+      });
+
+      popup.classList.add('is-open');
+      if (btn) {
+        btn.setAttribute('aria-expanded', 'true');
+        var isReviewer = item.classList.contains('rl-reviewer-item');
+        btn.setAttribute('aria-label', isReviewer ? 'Hide reviewer info' : 'Hide author info');
+      }
+      document.body.style.overflow = 'hidden';
+    }
+
+    function initMobileToggles() {
+      /* Chevron toggle */
+      document.querySelectorAll('.rl-author-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var item = btn.closest('.rl-author-item');
+          var popup = item && item.querySelector('.rl-author-popup');
+          if (popup && popup.classList.contains('is-open')) {
+            closeAll();
+          } else if (item) {
+            openPopup(item);
+          }
+        });
+      });
+
+      /* X close button */
+      document.querySelectorAll('.rl-popup-close').forEach(function (closeBtn) {
+        closeBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          closeAll();
+        });
+      });
+
+      /* ESC key */
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAll();
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMobileToggles);
+    } else {
+      initMobileToggles();
+    }
+  })();
+</script>
+<style>
+  /* ══════════════════════════════════════════
+  GRID LAYOUT
+  ══════════════════════════════════════════ */
+  .rl-body-wrap { display: block; max-width: 1340px; margin: 0 auto; }
+  .rl-body-wrap--has-sidebar { padding-top: 30px; display: grid; grid-template-columns: 1fr 240px; align-items: start; }
+  .rl-body-main { min-width: 0; grid-column: 1; padding-right: 40px; }
+  .rl-body-sidebar { grid-column: 2; grid-row: 1 / -1; align-self: start; height: 100%; }
+  @media (max-width: 1100px) {
+  .rl-body-wrap--has-sidebar { grid-template-columns: 1fr; }
+  .rl-body-sidebar { display: none; }
+  .rl-body-main { padding-right: 0; }
+  }
+  @media (max-width: 1300px) { .rl-page-width { padding: 0 20px !important; } }
+  /* ══════════════════════════════════════════
+  STICKY WIDGET
+  ══════════════════════════════════════════ */
+  .rl-sticky-widget { position: sticky; top: var(--sticky-top, 100px); background: #fff; border: 1px solid #dde3ea; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; will-change: transform; }
+  .rl-body-wrap--has-sidebar { overflow: visible !important; }
+  .rl-sticky-widget__img { width: 100%; display: flex; align-items: center; justify-content: center; padding: 0; min-height: 180px; }
+  .rl-sticky-widget__img img { max-width: 100%; max-height: 180px; object-fit: contain; display: block; }
+  .rl-sticky-widget__btn { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 14px 16px; background: #657e79; color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; border-top: 1px solid rgba(0,0,0,0.08); box-sizing: border-box; transition: background 0.2s; }
+  .rl-sticky-widget__btn:hover { background: #0b2a4a; color: #fff; }
+  .rl-sticky-widget__btn svg { flex-shrink: 0; transition: transform 0.2s; }
+  .rl-sticky-widget__btn:hover svg { transform: translateX(3px); }
+  /* ══════════════════════════════════════════
+  FULLWIDTH BANNER
+  ══════════════════════════════════════════ */
+  .rl-fullwidth-banner { width: 100%; line-height: 0; overflow: hidden; }
+  .rl-fullwidth-banner__img { width: 100%; height: auto; display: block; object-fit: cover; max-height: 480px; }
+  /* ══════════════════════════════════════════
+  PAGE WIDTH
+  ══════════════════════════════════════════ */
+  .rl-page-width { max-width: 1100px; margin: 0 auto; padding: 0; box-sizing: border-box; }
+  /* ══════════════════════════════════════════
+  AUTHOR ROW
+  ══════════════════════════════════════════ */
+  .rl-author-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .rl-author-item { position: relative; display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 4px 0; }
+  .rl-author-item + .rl-author-item { padding-left: 24px; border-left: 1px solid #e5e7eb; }
+  .rl-author-avatar img, .rl-avatar-placeholder { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  .rl-avatar-placeholder { background: #0b2a4a; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; text-transform: uppercase; }
+  .rl-author-text { display: flex; flex-direction: column; gap: 1px; font-size: 13px; }
+  .rl-author-label { color: #6b7280; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .rl-reviewer-label { display: inline-flex; align-items: center; gap: 4px; color: #3b82f6; text-transform: none; font-weight: 600; font-size: 12px; }
+  .rl-author-name { font-weight: 700; color: #111; font-size: 14px; text-decoration: underline; text-underline-offset: 2px; }
+  .rl-author-role { color: #6b7280; font-size: 12px; }
+  /* ══════════════════════════════════════════
+  DESKTOP POPUP (hover — completely unchanged)
+  ══════════════════════════════════════════ */
+  .rl-author-popup {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 200;
+  width: 300px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.14);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+  pointer-events: none;
+  }
+  .rl-author-item:hover .rl-author-popup,
+  .rl-author-item:focus-within .rl-author-popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+  }
+  /* X close button — hidden everywhere on desktop */
+  .rl-popup-close { display: none; }
+  .rl-popup-inner { padding: 16px; }
+  .rl-popup-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .rl-popup-avatar { width: 52px !important; height: 52px !important; border-radius: 50%; object-fit: cover; flex-shrink: 0; font-size: 20px; }
+  .rl-popup-name { font-weight: 700; color: #111; font-size: 15px; margin: 0 0 2px; }
+  .rl-popup-role { font-size: 12px; color: #6b7280; margin: 0; }
+  .rl-popup-bio { font-size: 13px; color: #444; line-height: 1.6; margin: 0 0 12px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+  .rl-popup-footer { display: flex; align-items: center; justify-content: space-between; }
+  .rl-popup-bio-link { font-size: 13px; color: #0b2a4a; font-weight: 600; cursor: default; }
+  .rl-popup-bio-link::after { content: ' →'; }
+  .rl-popup-li { color: #0077b5; transition: opacity 0.2s; }
+  .rl-popup-li:hover { opacity: 0.7; }
+  /* ══════════════════════════════════════════
+  BACKDROP (mobile only)
+  ══════════════════════════════════════════ */
+  .rl-popup-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 9998;
+  transition: background 0.22s ease;
+  }
+  .rl-popup-backdrop.is-visible {
+  background: rgba(0, 0, 0, 0.48);
+  }
+  /* ══════════════════════════════════════════
+  KEYFRAMES for mobile modal
+  ══════════════════════════════════════════ */
+  @keyframes rl-modal-in {
+  from {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.94);
+  }
+  to {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  }
+  }
+  /* ══════════════════════════════════════════
+  MOBILE — toggle button + open state
+  Only active at ≤600px; desktop untouched
+  ══════════════════════════════════════════ */
+  /* Chevron toggle — hidden on desktop */
+  .rl-author-toggle { display: none; }
+  
+  @media (max-width: 600px) {
+    .rl-page-width.rl-article-header__inner{
+    margin:0 !important
+}
+  /* Show chevron toggle */
+  .rl-author-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s;
+  }
+  .rl-author-toggle:hover { background: #e5e7eb; border-color: #d1d5db; }
+  .rl-author-toggle svg { transition: transform 0.25s ease; color: #6b7280; }
+  .rl-author-toggle[aria-expanded="true"] { background: #0b2a4a; border-color: #0b2a4a; }
+  .rl-author-toggle[aria-expanded="true"] svg { transform: rotate(180deg); color: #fff; }
+  /* Suppress desktop hover/focus-within on mobile */
+  .rl-author-item:hover .rl-author-popup,
+  .rl-author-item:focus-within .rl-author-popup {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(6px) !important;
+  pointer-events: none !important;
+  }
+  /* ── Mobile open state: centred modal ── */
+  .rl-author-item .rl-author-popup.is-open {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  /* transform is set here as the base; animation overrides during entrance */
+  transform: translate(-50%, -50%) !important;
+  width: calc(100vw - 32px) !important;
+  max-width: 360px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24) !important;
+  z-index: 9999 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  /* entrance animation */
+  animation: rl-modal-in 0.28s cubic-bezier(0.34, 1.18, 0.64, 1) both;
+  }
+  /* X close button — visible only inside open popup on mobile */
+  .rl-author-popup.is-open .rl-popup-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  color: #6b7280;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  z-index: 10;
+  flex-shrink: 0;
+  }
+  .rl-author-popup.is-open .rl-popup-close:hover {
+  background: #0b2a4a;
+  border-color: #0b2a4a;
+  color: #fff;
+  }
+  /* Bump inner padding so content clears the X button */
+  .rl-author-popup.is-open .rl-popup-inner {
+  padding-top: 44px;
+  }
+  /* Stack author items vertically on mobile */
+  .rl-author-item + .rl-author-item {
+  padding-left: 0;
+  border-left: none;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 14px;
+  }
+  .rl-author-item.rl-reviewer-item span.rl-author-label.rl-reviewer-label {
+  flex-direction: column-reverse;
+  align-items: start;
+  }
+  span.rl-author-label.rl-reviewer-label span.rl-author-role {
+  border-left: none;
+  padding-left: 0px;
+  }
+  .rl-author-item{
+  width: 100%;
+  }
+  }
+  .rl-author-item svg {
+  fill: none;
+  }
+  /* ══════════════════════════════════════════
+  INTRO
+  ══════════════════════════════════════════ */
+  .rl-article-intro { background: #fff; padding: 32px 0 0px; }
+  .rl-intro-body { max-width: 100%; font-size: 16px; color: #374151; line-height: 1.75; }
+  .rl-intro-body strong { color: #111; }
+  .rl-intro-body a { color: #0b2a4a; text-decoration: underline; }
+  .rl-article-content p a {
+  color: #3a7eff;
+  }
+  /* ══════════════════════════════════════════
+  RANKING
+  ══════════════════════════════════════════ */
+  .rl-ranking-section { padding: 48px 0; }
+  @media (max-width: 768px) { .rl-ranking-section { padding: 24px 0; } }
+  .deal-badge { display: inline-flex; align-items: center; justify-content: center; background-image: url("https://cdn.shopify.com/s/files/1/0777/3654/2462/files/badge-value_430x.webp?v=1770887285"); background-size: 100% 100%; background-repeat: no-repeat; background-position: center; color: #fff; font-weight: 600; height: 36px; padding: 0 22px; min-width: 170px; text-align: center; white-space: nowrap; position: absolute; top: 2px; left: -17px; font-size: 12px; padding: 6px 10px; border-radius: 10px 0 0 0; }
+  .rl-section-title { font-size: clamp(22px, 3vw, 26px); font-weight: 700; color: #0b2a4a; margin: 0 0 20px; }
+  .rl-rank-card { position: relative; background: #fff; border: 1px solid #657e79; border-radius: 6px; box-shadow: rgba(99,99,99,0.2) 0px 2px 8px 0px; display: flex; flex-wrap: wrap; align-items: stretch; margin-bottom: 20px; overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s; }
+  .rl-rank-card--first { border: 2px solid #f59e0b; }
+  .rl-rank-badge { position: relative; top: auto; left: auto; width: 100%; background: #f59e0b; color: #000; font-size: 13px; font-weight: 700; padding: 7px 14px; display: flex; align-items: center; gap: 7px; letter-spacing: 0.03em; clip-path: none; z-index: 2; line-height: 1.5; flex-shrink: 0; align-self: stretch; order: -1; margin: -1px -1px 0 -1px; border-radius: 5px 5px 0 0; box-sizing: border-box; }
+  .rl-rank-badge svg { flex-shrink: 0; color: #000; }
+  .rl-rank-number { width: 36px; height: 36px; background: transparent; border: 1px solid #0b2a4a; border-radius: 100%; color: #657e79; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; flex-shrink: 0; position: absolute; top: 42px; left: 6px; z-index: 3; }
+  .rl-rank-card--first .rl-rank-number { background: #f59e0b; color: #000; }
+  .rl-rank-image { width: 200px; min-width: 160px; display: flex; align-items: center; justify-content: center; padding: 16px; flex-shrink: 0; }
+  .rl-rank-image img { max-width: 100%; max-height: 130px; object-fit: contain; border-radius: 15px; }
+  .rl-rank-content { flex: 1; padding: 20px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .rl-rank-short-desc { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; margin: 0; }
+  .rl-rank-title { font-size: 18px; font-weight: 700; color: #111; margin: 0; line-height: 1.3; }
+  .rl-rank-features { margin-top: 6px; }
+  .rl-rank-features--parsed .metafield-rich_text_field { display: none; }
+  .rl-feat-list { list-style: none; margin: 0; padding: 0; }
+  .rl-feat-item { display: flex; align-items: flex-start; gap: 7px; font-size: 14px; color: #374151; line-height: 1.55; margin-bottom: 5px; }
+  .rl-feat-icon { flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px; }
+  .rl-feat-key { font-weight: 700; color: #111; }
+  .rl-feat-val { color: #374151; }
+  .rl-rank-cta-box { width: 200px; min-width: 200px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 16px; gap: 12px; border-left: 1px solid #e5e7eb; }
+  .rl-rank-score { display: flex; gap: 5px; border: 1px solid rgba(118,129,173,0.2); border-radius: 6px; align-items: center; overflow: hidden; width: 100%; }
+  .rl-score-number { display: flex; font-size: 26px; font-weight: 800; color: #fff; line-height: 1; background: #657e79; padding: 10px 10px; align-items: center; align-self: stretch; flex-shrink: 0; }
+  .rl-rank-card--first .rl-score-number { background: #d97706; }
+  .rl-score-label-box { padding: 4px 8px 4px 4px; }
+  .rl-score-label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; color: #6b7280; margin: 0 0 4px; }
+  .rl-score-stars { display: flex; gap: 2px; align-items: center; }
+  .rl-star-svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .rl-review-count { display: block; font-size: 11px; color: #9ca3af; margin-top: 4px; }
+  .rl-rank-cta-btn { display: inline-flex; align-items: center; gap: 6px; background: #657e79; color: #fff; padding: 11px 18px; border-radius: 7px; font-size: 14px; font-weight: 700; text-decoration: none; width: 100%; justify-content: center; box-sizing: border-box; transition: background 0.2s; }
+  .rl-rank-cta-btn:hover { background: #4a6360; color: #fff; }
+  @media (max-width: 900px) { .rl-rank-image { width: 150px; min-width: 120px; } .rl-rank-cta-box { width: 180px; min-width: 180px; } }
+  @media (max-width: 640px) {
+  .rl-rank-card { flex-direction: column; overflow: hidden; }
+  .rl-rank-badge { position: relative; top: auto; left: auto; display: inline-block; clip-path: none; border-radius: 0 0 6px 0; align-self: flex-start; margin: 0; }
+  .rl-rank-number { position: static; width: 30px; height: 30px; font-size: 15px; margin: 12px 0 0 12px; align-self: flex-start; }
+  .rl-rank-image { width: 100%; min-width: unset; border-bottom: 1px solid #e5e7eb; padding: 12px 16px; height: 160px; }
+  .rl-rank-content { padding: 14px 16px; }
+  .rl-rank-cta-box { width: 100%; min-width: unset; border-left: none; border-top: 1px solid #e5e7eb; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 14px 16px; }
+  .rl-rank-score { width: fit-content !important; margin: auto; min-width: fit-content !important; }
+  .rl-rank-cta-btn { width: 100%; flex-shrink: 0; margin-left: 0px; }
+  }
+  /* ══════════════════════════════════════════
+  COMPARE SLIDER
+  ══════════════════════════════════════════ */
+  .rl-compare-section { background: #e8f4f0; overflow: hidden; }
+  .rl-swiper-wrapper { position: relative; padding: 20px 0 0; box-sizing: border-box; }
+  .rl-swiper-prev, .rl-swiper-next { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; width: 36px; height: 36px; background: #fff; border: 1px solid #d1d5db; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s, border-color 0.2s; color: #374151; flex-shrink: 0; }
+  .rl-swiper-prev:hover, .rl-swiper-next:hover { background: #0b2a4a; border-color: #0b2a4a; color: #fff; }
+  .rl-swiper-prev { left: -44px; }
+  .rl-swiper-next { right: -44px; }
+  @media (min-width: 1024px) { .rl-swiper-wrapper { padding-left: 48px; padding-right: 48px; } .rl-swiper-prev { left: 4px; } .rl-swiper-next { right: 4px; } }
+  .rl-swiper-prev.swiper-button-disabled, .rl-swiper-next.swiper-button-disabled { opacity: 0.35; pointer-events: none; }
+  @media (max-width: 1023px) { .rl-swiper-prev, .rl-swiper-next { display: none !important; } .rl-swiper-wrapper { padding: 16px 0 0; } }
+  .swiper.rl-compare-swiper { width: 100%; overflow: hidden; padding-bottom: 36px; box-sizing: border-box; }
+  @media (max-width: 1023px) { .swiper.rl-compare-swiper { padding-left: 16px; padding-right: 16px; } }
+  .rl-compare-pagination { text-align: center; }
+  .rl-compare-pagination .swiper-pagination-bullet { background: #0b2a4a; opacity: 0.25; }
+  .rl-compare-pagination .swiper-pagination-bullet-active { opacity: 1; }
+  .rl-compare-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px 16px 18px; text-align: center; position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; width: 100%; box-sizing: border-box; overflow: visible; transition: border-color 0.2s, box-shadow 0.2s; }
+  .rl-compare-card:hover { border-color: #0b2a4a; box-shadow: 0 6px 24px rgba(11,42,74,0.09); }
+  .rl-compare-badge { position: absolute; top: -1px; left: 50%; transform: translateX(-50%); background: #f59e0b; color: #000; font-size: 10px; font-weight: 700; padding: 2px 12px; border-radius: 0 0 8px 8px; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+  .rl-compare-rank { width: 28px; height: 28px; border-radius: 50%; background: #0b2a4a; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .rl-compare-img { height: 100px; display: flex; align-items: center; justify-content: center; }
+  .rl-compare-img img { max-width: 140px; max-height: 100px; object-fit: contain; }
+  .rl-compare-title { font-size: 20px; color: #111; margin: 0; line-height: 1.3; }
+  .rl-compare-desc { font-size: 12px; color: #6b7280; line-height: 1.5; margin: 0; }
+  .rl-compare-features { width: 100%; text-align: left; border-top: 1px solid #f0f0f0; padding-top: 8px; margin-top: 0; flex-grow: 1; }
+  .rl-compare-features .rl-feat-item { font-size: 14px; margin-bottom: 16px; gap: 5px; line-height: 1.4; }
+  .rl-compare-features .rl-feat-icon { width: 16px; height: 20px; margin-top: 1px; }
+  .rl-compare-features .rl-feat-key { font-size: 14px; }
+  .rl-compare-features .rl-feat-val { font-size: 14px; color: #4b5563; }
+  .rl-compare-cta { display: inline-flex; align-items: center; gap: 6px; background: #657e79; color: #fff; padding: 10px 20px; border-radius: 7px; font-size: 13px; font-weight: 700; text-decoration: none; width: 100%; justify-content: center; margin-top: auto; transition: background 0.2s; box-sizing: border-box; }
+  .rl-compare-cta:hover { background: #0b2a4a; color: #fff; }
+  .swiper-wrapper { align-items: stretch; }
+  .swiper-slide { height: auto !important; }
+  .rl-compare-section .rl-page-width { padding-left: 0; padding-right: 0; max-width: 100%; }
+  /* ══════════════════════════════════════════
+  ARTICLE CONTENT
+  ══════════════════════════════════════════ */
+  .rl-main-article { background: #fff; padding: 48px 0 64px; }
+  @media (max-width: 640px) { .rl-main-article { padding: 32px 0 40px; } }
+  .rl-article-content { color: #374151; font-size: 16px; line-height: 1.8; }
+  .rl-article-content h2 { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(20px, 2.5vw, 28px); font-weight: 700; color: #111; margin: 36px 0 12px; padding-bottom: 10px; border-bottom: 2px solid #e5e7eb; }
+  .rl-article-content h3 { font-size: clamp(17px, 2vw, 22px); font-weight: 700; color: #1f2937; margin: 28px 0 10px; }
+  .rl-article-content p { margin: 0 0 16px; }
+  .rl-article-content ul, .rl-article-content ol { padding-left: 20px; margin: 0 0 16px; }
+  .rl-article-content li { margin-bottom: 6px; }
+  .rl-article-content a { color: #fff; }
+  .rl-article-content a:hover { color: #4a6360; }
+  .rl-article-content blockquote { border-left: 4px solid #0b2a4a; margin: 24px 0; padding: 12px 20px; background: #f1f5f9; font-style: italic; }
+  .rl-article-content img { max-width: 100%; border-radius: 8px; height: auto; }
+  .rl-article-content table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 20px 0; }
+  .rl-article-content table th { background: #0b2a4a; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+  .rl-article-content table td { padding: 10px 14px; border: 1px solid #e5e7eb; }
+  .rl-article-content table tr:nth-child(even) td { background: #f9fafb; }
+  .rl-article-content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .rl-article-tags { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 40px; padding-top: 24px; border-top: 1px solid #e5e7eb; max-width: 820px; }
+  .rl-tags-label { font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
+  .rl-tag { background: #f1f5f9; color: #374151; font-size: 13px; padding: 4px 12px; border-radius: 100px; text-decoration: none; transition: background 0.2s; }
+  .rl-tag:hover { background: #0b2a4a; color: #fff; }
+  .rl-article-sources { max-width: 820px; margin-top: 48px; padding: 24px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; }
+  .rl-article-sources h4 { font-size: 15px; font-weight: 700; color: #111; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .rl-article-sources p, .rl-article-sources li { font-size: 13px; color: #6b7280; line-height: 1.7; margin: 0 0 6px; }
+  .Separator-module__e8Wu7W__root { border: none; border-top: 3px solid #000; margin: 20px 0; }
+  .rl-adcard { position: relative; display: flex; align-items: center; gap: 0; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; overflow: hidden; margin: 28px 0; box-shadow: 0 2px 12px rgba(0,0,0,.06); min-height: 120px; }
+  .rl-adcard__badge { position: absolute; top: 10px; right: 12px; display: flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: #9ca3af; letter-spacing: .04em; z-index: 2; line-height: 1; }
+  .rl-adcard__img-wrap { width: 170px; min-width: 150px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; align-self: stretch; padding: 16px; }
+  .rl-adcard__img { width: 130px; height: 130px; object-fit: contain; display: block; }
+  .rl-adcard__body { flex: 1; padding: 20px 16px 20px 20px; min-width: 0; }
+  .rl-adcard__sub { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #657e79; margin: 0 0 8px; }
+  .rl-adcard__headline { font-size: clamp(16px,2.2vw,22px); font-weight: 700; color: #111; line-height: 1.3; margin: 0; }
+  .rl-adcard__cta-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px 24px 20px 16px; min-width: 160px; }
+  .rl-adcard__cta-btn { display: inline-flex; align-items: center; justify-content: center; background: #657e79; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 24px; border-radius: 7px; text-decoration: none; white-space: nowrap; width: 100%; text-align: center; transition: background .2s; box-sizing: border-box; }
+  .rl-adcard__cta-btn:hover { background: #0b2a4a; color: #fff; }
+  .rl-adcard__cta-sub { font-size: 12px; color: #6b7280; margin: 0; text-align: center; white-space: nowrap; }
+  @media (max-width: 600px) {
+  .rl-adcard { flex-direction: column; align-items: stretch; }
+  .rl-adcard__img-wrap { width: 100%; min-width: unset; border-bottom: 1px solid #e5e7eb; }
+  .rl-adcard__img { width: auto; height: 120px; }
+  .rl-adcard__body { padding: 16px 16px 8px; }
+  .rl-adcard__cta-wrap { padding: 12px 16px 16px; min-width: unset; width: 100%; box-sizing: border-box; }
+  }
+</style>
+<script>
+  (function () {
+    function parseFeatureBlock(wrapper) {
+      var raw = wrapper.querySelector('.metafield-rich_text_field');
+      if (!raw) return;
+      var html = raw.innerHTML;
+      html = html
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n')
+        .replace(/<p[^>]*>/gi, '')
+        .replace(/<\/?(strong|b|em|i)[^>]*>/gi, '|BOLD|')
+        .replace(/<[^>]+>/g, '');
+      var tmp = document.createElement('textarea');
+      tmp.innerHTML = html;
+      html = tmp.value;
+      var lines = html
+        .split('\n')
+        .map(function (l) {
+          return l.trim();
+        })
+        .filter(Boolean);
+      var ul = document.createElement('ul');
+      ul.className = 'rl-feat-list';
+      lines.forEach(function (line) {
+        if (!line) return;
+        var li = document.createElement('li');
+        li.className = 'rl-feat-item';
+        li.innerHTML =
+          '<svg class="rl-feat-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#dcfce7"/><path d="M6 10.5l2.5 2.5 5.5-5.5" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        var colonIdx = line.indexOf(':');
+        var span = document.createElement('span');
+        if (colonIdx > 0) {
+          var key = line
+            .substring(0, colonIdx)
+            .replace(/\|BOLD\|/g, '')
+            .trim();
+          var val = line
+            .substring(colonIdx + 1)
+            .replace(/\|BOLD\|/g, '')
+            .trim();
+          span.innerHTML = '<span class="rl-feat-key">' + key + ':</span> <span class="rl-feat-val">' + val + '</span>';
+        } else {
+          span.className = 'rl-feat-val';
+          span.textContent = line.replace(/\|BOLD\|/g, '').trim();
+        }
+        li.appendChild(span);
+        ul.appendChild(li);
+      });
+      wrapper.appendChild(ul);
+    }
+    function init() {
+      document.querySelectorAll('.rl-rank-features--parsed').forEach(parseFeatureBlock);
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
+{% schema %}
+{
+  "name": "Article Body V2",
+  "settings": [
+    { "type": "header", "content": "Star Rating Scale" },
+    {
+      "type": "select",
+      "id": "rating_scale",
+      "label": "Rating metafield scale",
+      "options": [
+        { "value": "5", "label": "0 – 5 (e.g. 4.5 stars)" },
+        { "value": "10", "label": "0 – 10 (e.g. 9.3 score)" }
+      ],
+      "default": "5",
+      "info": "Match this to the scale used in your product custom.rating metafield."
+    },
+    { "type": "header", "content": "Sticky Product Widget" },
+    { "type": "checkbox", "id": "show_featured_product", "label": "Enable sticky product widget", "default": false },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Featured Product",
+      "info": "CTA uses custom.tracking_link metafield if set, otherwise product URL."
+    },
+    { "type": "url", "id": "featured_product_link", "label": "Override CTA URL (optional)" },
+    { "type": "text", "id": "featured_cta_label", "label": "Button Label", "default": "Learn More" },
+    {
+      "type": "range",
+      "id": "sticky_top_offset",
+      "label": "Sticky top offset (px)",
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "default": 100,
+      "info": "Distance from top of viewport when widget sticks."
+    },
+    { "type": "header", "content": "Intro Text" },
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "Intro Text",
+      "info": "Overrides article.metafields.custom.intro_text if filled."
+    },
+    { "type": "header", "content": "Product Ranking" },
+    { "type": "collection", "id": "ranking_collection", "label": "Ranking Collection" },
+    { "type": "text", "id": "ranking_title", "label": "Ranking Section Title", "default": "Top Picks" },
+    { "type": "text", "id": "ranking_cta", "label": "Ranking CTA Label", "default": "Learn More" },
+    { "type": "header", "content": "Compare Slider" },
+    { "type": "collection", "id": "compare_collection", "label": "Comparison Collection" },
+    { "type": "text", "id": "compare_title", "label": "Compare Section Title", "default": "Our Top Recommendations" },
+    { "type": "text", "id": "compare_cta", "label": "Compare CTA Label", "default": "Shop Now" },
+    { "type": "header", "content": "Author Bio (Hover Popup)" },
+    {
+      "type": "image_picker",
+      "id": "author_image_override",
+      "label": "Author Image",
+      "info": "Overrides article metafield."
+    },
+    { "type": "text", "id": "author_name_override", "label": "Author Name", "info": "Overrides article metafield." },
+    {
+      "type": "text",
+      "id": "author_role_override",
+      "label": "Author Role / Title",
+      "info": "Overrides article metafield."
+    },
+    { "type": "textarea", "id": "author_bio_override", "label": "Author Bio", "info": "Overrides article metafield." },
+    { "type": "header", "content": "Reviewer Bio (Hover Popup)" },
+    {
+      "type": "image_picker",
+      "id": "reviewer_image_override",
+      "label": "Reviewer Image",
+      "info": "Overrides article metafield."
+    },
+    {
+      "type": "text",
+      "id": "reviewer_name_override",
+      "label": "Reviewer Name",
+      "info": "Overrides article metafield."
+    },
+    {
+      "type": "text",
+      "id": "reviewer_role_override",
+      "label": "Reviewer Role / Title",
+      "info": "Overrides article metafield."
+    },
+    {
+      "type": "textarea",
+      "id": "reviewer_bio_override",
+      "label": "Reviewer Bio",
+      "info": "Overrides article metafield."
+    },
+    { "type": "header", "content": "Full-Width Banner Image" },
+    {
+      "type": "image_picker",
+      "id": "fullwidth_image",
+      "label": "Banner Image",
+      "info": "Displays full-width between intro and ranking."
+    },
+    { "type": "text", "id": "fullwidth_image_alt", "label": "Image Alt Text", "default": "img" }
+  ],
+  "presets": [{ "name": "Article Body V2" }]
+}
+{% endschema %}

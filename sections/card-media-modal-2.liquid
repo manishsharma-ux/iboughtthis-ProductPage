@@ -1,0 +1,702 @@
+<!-- card-media-modal.liquid -->
+<section class="customstyle{{ section.id }} card-media-modal-section" data-section-id="{{ section.id }}">
+  <style>
+    .customstyle{{ section.id }} {
+      background: {{ section.settings.bg_color }};
+      padding: {{ section.settings.padding_desktop }};
+      margin: {{ section.settings.margin_desktop }};
+      position: relative;
+    }
+    @media (max-width: 767px){
+      .customstyle{{ section.id }} {
+        padding: {{ section.settings.padding_mobile }};
+        margin: {{ section.settings.margin_mobile }};
+      }
+    }
+
+    .customstyle{{ section.id }} .inner {
+      width: 100%;
+      {% case section.settings.width %}
+        {% when 'container' %}
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 16px;
+        {% when 'container-fluid' %}
+          max-width: 100%;
+          margin: 0 auto;
+          padding: 0 24px;
+        {% when 'full' %}
+          max-width: 100%;
+          margin: 0;
+          padding: 0;
+      {% endcase %}
+    }
+
+    .customstyle{{ section.id }} .sec-heading {
+      text-align: {{ section.settings.heading_align }};
+      margin: 0 0 24px;
+      color: {{ section.settings.heading_color }};
+    }
+    .customstyle{{ section.id }} .sec-sub {
+      text-align: {{ section.settings.heading_align }};
+      margin: 8px 0 28px;
+      color: {{ section.settings.subheading_color }};
+      opacity: .9;
+    }
+
+    .customstyle{{ section.id }} .grid {
+      display: grid;
+      grid-template-columns: repeat({{ section.settings.columns_desktop }}, minmax(0, 1fr));
+      gap: 24px;
+    }
+    @media (max-width: 991px){
+      .customstyle{{ section.id }} .grid {
+        grid-template-columns: repeat({{ section.settings.columns_tablet }}, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 767px){
+      .customstyle{{ section.id }} .grid {
+        grid-template-columns: repeat({{ section.settings.columns_mobile }}, minmax(0, 1fr));
+      }
+    }
+
+    .customstyle{{ section.id }} .card {
+      background: {{ section.settings.card_bg }};
+      border: 1px solid {{ section.settings.card_border }};
+      border-radius: 16px;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      box-shadow: 0 6px 18px rgba(0,0,0,.08);
+    }
+    .customstyle{{ section.id }} .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.12);
+      border-color: {{ section.settings.card_border_hover }};
+    }
+
+    .customstyle{{ section.id }} .card-media {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+    }
+    .customstyle{{ section.id }} .card-media img,
+    .customstyle{{ section.id }} .card-media video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Play icon overlay */
+    .customstyle{{ section.id }} .play-icon-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0.95;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+    .customstyle{{ section.id }} .card:hover .play-icon-center {
+      transform: translate(-50%, -50%) scale(1.15);
+      opacity: 1;
+    }
+    .customstyle{{ section.id }} .play-icon-center svg {
+      width: 64px !important;
+      height: 64px !important;
+    }
+
+    .customstyle{{ section.id }} .card-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    .customstyle{{ section.id }} .card-title {
+      margin: 0;
+      font-weight: 800;
+      font-size: 20px;
+      color: {{ section.settings.card_title_color }};
+    }
+    .customstyle{{ section.id }} .card-text {
+      color: {{ section.settings.card_text_color }};
+      opacity: .85;
+    }
+
+    .customstyle{{ section.id }} .btn {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 2px solid {{ section.settings.btn_color }};
+      color: {{ section.settings.btn_color }};
+      text-decoration: none;
+      display: inline-block;
+      transition: background .2s ease, color .2s ease, transform .2s ease;
+      font-weight: 700;
+    }
+    .customstyle{{ section.id }} .btn:hover {
+      {% if section.settings.btn_fill_on_hover %}
+        background: {{ section.settings.btn_color }};
+        color: #fff;
+      {% endif %}
+      transform: translateY(-2px);
+    }
+
+    /* MODAL */
+    .card-media-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .card-media-modal-overlay[aria-hidden="false"] {
+      display: flex;
+    }
+
+    .card-media-modal-dialog {
+      width: min(50%, {{ section.settings.modal_max_width }});
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 12px 32px rgba(0,0,0,.4);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-media-modal-media {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      flex-shrink: 0;
+    }
+    .card-media-modal-media img,
+    .card-media-modal-media video,
+    .card-media-modal-media iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      background: #000;
+    }
+
+    .card-media-modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(255,255,255,.9);
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      z-index: 2;
+    }
+
+    .card-media-modal-body {
+      padding: 18px;
+      overflow-y: auto;
+    }
+  </style>
+
+  <div class="inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="sec-heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <div class="sec-sub">{{ section.settings.subheading }}</div>
+    {% endif %}
+
+    <div class="video-slider">
+      {% for block in section.blocks %}
+        {% if block.type == 'card' %}
+          {% assign modal_id = 'modal-' | append: section.id | append: '-' | append: block.id %}
+          <div class="video-items">
+            <article class="card" data-modal-target="#{{ modal_id }}" {{ block.shopify_attributes }}>
+              {% if block.settings.media_type != 'none' %}
+                <div class="card-media">
+                  {%- case block.settings.media_type -%}
+
+                    {%- when 'image' -%}
+                      {% if block.settings.image != blank %}
+                        <img
+                          src="{{ block.settings.image | image_url: width: 1200 }}"
+                          alt="{{ block.settings.image.alt | escape }}"
+                          loading="lazy"
+                        >
+                      {% else %}
+                        {{ 'image' | placeholder_svg_tag }}
+                      {% endif %}
+
+                    {%- when 'video' -%}
+                      {% if block.settings.video != blank %}
+                        {% assign first_source = block.settings.video.sources | first %}
+                        <video
+                          muted
+                          playsinline
+                          preload="metadata"
+                          poster="{{ block.settings.video.preview_image | image_url: width: 1200 }}"
+                        >
+                          {% if first_source %}
+                            <source src="{{ first_source.url }}" type="{{ first_source.mime_type }}">
+                          {% endif %}
+                        </video>
+                      {% else %}
+                        {{ 'lifestyle-2' | placeholder_svg_tag }}
+                      {% endif %}
+
+                    {%- when 'embed' -%}
+                      {% if block.settings.embed_url != blank %}
+                        {%- assign raw_url = block.settings.embed_url | strip -%}
+                        {%- assign yt_id = '' -%}
+
+                        {%- comment %}
+                          Extract YouTube video ID from:
+                          - https://www.youtube.com/watch?v=VIDEO_ID
+                          - https://youtu.be/VIDEO_ID
+                          - https://www.youtube.com/embed/VIDEO_ID
+                        {% endcomment -%}
+                        {%- if raw_url contains 'youtu.be/' -%}
+                          {%- assign yt_id = raw_url | split: 'youtu.be/' | last | split: '?' | first -%}
+                        {%- elsif raw_url contains '/embed/' -%}
+                          {%- assign yt_id = raw_url | split: '/embed/' | last | split: '?' | first -%}
+                        {%- elsif raw_url contains 'watch?v=' -%}
+                          {%- assign yt_id = raw_url | split: 'watch?v=' | last | split: '&' | first -%}
+                        {%- endif -%}
+
+                        {% if yt_id != '' %}
+                          <img
+                            src="https://img.youtube.com/vi/{{ yt_id }}/hqdefault.jpg"
+                            alt="Video thumbnail"
+                            loading="lazy"
+                          >
+                        {% else %}
+                          {{ 'lifestyle-2' | placeholder_svg_tag }}
+                        {% endif %}
+                      {% else %}
+                        {{ 'lifestyle-2' | placeholder_svg_tag }}
+                      {% endif %}
+
+                  {%- endcase -%}
+
+                  {% if block.settings.media_type == 'video' or block.settings.media_type == 'embed' %}
+                    <div class="play-icon-center">
+                      <svg viewBox="0 0 64 64">
+                        <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.55)" />
+                        <polygon points="26,20 46,32 26,44" fill="#fff" />
+                      </svg>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+
+              <div class="card-body">
+                {% if block.settings.title != blank %}
+                  <h3 class="card-title">{{ block.settings.title }}</h3>
+                {% endif %}
+                {% if block.settings.content != blank %}
+                  <div class="card-text">{{ block.settings.content }}</div>
+                {% endif %}
+                <a
+                  href="javascript:void(0)"
+                  class="btn"
+                  data-modal-target="#{{ modal_id }}"
+                >
+                  {% if block.settings.media_type == 'video' or block.settings.media_type == 'embed' %}
+                    Watch&nbsp;&#8594;
+                  {% else %}
+                    {{ block.settings.button_label }}
+                  {% endif %}
+                </a>
+              </div>
+            </article>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{%- comment -%}
+  POPUP MODALS
+{%- endcomment -%}
+<div class="card-media-modals-wrapper card-media-modals-wrapper-{{ section.id }}">
+  {% for block in section.blocks %}
+    {% if block.type == 'card' %}
+      {% assign modal_id = 'modal-' | append: section.id | append: '-' | append: block.id %}
+
+      {%- comment %}
+        Build normalized embed src for external videos (YouTube & basic Vimeo)
+      {% endcomment -%}
+      {% assign embed_src = '' %}
+      {% if block.settings.media_type == 'embed' and block.settings.embed_url != blank %}
+        {% assign raw_url = block.settings.embed_url | strip %}
+        {% assign embed_src = raw_url %}
+
+        {%- if raw_url contains 'youtu.be/' -%}
+          {% assign yt_id = raw_url | split: 'youtu.be/' | last | split: '?' | first %}
+          {% assign embed_src = 'https://www.youtube.com/embed/' | append: yt_id %}
+        {%- elsif raw_url contains 'watch?v=' -%}
+          {% assign yt_id = raw_url | split: 'watch?v=' | last | split: '&' | first %}
+          {% assign embed_src = 'https://www.youtube.com/embed/' | append: yt_id %}
+        {%- elsif raw_url contains '/embed/' -%}
+          {% assign embed_src = raw_url %}
+        {%- elsif raw_url contains 'vimeo.com/' -%}
+          {%- comment %}
+            Basic Vimeo support:
+            - https://vimeo.com/VIDEO_ID
+            - https://player.vimeo.com/video/VIDEO_ID
+          {% endcomment -%}
+          {% if raw_url contains 'player.vimeo.com/video/' %}
+            {% assign vimeo_id = raw_url | split: 'player.vimeo.com/video/' | last | split: '?' | first %}
+          {% else %}
+            {% assign vimeo_id = raw_url | split: 'vimeo.com/' | last | split: '?' | first %}
+          {% endif %}
+          {% assign embed_src = 'https://player.vimeo.com/video/' | append: vimeo_id %}
+        {%- endif -%}
+      {% endif %}
+
+      <div
+        id="{{ modal_id }}"
+        class="card-media-modal-overlay"
+        aria-hidden="true"
+      >
+        <div class="card-media-modal-dialog">
+          <button type="button" class="card-media-modal-close" aria-label="Close">
+            &times;
+          </button>
+
+          <div class="card-media-modal-media">
+            {%- case block.settings.media_type -%}
+              {%- when 'image' -%}
+                {% if block.settings.image != blank %}
+                  <img
+                    src="{{ block.settings.image | image_url: width: 1600 }}"
+                    alt="{{ block.settings.image.alt | escape }}"
+                    loading="lazy"
+                  >
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag }}
+                {% endif %}
+
+              {%- when 'video' -%}
+                {% if block.settings.video != blank %}
+                  {% assign first_source = block.settings.video.sources | first %}
+                  <video
+                    controls
+                    playsinline
+                    data-autoplay
+                    poster="{{ block.settings.video.preview_image | image_url: width: 1600 }}"
+                  >
+                    {% if first_source %}
+                      <source src="{{ first_source.url }}" type="{{ first_source.mime_type }}">
+                    {% endif %}
+                  </video>
+                {% else %}
+                  {{ 'lifestyle-2' | placeholder_svg_tag }}
+                {% endif %}
+
+              {%- when 'embed' -%}
+                {% if embed_src != '' %}
+                  <iframe
+                    data-src="{{ embed_src }}"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                {% else %}
+                  {{ 'lifestyle-2' | placeholder_svg_tag }}
+                {% endif %}
+
+              {%- else -%}
+                {{ 'image' | placeholder_svg_tag }}
+            {%- endcase -%}
+          </div>
+
+          <div class="card-media-modal-body">
+            {% if block.settings.title != blank %}
+              <h3 class="card-title">{{ block.settings.title }}</h3>
+            {% endif %}
+            {% if block.settings.content != blank %}
+              <div class="card-text">{{ block.settings.content }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<script>
+  (function () {
+    var sectionEl = document.querySelector('.customstyle{{ section.id }}');
+    if (!sectionEl) return;
+
+    function openModal(modal) {
+      if (!modal) return;
+
+      // Autoplay Shopify hosted video
+      var video = modal.querySelector('.card-media-modal-media video[data-autoplay]');
+      if (video) {
+        try {
+          video.currentTime = 0;
+          var playPromise = video.play();
+          if (playPromise && playPromise.catch) {
+            playPromise.catch(function () {});
+          }
+        } catch (e) {}
+      }
+
+      // Lazy-load + autoplay iframe (YouTube / Vimeo)
+      var iframe = modal.querySelector('.card-media-modal-media iframe[data-src]');
+      if (iframe) {
+        var base = iframe.getAttribute('data-src');
+        if (base) {
+          var url = base.indexOf('?') === -1 ? base + '?autoplay=1' : base + '&autoplay=1';
+          iframe.src = url;
+        }
+      }
+
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modal) {
+      if (!modal) return;
+
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+
+      // Stop & reset HTML5 videos
+      modal.querySelectorAll('video').forEach(function (v) {
+        try {
+          v.pause();
+          v.currentTime = 0;
+        } catch (e) {}
+      });
+
+      // Reset iframes to clean data-src (no autoplay param)
+      modal.querySelectorAll('iframe').forEach(function (iframe) {
+        var original = iframe.getAttribute('data-src');
+        if (original) {
+          iframe.src = '';
+          setTimeout(function () {
+            iframe.src = original;
+          }, 0);
+        } else {
+          iframe.src = 'about:blank';
+        }
+      });
+    }
+
+    // Open modal on card / button click
+    sectionEl.addEventListener('click', function (e) {
+      var trigger = e.target.closest('[data-modal-target]');
+      if (!trigger) return;
+
+      var selector = trigger.getAttribute('data-modal-target');
+      if (!selector) return;
+
+      var modal = document.querySelector(selector);
+      if (modal) {
+        e.preventDefault();
+        openModal(modal);
+      }
+    });
+
+    // Close when clicking on overlay background
+    document.addEventListener('click', function (e) {
+      var overlay = e.target.classList && e.target.classList.contains('card-media-modal-overlay')
+        ? e.target
+        : null;
+      if (overlay && overlay.getAttribute('aria-hidden') === 'false') {
+        closeModal(overlay);
+      }
+    });
+
+    // Close on close button
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.card-media-modal-close');
+      if (!btn) return;
+      var modal = btn.closest('.card-media-modal-overlay');
+      if (modal) {
+        closeModal(modal);
+      }
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        document
+          .querySelectorAll('.card-media-modal-overlay[aria-hidden="false"]')
+          .forEach(function (modal) {
+            closeModal(modal);
+          });
+      }
+    });
+
+    /* SLICK SLIDER INIT */
+    function initVideoSlider(context) {
+      var $context = context ? $(context) : $(document);
+      var $slider = $context.find('.video-slider');
+
+      if (!$slider.length) return;
+      if ($slider.hasClass('slick-initialized')) return;
+
+      $slider.slick({
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        dots: true,
+        arrows: true,
+        infinite: false,
+        responsive: [
+          {
+            breakpoint: 992,
+            settings: {
+              slidesToShow: 3
+            }
+          },
+          {
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 1
+            }
+          }
+        ]
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      initVideoSlider(document.querySelector('.customstyle{{ section.id }}'));
+    });
+
+    // Shopify theme editor hooks
+    document.addEventListener('shopify:section:load', function (event) {
+      if (event.detail && event.detail.sectionId === '{{ section.id }}') {
+        initVideoSlider(event.target);
+      }
+    });
+
+    document.addEventListener('shopify:section:unload', function (event) {
+      if (event.detail && event.detail.sectionId === '{{ section.id }}') {
+        var $slider = $(event.target).find('.video-slider');
+        if ($slider.hasClass('slick-initialized')) {
+          $slider.slick('unslick');
+        }
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Card grid modal",
+  "class": "index-section",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "richtext", "id": "subheading", "label": "Subheading" },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "container",
+      "options": [
+        { "value": "container", "label": "Container" },
+        { "value": "container-fluid", "label": "Container Fluid" },
+        { "value": "full", "label": "Full width" }
+      ]
+    },
+    { "type": "color", "id": "bg_color", "label": "Background color", "default": "#ffffff" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#111111" },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color", "default": "#333333" },
+
+    { "type": "range", "id": "columns_desktop", "label": "Columns (desktop)", "min": 1, "max": 6, "step": 1, "default": 3 },
+    { "type": "range", "id": "columns_tablet", "label": "Columns (tablet)", "min": 1, "max": 4, "step": 1, "default": 2 },
+    { "type": "range", "id": "columns_mobile", "label": "Columns (mobile)", "min": 1, "max": 3, "step": 1, "default": 1 },
+
+    { "type": "color", "id": "card_bg", "label": "Card background", "default": "#ffffff" },
+    { "type": "color", "id": "card_border", "label": "Card border", "default": "#e5e7eb" },
+    { "type": "color", "id": "card_border_hover", "label": "Card border (hover)", "default": "#cbd2dc" },
+    { "type": "color", "id": "card_title_color", "label": "Card title color", "default": "#111111" },
+    { "type": "color", "id": "card_text_color", "label": "Card text color", "default": "#333333" },
+
+    { "type": "color", "id": "btn_color", "label": "Button color", "default": "#3B5BFF" },
+    { "type": "checkbox", "id": "btn_fill_on_hover", "label": "Fill button on hover", "default": true },
+
+    { "type": "text", "id": "modal_max_width", "label": "Modal max width (e.g. 960px)", "default": "960px" },
+    { "type": "text", "id": "padding_desktop", "label": "Padding (desktop)", "default": "48px 0" },
+    { "type": "text", "id": "padding_mobile", "label": "Padding (mobile)", "default": "36px 0" },
+    { "type": "text", "id": "margin_desktop", "label": "Margin (desktop)", "default": "0" },
+    { "type": "text", "id": "margin_mobile", "label": "Margin (mobile)", "default": "0" }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "Media type",
+          "default": "image",
+          "options": [
+            { "value": "none",  "label": "None" },
+            { "value": "image", "label": "Image" },
+            { "value": "video", "label": "Video (Shopify hosted)" },
+            { "value": "embed", "label": "External video (YouTube/Vimeo)" }
+          ]
+        },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "video", "id": "video", "label": "Video file" },
+        {
+          "type": "text",
+          "id": "embed_url",
+          "label": "External video URL",
+          "info": "Paste any YouTube or Vimeo link (watch/share/embed)."
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Card title" },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>Short description of this card. Click to open the popup.</p>"
+        },
+        { "type": "text", "id": "button_label", "label": "Button label", "default": "Read more" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Card grid with media modal",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

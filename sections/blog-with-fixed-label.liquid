@@ -1,0 +1,553 @@
+{% comment %}
+  Blog With Fixed Label - Sticky Top Bar Section
+  Inspired by AG1 banner design
+{% endcomment %}
+
+<div
+  id="fixed-label-bar"
+  class="fixed-label-bar"
+  data-section-id="{{ section.id }}"
+  style="display: none;"
+  aria-live="polite"
+  role="banner"
+>
+  <div class="fixed-label-bar__inner">
+
+    {% comment %} Left: Image + Text {% endcomment %}
+    <div class="fixed-label-bar__left">
+      {% if section.settings.bar_image != blank %}
+        <div class="fixed-label-bar__image">
+          <img
+            src="{{ section.settings.bar_image | image_url: width: 120 }}"
+            alt="{{ section.settings.image_alt | escape }}"
+            width="80"
+            height="40"
+            loading="lazy"
+          >
+        </div>
+      {% endif %}
+
+      {% if section.settings.bar_text != blank %}
+        <p class="fixed-label-bar__text">{{ section.settings.bar_text }}</p>
+      {% endif %}
+    </div>
+
+    {% comment %} Center/Right: Rating {% endcomment %}
+    {% if section.settings.show_rating %}
+      <div class="fixed-label-bar__rating">
+        {% assign rating_display = section.settings.rating_score | times: 1.0 | divided_by: 10 %}
+        {% assign star_score = section.settings.rating_score | times: 1.0 | divided_by: 20 %}
+        <div class="fixed-label-bar__score">{{ rating_display }}</div>
+        <div class="fixed-label-bar__rating-details">
+          <span class="fixed-label-bar__rating-label">{{ section.settings.rating_label }}</span>
+          <div class="fixed-label-bar__stars" aria-label="{{ rating_display }} out of 5 stars" style="display:none">
+            {% assign full_stars = star_score | floor %}
+            {% assign decimal = star_score | modulo: 1 %}
+            {% assign half_star_index = full_stars | plus: 1 %}
+            {% for i in (1..5) %}
+              {% if i <= full_stars %}
+                <svg class="star star--full" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M10 1L12.39 6.26L18.18 7.11L14.09 11.1L15.08 16.87L10 14.12L4.92 16.87L5.91 11.1L1.82 7.11L7.61 6.26L10 1Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                </svg>
+              {% elsif decimal >= 0.5 and i == half_star_index %}
+                <svg class="star star--half" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="half-grad-{{ section.id }}">
+                      <stop offset="50%" stop-color="currentColor"/>
+                      <stop offset="50%" stop-color="transparent"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M10 1L12.39 6.26L18.18 7.11L14.09 11.1L15.08 16.87L10 14.12L4.92 16.87L5.91 11.1L1.82 7.11L7.61 6.26L10 1Z" fill="url(#half-grad-{{ section.id }})" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                </svg>
+              {% else %}
+                <svg class="star star--empty" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M10 1L12.39 6.26L18.18 7.11L14.09 11.1L15.08 16.87L10 14.12L4.92 16.87L5.91 11.1L1.82 7.11L7.61 6.26L10 1Z" fill="transparent" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                </svg>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% comment %} CTA Button {% endcomment %}
+    {% if section.settings.button_text != blank and section.settings.button_link != blank %}
+      <a
+        href="{{ section.settings.button_link }}"
+        class="fixed-label-bar__cta"
+        {% if section.settings.button_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+      >
+        {{ section.settings.button_text }}
+        <svg class="fixed-label-bar__cta-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    {% endif %}
+
+    {% comment %} Close Button {% endcomment %}
+    <button
+      class="fixed-label-bar__close"
+      id="fixed-label-bar-close"
+      aria-label="Close announcement bar"
+      type="button"
+    >
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+  </div>
+</div>
+
+<style>
+  /* ============================================================
+     CSS VARIABLES — easy to override in theme editor
+  ============================================================ */
+  #fixed-label-bar {
+    --flb-bg:           {{ section.settings.bar_bg_color }};
+    --flb-text:         {{ section.settings.bar_text_color }};
+    --flb-star:         {{ section.settings.star_color }};
+    --flb-btn-bg:       {{ section.settings.button_bg_color }};
+    --flb-btn-text:     {{ section.settings.button_text_color }};
+    --flb-btn-hover:    {{ section.settings.button_hover_color }};
+    --flb-score-bg:     {{ section.settings.score_bg_color }};
+    --flb-score-text:   {{ section.settings.score_text_color }};
+    --flb-height:       56px;
+    --flb-radius:       8px;
+    --flb-transition:   0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ============================================================
+     BASE STYLES
+  ============================================================ */
+  .fixed-label-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: var(--flb-bg);
+    color: var(--flb-text);
+    box-shadow: 0 -2px 16px rgba(0,0,0,0.13);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    transform: translateY(110%);
+    opacity: 0;
+    transition:
+      transform var(--flb-transition),
+      opacity 0.35s ease;
+    will-change: transform, opacity;
+    font-family: inherit;
+  }
+
+  .fixed-label-bar.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .fixed-label-bar.is-hiding {
+    transform: translateY(110%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     INNER LAYOUT
+  ============================================================ */
+  .fixed-label-bar__inner {
+    max-width: 1200px;
+    margin: 10px auto;
+    padding: 0 20px;
+    height: var(--flb-height);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* ============================================================
+     LEFT: IMAGE + TEXT
+  ============================================================ */
+  .fixed-label-bar__left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .fixed-label-bar__image {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .fixed-label-bar__image img {
+    height: 70px;
+    width: auto;
+    max-width: 100px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .fixed-label-bar__text {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--flb-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.01em;
+  }
+
+  /* ============================================================
+     RATING BLOCK
+  ============================================================ */
+  .fixed-label-bar__rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .fixed-label-bar__score {
+    background: var(--flb-score-bg);
+    color: var(--flb-score-text);
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+    padding: 8px 12px;
+    border-radius: var(--flb-radius);
+    letter-spacing: -0.5px;
+  }
+
+  .fixed-label-bar__rating-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .fixed-label-bar__rating-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--flb-text);
+    opacity: 0.85;
+  }
+
+  .fixed-label-bar__stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    color: var(--flb-star);
+  }
+
+  .fixed-label-bar__stars .star {
+    width: 14px;
+    height: 14px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* ============================================================
+     CTA BUTTON
+  ============================================================ */
+  .fixed-label-bar__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--flb-btn-bg);
+    color: var(--flb-btn-text);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 9px 18px;
+    border-radius: var(--flb-radius);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition:
+      background 0.22s ease,
+      transform 0.18s ease,
+      box-shadow 0.22s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  .fixed-label-bar__cta:hover {
+    background: var(--flb-btn-hover);
+    transform: translateY(-1px);
+    color:#fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .fixed-label-bar__cta:active {
+    transform: translateY(0);
+  }
+
+  .fixed-label-bar__cta-arrow {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .fixed-label-bar__cta:hover .fixed-label-bar__cta-arrow {
+    transform: translateX(3px);
+  }
+
+  /* ============================================================
+     CLOSE BUTTON
+  ============================================================ */
+  .fixed-label-bar__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    margin-left: 4px;
+    color: var(--flb-text);
+    opacity: 0.6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition:
+      opacity 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .fixed-label-bar__close svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+
+  .fixed-label-bar__close:hover {
+    opacity: 1;
+    background: rgba(255,255,255,0.12);
+    transform: rotate(90deg);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+  ============================================================ */
+  @media (max-width: 900px) {
+    .fixed-label-bar__rating {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .fixed-label-bar__inner {
+      gap: 10px;
+      padding: 0 14px;
+    }
+
+    .fixed-label-bar__text {
+      font-size: 12px;
+    }
+
+    .fixed-label-bar__image img {
+      height: 28px;
+    }
+
+    .fixed-label-bar__cta {
+      font-size: 11px;
+      padding: 7px 12px;
+      gap: 5px;
+    }
+
+    .fixed-label-bar__cta-arrow {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .fixed-label-bar__image {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var bar = document.getElementById('fixed-label-bar');
+    var closeBtn = document.getElementById('fixed-label-bar-close');
+
+    if (!bar) return;
+
+    var isVisible = false;
+    var dismissedUntilTop = false;
+
+    function showBar() {
+      if (isVisible) return;
+      bar.style.display = '';
+      bar.offsetHeight; // force reflow
+      bar.classList.add('is-visible');
+      isVisible = true;
+    }
+
+    function hideBar() {
+      if (!isVisible) return;
+      bar.classList.remove('is-visible');
+      isVisible = false;
+    }
+
+    window.addEventListener('scroll', function () {
+      if (window.scrollY <= 10) {
+        // Page touched top — reset dismissed state so bar can show again
+        dismissedUntilTop = false;
+        hideBar();
+      } else {
+        // Only show if user hasn't clicked X
+        if (!dismissedUntilTop) {
+          showBar();
+        }
+      }
+    }, { passive: true });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        dismissedUntilTop = true;
+        hideBar();
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Blog With Fixed Label",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "bar_image",
+      "label": "Bar image (logo / product icon)",
+      "info": "Recommended height: 40–80px. Transparent PNG works best."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text",
+      "default": "Brand logo"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "bar_text",
+      "label": "Announcement text",
+      "default": "FREE Vitamin D3K2 + Travel Packs"
+    },
+    {
+      "type": "header",
+      "content": "Rating"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating block",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "rating_score",
+      "label": "Rating score (e.g. 99 = 9.9, or 48 = 4.8)",
+      "default": 99,
+      "info": "Enter score x10 as a whole number: e.g. 99 = 9.9, 48 = 4.8. Max 50 for 5-star scale."
+    },
+    {
+      "type": "text",
+      "id": "rating_label",
+      "label": "Rating label",
+      "default": "EXCELLENT"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Claim Offer →"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_new_tab",
+      "label": "Open link in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bar_bg_color",
+      "label": "Bar background",
+      "default": "#1d4e4f"
+    },
+    {
+      "type": "color",
+      "id": "bar_text_color",
+      "label": "Bar text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#f5a623"
+    },
+    {
+      "type": "color",
+      "id": "score_bg_color",
+      "label": "Score badge background",
+      "default": "#2e6b6c"
+    },
+    {
+      "type": "color",
+      "id": "score_text_color",
+      "label": "Score badge text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background",
+      "default": "#4a7a7b"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover background",
+      "default": "#5c9192"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog With Fixed Label"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,487 @@
+{% doc %}
+  @prompt
+    Create a Reviewer Bio hover popup block for a blog article page. When a user hovers over the reviewer's name, a popup appears showing: a circular reviewer profile image (uploadable via theme editor), reviewer name, reviewer title/credentials, and a short bio description. The image should be uploadable through the theme editor settings. Style it cleanly and professionally.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-reviewer-bio-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+  }
+
+  .ai-reviewer-bio-container-{{ ai_gen_id }} {
+    position: relative;
+    display: inline-block;
+  }
+
+  .ai-reviewer-name-{{ ai_gen_id }} {
+    color: {{ block.settings.name_color }};
+    font-size: {{ block.settings.name_font_size }}px;
+    font-weight: {{ block.settings.name_font_weight }};
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 2px solid {{ block.settings.name_underline_color }};
+    padding-bottom: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .ai-reviewer-name-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.name_hover_color }};
+    border-bottom-color: {{ block.settings.name_hover_color }};
+  }
+
+  .ai-reviewer-popup-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: calc(100% + 15px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    width: {{ block.settings.popup_width }}px;
+    background-color: {{ block.settings.popup_bg_color }};
+    border-radius: {{ block.settings.popup_border_radius }}px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: {{ block.settings.popup_padding }}px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  .ai-reviewer-popup-{{ ai_gen_id }}::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid {{ block.settings.popup_bg_color }};
+  }
+
+  .ai-reviewer-container-{{ ai_gen_id }}:hover .ai-reviewer-popup-{{ ai_gen_id }} {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  .ai-reviewer-popup-content-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .ai-reviewer-image-wrapper-{{ ai_gen_id }} {
+    width: {{ block.settings.image_size }}px;
+    height: {{ block.settings.image_size }}px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid {{ block.settings.image_border_color }};
+    flex-shrink: 0;
+  }
+
+  .ai-reviewer-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-reviewer-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-reviewer-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-reviewer-popup-name-{{ ai_gen_id }} {
+    font-size: {{ block.settings.popup_name_size }}px;
+    font-weight: {{ block.settings.popup_name_weight }};
+    color: {{ block.settings.popup_text_color }};
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .ai-reviewer-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: {{ block.settings.title_weight }};
+    color: {{ block.settings.title_color }};
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .ai-reviewer-bio-{{ ai_gen_id }} {
+    font-size: {{ block.settings.bio_size }}px;
+    color: {{ block.settings.bio_color }};
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-reviewer-popup-{{ ai_gen_id }} {
+      width: 280px;
+      padding: 20px;
+    }
+
+    .ai-reviewer-image-wrapper-{{ ai_gen_id }} {
+      width: 80px;
+      height: 80px;
+    }
+  }
+{% endstyle %}
+
+<reviewer-bio-{{ ai_gen_id }}
+  class="ai-reviewer-bio-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-reviewer-bio-container-{{ ai_gen_id }} ai-reviewer-container-{{ ai_gen_id }}">
+    <span class="ai-reviewer-name-{{ ai_gen_id }}">
+      {{ block.settings.reviewer_name }}
+    </span>
+
+    <div class="ai-reviewer-popup-{{ ai_gen_id }}">
+      <div class="ai-reviewer-popup-content-{{ ai_gen_id }}">
+        <div class="ai-reviewer-image-wrapper-{{ ai_gen_id }}">
+          {% if block.settings.reviewer_image %}
+            <img
+              src="{{ block.settings.reviewer_image | image_url: width: 200 }}"
+              alt="{{ block.settings.reviewer_name | escape }}"
+              class="ai-reviewer-image-{{ ai_gen_id }}"
+              loading="lazy"
+              width="200"
+              height="200"
+            >
+          {% else %}
+            <div class="ai-reviewer-image-placeholder-{{ ai_gen_id }}">
+              {{ 'image' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+        </div>
+
+        {% if block.settings.reviewer_name != blank %}
+          <h3 class="ai-reviewer-popup-name-{{ ai_gen_id }}">{{ block.settings.reviewer_name }}</h3>
+        {% endif %}
+
+        {% if block.settings.reviewer_title != blank %}
+          <p class="ai-reviewer-title-{{ ai_gen_id }}">{{ block.settings.reviewer_title }}</p>
+        {% endif %}
+
+        {% if block.settings.reviewer_bio != blank %}
+          <p class="ai-reviewer-bio-{{ ai_gen_id }}">{{ block.settings.reviewer_bio }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</reviewer-bio-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ReviewerBio{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.popup = this.querySelector('.ai-reviewer-popup-{{ ai_gen_id }}');
+        this.container = this.querySelector('.ai-reviewer-container-{{ ai_gen_id }}');
+        
+        if (this.popup && this.container) {
+          this.adjustPopupPosition();
+          window.addEventListener('resize', () => this.adjustPopupPosition());
+        }
+      }
+
+      adjustPopupPosition() {
+        if (!this.popup || !this.container) return;
+
+        const rect = this.container.getBoundingClientRect();
+        const popupRect = this.popup.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+
+        if (rect.left + popupRect.width / 2 > viewportWidth) {
+          this.popup.style.left = 'auto';
+          this.popup.style.right = '0';
+          this.popup.style.transform = 'translateY(10px)';
+        } else if (rect.left - popupRect.width / 2 < 0) {
+          this.popup.style.left = '0';
+          this.popup.style.right = 'auto';
+          this.popup.style.transform = 'translateY(10px)';
+        }
+      }
+    }
+
+    customElements.define('reviewer-bio-{{ ai_gen_id }}', ReviewerBio{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Reviewer bio popup",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Reviewer information"
+    },
+    {
+      "type": "text",
+      "id": "reviewer_name",
+      "label": "Reviewer name",
+      "default": "Dr. Sarah Johnson"
+    },
+    {
+      "type": "text",
+      "id": "reviewer_title",
+      "label": "Title or credentials",
+      "default": "Senior Editor & Product Specialist"
+    },
+    {
+      "type": "textarea",
+      "id": "reviewer_bio",
+      "label": "Bio description",
+      "default": "With over 10 years of experience in product testing and review, Sarah brings expert insights to help you make informed decisions."
+    },
+    {
+      "type": "image_picker",
+      "id": "reviewer_image",
+      "label": "Profile image"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Reviewer name style"
+    },
+    {
+      "type": "range",
+      "id": "name_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "name_font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "color",
+      "id": "name_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "name_hover_color",
+      "label": "Hover color",
+      "default": "#ad2c34"
+    },
+    {
+      "type": "color",
+      "id": "name_underline_color",
+      "label": "Underline color",
+      "default": "#ad2c34"
+    },
+    {
+      "type": "header",
+      "content": "Popup style"
+    },
+    {
+      "type": "range",
+      "id": "popup_width",
+      "label": "Width",
+      "min": 250,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 320
+    },
+    {
+      "type": "range",
+      "id": "popup_padding",
+      "label": "Padding",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "popup_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "popup_bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Profile image"
+    },
+    {
+      "type": "range",
+      "id": "image_size",
+      "label": "Size",
+      "min": 60,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "color",
+      "id": "image_border_color",
+      "label": "Border color",
+      "default": "#ad2c34"
+    },
+    {
+      "type": "header",
+      "content": "Popup text style"
+    },
+    {
+      "type": "range",
+      "id": "popup_name_size",
+      "label": "Name size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "popup_name_weight",
+      "label": "Name weight",
+      "options": [
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "color",
+      "id": "popup_text_color",
+      "label": "Name color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Title weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "bio_size",
+      "label": "Bio size",
+      "min": 12,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "bio_color",
+      "label": "Bio color",
+      "default": "#666666"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviewer bio popup"
+    }
+  ]
+}
+{% endschema %}

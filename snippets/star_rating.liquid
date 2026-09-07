@@ -1,0 +1,80 @@
+{% if product.metafields.custom.rating.value != blank %}
+  {% assign rating = product.metafields.custom.rating.value | plus: 0 %}
+  {% assign rating_percentage = rating | times: 20 %}
+
+  <div class="product-card__reviews-inline">
+
+    <!-- ⭐ RATING NUMBER ADDED HERE -->
+    <span class="rating-number">{{ rating }}</span>
+
+    <div
+      class="star-rating"
+      aria-label="Rated {{ rating }} out of 5{% if product.metafields.custom.number_of_reviews.value != blank %} based on {{ product.metafields.custom.number_of_reviews.value }} reviews{% endif %}"
+    >
+      <div class="star-rating__base">
+        {% for i in (1..5) %}
+          <span>★</span>
+        {% endfor %}
+      </div>
+
+      <div class="star-rating__fill" style="width: {{ rating_percentage }}%;">
+        {% for i in (1..5) %}
+          <span>★</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if product.metafields.custom.number_of_reviews.value != blank %}
+      <p>({{ product.metafields.custom.number_of_reviews.value }} reviews)</p>
+    {% endif %}
+
+  </div>
+{% endif %}
+
+<style>
+  .star-rating {
+  position: relative;
+  display: inline-block;
+  font-size: 20px;
+  line-height: 1;
+  margin: 0 4px;
+  }
+  .star-rating__base,
+  .star-rating__fill {
+  display: flex;
+  }
+  .star-rating__base span,
+  .star-rating__fill span {
+  font-size: 20px;
+  }
+  .star-rating__base {
+  color: #ddd;
+  /* grey stars */
+  }
+  .star-rating__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #ffc107;
+  /* yellow stars */
+  }
+  .product-card__rating-number {
+  font-size: 17px;
+  font-weight: bold;
+  line-height: 0;
+  display: flex;
+  }
+  .product-card__rating-number p {
+  font-size: 13px;
+  }
+  .product-card__reviews-inline {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  }
+  .rating-line{
+  font-size:20px}
+</style>

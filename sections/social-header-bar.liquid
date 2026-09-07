@@ -1,0 +1,475 @@
+<!-- social-header-bar.liquid -->
+<style>
+  .customstyle{{ section.id }} {
+    position: relative;
+    z-index: {{ section.settings.zindex | default: 1 }};
+    background-color: {{ section.settings.bgsection }};
+    background-position: {{ section.settings.e_pos }} !important;
+    background-repeat: {{ section.settings.e_repeat }} !important;
+    background-size: {{ section.settings.e_size }} !important;
+  }
+
+  .social-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: {{ section.settings.paddingsection }};
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* ===== Left: Heading ===== */
+  .social-header-bar__heading {
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    color: {{ section.settings.heading_color }};
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  /* ===== Right: Follow Block ===== */
+  .social-header-bar__follow {
+    display: flex;
+    align-items: center;
+    gap: {{ section.settings.follow_gap }}px;
+    text-decoration: none;
+    color: {{ section.settings.follow_text_color }};
+  }
+
+  .social-header-bar__follow:hover {
+    opacity: 0.75;
+  }
+
+  .social-header-bar__follow-label {
+    font-size: {{ section.settings.follow_text_size }}px;
+    font-weight: {{ section.settings.follow_text_weight }};
+    color: {{ section.settings.follow_text_color }};
+    white-space: nowrap;
+  }
+
+  /* Instagram Icon SVG */
+  .social-header-bar__icon {
+    width: {{ section.settings.icon_size }}px;
+    height: {{ section.settings.icon_size }}px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .social-header-bar__icon svg {
+    width: 100%;
+    height: 100%;
+    fill:#fff;
+  }
+
+  .social-header-bar__handle {
+    font-size: {{ section.settings.handle_size }}px;
+    font-weight: {{ section.settings.handle_weight }};
+    color: {{ section.settings.handle_color }};
+    white-space: nowrap;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .social-header-bar {
+      padding: {{ section.settings.paddingmobile }};
+      {% if section.settings.mobile_stack %}
+      flex-direction: column;
+      align-items: {{ section.settings.mobile_align }};
+      {% endif %}
+    }
+    .social-header-bar__heading {
+      font-size: {{ section.settings.heading_size_mobile }}px;
+    }
+    .social-header-bar__follow-label,
+    .social-header-bar__handle {
+      font-size: {{ section.settings.follow_text_size | minus: 2 }}px;
+    }
+  }
+</style>
+
+<section
+  class="customstyle{{ section.id }} lazyload"
+  data-aos="{{ section.settings.animation }}"
+  data-bgset="{% render 'bgset', image: section.settings.image_bg %}"
+  data-sizes="auto"
+  data-parent-fit="cover"
+>
+  {%- render 'style-section' -%}
+
+  <div class="{{ section.settings.setwidth }}">
+    <div class="social-header-bar">
+
+      {%- comment -%} LEFT — Heading {%- endcomment -%}
+      {%- if section.settings.heading != blank -%}
+        <{{ section.settings.heading_tag }} class="social-header-bar__heading">
+          {{ section.settings.heading }}
+        </{{ section.settings.heading_tag }}>
+      {%- endif -%}
+
+      {%- comment -%} RIGHT — Follow us {%- endcomment -%}
+      {%- if section.settings.social_url != blank or section.settings.handle != blank -%}
+        <a
+          class="social-header-bar__follow"
+          href="{{ section.settings.social_url }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Follow us on {{ section.settings.platform }}"
+        >
+          {%- if section.settings.follow_label != blank -%}
+            <span class="social-header-bar__follow-label">{{ section.settings.follow_label }}</span>
+          {%- endif -%}
+
+          <span class="social-header-bar__icon">
+            {%- if section.settings.platform == 'instagram' -%}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="{{ section.settings.icon_color }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <circle cx="12" cy="12" r="4.5"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="{{ section.settings.icon_color }}" stroke="none"/>
+              </svg>
+            {%- elsif section.settings.platform == 'tiktok' -%}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="{{ section.settings.icon_color }}">
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.35 6.35 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.73a8.19 8.19 0 004.79 1.54V6.82a4.85 4.85 0 01-1.02-.13z"/>
+              </svg>
+            {%- elsif section.settings.platform == 'facebook' -%}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="{{ section.settings.icon_color }}">
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+              </svg>
+            {%- elsif section.settings.platform == 'youtube' -%}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="{{ section.settings.icon_color }}">
+                <path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/>
+              </svg>
+            {%- elsif section.settings.platform == 'twitter' -%}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="{{ section.settings.icon_color }}">
+                <path d="M4 4l16 16M4 20L20 4" stroke="{{ section.settings.icon_color }}" stroke-width="2" stroke-linecap="round"/>
+                <path d="M3 4h4l14 16h-4z" fill="{{ section.settings.icon_color }}" stroke="none"/>
+              </svg>
+            {%- endif -%}
+          </span>
+
+          {%- if section.settings.handle != blank -%}
+            <span class="social-header-bar__handle">{{ section.settings.handle }}</span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Social Header Bar",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "animation",
+      "label": "Entry Animation",
+      "options": [
+        { "value": "", "label": "None" },
+        { "value": "fade", "label": "Fade" },
+        { "value": "fade-up", "label": "Fade Up" },
+        { "value": "fade-down", "label": "Fade Down" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "setwidth",
+      "label": "Container Width",
+      "default": "container",
+      "options": [
+        { "value": "container", "label": "Box" },
+        { "value": "container-fluid", "label": "Container Fluid" },
+        { "value": "full", "label": "Full" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Left — Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading Text",
+      "default": "516K+ people can't be wrong"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading HTML Tag",
+      "default": "h2",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "p", "label": "Paragraph" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Font Size (px)",
+      "min": 14,
+      "max": 72,
+      "step": 1,
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading Font Size Mobile (px)",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "default": 22
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading Font Weight",
+      "default": "700",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Right — Social Follow"
+    },
+    {
+      "type": "select",
+      "id": "platform",
+      "label": "Social Platform",
+      "default": "instagram",
+      "options": [
+        { "value": "instagram", "label": "Instagram" },
+        { "value": "tiktok", "label": "TikTok" },
+        { "value": "facebook", "label": "Facebook" },
+        { "value": "youtube", "label": "YouTube" },
+        { "value": "twitter", "label": "X / Twitter" }
+      ]
+    },
+    {
+      "type": "url",
+      "id": "social_url",
+      "label": "Social Profile URL"
+    },
+    {
+      "type": "text",
+      "id": "follow_label",
+      "label": "Follow Label Text",
+      "default": "Follow us @"
+    },
+    {
+      "type": "text",
+      "id": "handle",
+      "label": "Handle / Username",
+      "default": "/revomadic"
+    },
+    {
+      "type": "range",
+      "id": "follow_gap",
+      "label": "Gap Between Elements (px)",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "follow_text_size",
+      "label": "Follow Label Font Size (px)",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "follow_text_weight",
+      "label": "Follow Label Font Weight",
+      "default": "400",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "follow_text_color",
+      "label": "Follow Label Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon Size (px)",
+      "min": 18,
+      "max": 60,
+      "step": 2,
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#e1306c"
+    },
+    {
+      "type": "range",
+      "id": "handle_size",
+      "label": "Handle Font Size (px)",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "handle_weight",
+      "label": "Handle Font Weight",
+      "default": "600",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "handle_color",
+      "label": "Handle Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_stack",
+      "label": "Stack on Mobile",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "mobile_align",
+      "label": "Mobile Stack Alignment",
+      "default": "flex-start",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Right" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color",
+      "id": "bgsection",
+      "label": "Background Color",
+      "default": "#f5f0e8"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_bg",
+      "label": "Background Image"
+    },
+    {
+      "type": "select",
+      "id": "e_size",
+      "label": "Background Size",
+      "default": "cover",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "e_repeat",
+      "label": "Background Repeat",
+      "default": "no-repeat",
+      "options": [
+        { "value": "no-repeat", "label": "No-repeat" },
+        { "value": "repeat", "label": "Repeat" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "e_pos",
+      "label": "Background Position",
+      "default": "center center",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "top center", "label": "Top Center" },
+        { "value": "bottom center", "label": "Bottom Center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "text",
+      "id": "paddingsection",
+      "label": "Padding (Desktop)",
+      "default": "28px 0px 28px 0px",
+      "info": "Top Right Bottom Left"
+    },
+    {
+      "type": "text",
+      "id": "paddingmobile",
+      "label": "Padding (Mobile)",
+      "default": "20px 0px 20px 0px",
+      "info": "Top Right Bottom Left"
+    },
+    {
+      "type": "header",
+      "content": "Section Margin"
+    },
+    {
+      "type": "text",
+      "id": "marginsection",
+      "label": "Margin Section",
+      "default": "0px 0px 0px 0px",
+      "info": "Margin: Top Right Bottom Left"
+    },
+    {
+      "type": "text",
+      "id": "marginmobile",
+      "label": "Margin Mobile",
+      "default": "0px 0px 0px 0px",
+      "info": "Margin: Top Right Bottom Left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social Header Bar"
+    }
+  ]
+}
+{% endschema %}

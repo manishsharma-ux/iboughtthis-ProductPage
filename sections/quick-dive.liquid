@@ -1,0 +1,124 @@
+{% comment %}
+  FILE: sections/quick-dive.liquid
+  PURPOSE: Quick Dive summary box with anchor navigation buttons
+{% endcomment %}
+
+<style>
+  .quick-dive {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 28px 20px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .quick-dive__box {
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    padding: 24px 28px;
+  }
+
+  .quick-dive__label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 8px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .quick-dive__desc {
+    font-size: 0.9rem;
+    color: #3a3a3a;
+    line-height: 1.6;
+    margin: 0 0 20px;
+    font-family: 'Source Serif 4', Georgia, serif;
+  }
+
+  .quick-dive__nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .quick-dive__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    background: #fff;
+    color: #1a1a1a;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .quick-dive__btn:hover {
+    background: #f4f4f4;
+    border-color: #aaa;
+  }
+
+  .quick-dive__btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    opacity: 0.55;
+  }
+
+  .quick-dive__btn-arrow {
+    margin-left: 4px;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 540px) {
+    .quick-dive__nav { grid-template-columns: 1fr; }
+    .quick-dive__box { padding: 18px; }
+  }
+</style>
+
+<section class="page-width mb-4" id="quick-dive">
+  <div class="quick-dive__box">
+    <p class="quick-dive__label">Quick Dive</p>
+    <p class="quick-dive__desc">{{ section.settings.description }}</p>
+    <div class="quick-dive__nav">
+      <a href="{{ section.settings.btn1_link }}" class="quick-dive__btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="8" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="16" y1="4" x2="16" y2="18"/>
+        </svg>
+        {{ section.settings.btn1_text }}
+        <span class="quick-dive__btn-arrow">&#8600;</span>
+      </a>
+      <a href="{{ section.settings.btn2_link }}" class="quick-dive__btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+        </svg>
+        {{ section.settings.btn2_text }}
+        <span class="quick-dive__btn-arrow">&#8600;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Quick Dive",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Countless hearing aids, both over the counter (OTC) and prescription, are available to consumers. With an array of options available, selecting the right device can be a tedious task. Discover the best hearing aids available to you."
+    },
+    { "type": "text", "id": "btn1_text", "label": "Button 1 Text", "default": "Top Editorial Picks" },
+    { "type": "url", "id": "btn1_link", "label": "Button 1 Link" },
+    { "type": "text", "id": "btn2_text", "label": "Button 2 Text", "default": "Dive Into The Data" },
+    { "type": "url", "id": "btn2_link", "label": "Button 2 Link" }
+  ],
+  "presets": [{ "name": "Quick Dive" }]
+}
+{% endschema %}

@@ -1,0 +1,427 @@
+<!-- stats-counter.liquid -->
+<section class="customstyle{{ section.id }} stats-counter-section" data-section-id="{{ section.id }}">
+  <style>
+            .customstyle{{ section.id }}{
+              background-color: {{ section.settings.bg_color }};
+
+              {% if section.settings.bg_image != blank %}
+                background-image: url({{ section.settings.bg_image | img_url: '2000x' }});
+                background-size: {{ section.settings.bg_size }};
+                background-position: {{ section.settings.bg_position }};
+                background-repeat: {% if section.settings.bg_repeat %}repeat{% else %}no-repeat{% endif %};
+              {% endif %}
+
+              padding: {{ section.settings.padding_desktop }};
+              margin: {{ section.settings.margin_desktop }};
+              position: relative;
+              overflow: hidden;
+            }
+
+            {% if section.settings.overlay_enable %}
+            .customstyle{{ section.id }}::after {
+              content: "";
+              position: absolute;
+              inset: 0;
+              background: rgba(0,0,0, {{ section.settings.overlay_opacity }});
+              z-index: 0;
+              pointer-events: none;
+            }
+            {% endif %}
+
+            {% if section.settings.show_dots %}
+            .customstyle{{ section.id }}::before{
+              content: "";
+              position: absolute;
+              inset: 0;
+              pointer-events:none;
+              background-image:
+                radial-gradient({{ section.settings.dots_color }} {{ section.settings.dots_size }}px, transparent {{ section.settings.dots_size }}px);
+              background-size: {{ section.settings.dots_gap }}px {{ section.settings.dots_gap }}px;
+              opacity: {{ section.settings.dots_opacity }};
+              z-index: 0;
+            }
+            {% endif %}
+
+            @media (max-width: 767px){
+              .customstyle{{ section.id }}{
+                padding: {{ section.settings.padding_mobile }};
+                margin: {{ section.settings.margin_mobile }};
+              }
+            }
+
+            .customstyle{{ section.id }} .inner{
+              width: 100%;
+              {% case section.settings.width %}
+                {% when 'container' %} max-width: 1200px; margin: 0 auto; padding: 0 16px;
+                {% when 'container-fluid' %} max-width: 100%; margin: 0 auto; padding: 0 24px;
+                {% when 'full' %} max-width: 100%; margin: 0; padding: 0;
+              {% endcase %}
+              position: relative;
+              z-index: 1;
+              text-align: center;
+            }
+
+            .customstyle{{ section.id }} .grid{
+              display: grid;
+              grid-template-columns: repeat({{ section.settings.columns_desktop }}, minmax(0,1fr));
+              gap: 24px;
+            }
+            @media (max-width: 991px){
+              .customstyle{{ section.id }} .grid{ grid-template-columns: repeat({{ section.settings.columns_tablet }}, minmax(0,1fr)); }
+            }
+            @media (max-width: 767px){
+              .customstyle{{ section.id }} .grid{ grid-template-columns: repeat({{ section.settings.columns_mobile }}, minmax(0,1fr)); }
+            }
+            @media (max-width: 450px){
+            .customstyle{{ section.id }} .stat{
+            width: 120px;
+             white-space: nowrap;
+            }
+             .customstyle{{ section.id }} .grid{
+            gap:0 !important
+             }
+            .customstyle{{ section.id }} .inner{
+              padding:0 !important
+            }
+              .customstyle{{ section.id }} .stat:nth-child(2):before{
+              position:absolute;
+              content:"";
+              height: 74px;
+              width:1px;
+              background: #000000;
+              background: radial-gradient(circle, rgba(0, 0, 0, 0.69) 0%, rgba(237, 221, 83, 0) 100%);
+              left: 6px;
+             }
+
+            .customstyle{{ section.id }} .stat:nth-child(2):after{
+                position:absolute;
+                content:"";
+                height: 74px;
+                width:1px;
+                background: #000000;
+                background: radial-gradient(circle, rgba(0, 0, 0, 0.69) 0%, rgba(237, 221, 83, 0) 100%);
+                right: -2px;
+            }
+            }
+            .customstyle{{ section.id }} .stat{
+              display:flex;
+              flex-direction:column;
+              align-items:center;
+              justify-content:center;
+              position:relative;
+
+            }
+            .customstyle{{ section.id }} .stat-value{
+              font-weight: 800;
+              font-size: clamp(32px, 6vw, 64px);
+              color: {{ section.settings.number_color }};
+              letter-spacing: .5px;
+            }
+            .customstyle{{ section.id }} .stat-label{
+              margin-top: 6px;
+              font-weight: 700;
+              font-size: clamp(14px, 2.2vw, 18px);
+              color: {{ section.settings.label_color }};
+            }
+            .customstyle{{ section.id }} .stat-sub{
+              margin-top: 4px;
+              font-weight: 600;
+              font-size: clamp(12px, 2vw, 16px);
+              color: {{ section.settings.sub_label_color }};
+              max-width: 28ch;
+            }
+
+            .customstyle{{ section.id }} .cta-wrap{ margin-top: 24px; }
+            .customstyle{{ section.id }} .cta-btn{
+              display:inline-block;
+              padding: 10px 20px;
+              border-radius: 999px;
+              border: 2px solid {{ section.settings.cta_color }};
+              color: {{ section.settings.cta_color }};
+              text-decoration:none;
+              font-weight: 700;
+              transition: transform .2s ease, background .2s ease, color .2s ease;
+              background: transparent;
+            }
+            .customstyle{{ section.id }} .cta-btn:hover{
+              transform: translateY(-1px);
+              {% if section.settings.cta_fill_on_hover %} background: {{ section.settings.cta_color }}; color: #fff; {% endif %}
+            }
+  </style>
+
+  <div class="inner">
+    {% if section.settings.heading != blank %}
+      <h2
+        class="section-title-1"
+        style="margin:0 0 20px; color: {{ section.settings.label_color }}; text-align:center;"
+      >
+        {{ section.settings.heading }}
+      </h2>
+    {% endif %}
+
+    <div class="grid" id="stats-grid-{{ section.id }}">
+      {% for block in section.blocks %}
+        {% if block.type == 'stat' %}
+          <div class="stat" {{ block.shopify_attributes }}>
+            <div
+              class="stat-value"
+              data-target="{{ block.settings.value }}"
+              data-duration="{{ block.settings.duration }}"
+              data-decimals="{{ block.settings.decimals }}"
+              data-suffix="{{ block.settings.suffix | escape }}"
+              data-prefix="{{ block.settings.prefix | escape }}"
+              data-format="{{ block.settings.thousand_sep }}"
+            >
+              {{ block.settings.prefix }}0{{ block.settings.suffix }}
+            </div>
+            {% if block.settings.label != blank %}
+              <div class="stat-label">{{ block.settings.label }}</div>
+            {% endif %}
+            {% if block.settings.sub_label != blank %}
+              <div class="stat-sub">{{ block.settings.sub_label }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if section.settings.cta_text != blank and section.settings.cta_link != blank %}
+      <div class="cta-wrap">
+        <a class="cta-btn" href="{{ section.settings.cta_link }}">
+          {{ section.settings.cta_text }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    (function () {
+      const section = document.querySelector('.customstyle{{ section.id }}');
+      if (!section) return;
+
+      const values = section.querySelectorAll('.stat-value');
+      let hasRun = false;
+
+      function easeOutQuad(t) {
+        return t * (2 - t);
+      }
+
+      function formatNumber(num, useSep) {
+        if (!useSep) return String(num);
+        try {
+          return new Intl.NumberFormat().format(num);
+        } catch (e) {
+          return String(num);
+        }
+      }
+
+      function animate(el) {
+        const target = parseFloat(el.dataset.target || '0');
+        const duration = parseInt(el.dataset.duration || '1500', 10);
+        const decimals = parseInt(el.dataset.decimals || '0', 10);
+        const suffix = el.dataset.suffix || '';
+        const prefix = el.dataset.prefix || '';
+        const useSep = el.dataset.format === 'true';
+
+        const start = performance.now();
+        function tick(now) {
+          const t = Math.min((now - start) / duration, 1);
+          const eased = easeOutQuad(t);
+          const current = target * eased;
+          const fixed = current.toFixed(decimals);
+          const numeric = decimals > 0 ? parseFloat(fixed) : Math.round(current);
+          el.textContent = prefix + formatNumber(numeric, useSep) + suffix;
+          if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.9 && !hasRun) {
+              hasRun = true;
+              values.forEach(animate);
+              observer.disconnect();
+            }
+          });
+        },
+        { threshold: [0.9] }
+      );
+
+      observer.observe(section);
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Stats counter",
+  "class": "index-section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading" },
+
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "container",
+      "options": [
+        { "value": "container", "label": "Container" },
+        { "value": "container-fluid", "label": "Container Fluid" },
+        { "value": "full", "label": "Full width" }
+      ]
+    },
+
+    { "type": "color", "id": "bg_color", "label": "Background color", "default": "#f6f7fb" },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "select",
+      "id": "bg_size",
+      "label": "Background size",
+      "default": "cover",
+      "options": [
+        { "value": "cover", "label": "Cover (fill area)" },
+        { "value": "contain", "label": "Contain" },
+        { "value": "auto", "label": "Auto" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "bg_position",
+      "label": "Background position",
+      "default": "center center",
+      "options": [
+        { "value": "left top", "label": "Left Top" },
+        { "value": "center center", "label": "Center Center" },
+        { "value": "right bottom", "label": "Right Bottom" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "bg_repeat",
+      "label": "Repeat background",
+      "default": false
+    },
+
+    {
+      "type": "checkbox",
+      "id": "overlay_enable",
+      "label": "Enable black transparent overlay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity (0 - 1)",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.4
+    },
+
+    { "type": "color", "id": "number_color", "label": "Number color", "default": "#3B5BFF" },
+    { "type": "color", "id": "label_color", "label": "Main label color", "default": "#171717" },
+    { "type": "color", "id": "sub_label_color", "label": "Sub label color", "default": "#333333" },
+
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns (desktop)",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "label": "Columns (tablet)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+
+    { "type": "checkbox", "id": "show_dots", "label": "Show dotted background", "default": true },
+    { "type": "color", "id": "dots_color", "label": "Dots color", "default": "#3b5bff22" },
+    { "type": "range", "id": "dots_size", "label": "Dot size (px)", "min": 1, "max": 6, "step": 1, "default": 3 },
+    { "type": "range", "id": "dots_gap", "label": "Dot gap (px)", "min": 12, "max": 60, "step": 2, "default": 36 },
+    { "type": "range", "id": "dots_opacity", "label": "Dots opacity", "min": 0, "max": 1, "step": 0.1, "default": 1 },
+
+    { "type": "text", "id": "cta_text", "label": "Button text", "default": "Read their stories" },
+    { "type": "url", "id": "cta_link", "label": "Button link" },
+    { "type": "color", "id": "cta_color", "label": "Button color", "default": "#3B5BFF" },
+    { "type": "checkbox", "id": "cta_fill_on_hover", "label": "Fill on hover", "default": true },
+
+    { "type": "text", "id": "padding_desktop", "label": "Padding (desktop)", "default": "48px 0" },
+    { "type": "text", "id": "padding_mobile", "label": "Padding (mobile)", "default": "36px 0" },
+    { "type": "text", "id": "margin_desktop", "label": "Margin (desktop)", "default": "0" },
+    { "type": "text", "id": "margin_mobile", "label": "Margin (mobile)", "default": "0" }
+  ],
+
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        { "type": "text", "id": "prefix", "label": "Prefix (optional)" },
+        { "type": "number", "id": "value", "label": "Target value", "default": 18 },
+        { "type": "text", "id": "suffix", "label": "Suffix (e.g. B+)", "default": "B+" },
+        { "type": "range", "id": "decimals", "label": "Decimals", "min": 0, "max": 2, "step": 1, "default": 0 },
+        { "type": "checkbox", "id": "thousand_sep", "label": "Use thousand separators", "default": false },
+        {
+          "type": "range",
+          "id": "duration",
+          "label": "Animation duration (ms)",
+          "min": 400,
+          "max": 4000,
+          "step": 100,
+          "default": 1600
+        },
+
+        { "type": "text", "id": "label", "label": "Main label", "default": "shopper touchpoints enabled" },
+        { "type": "text", "id": "sub_label", "label": "Sub label (optional)" }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Stats counter",
+      "category": "Text",
+      "blocks": [
+        { "type": "stat", "settings": { "value": 18, "suffix": "B+", "label": "shopper touchpoints enabled" } },
+        {
+          "type": "stat",
+          "settings": {
+            "value": 13000,
+            "suffix": "+",
+            "thousand_sep": true,
+            "label": "brands, retailers, and media partners"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": { "value": 3.1, "decimals": 1, "suffix": "B+", "label": "peak monthly shoppers" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

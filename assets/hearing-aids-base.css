@@ -1,0 +1,84 @@
+/*
+  FILE: assets/hearing-aids-base.css
+  PURPOSE: Shared base styles for all hearing aids sections
+  USAGE: {{ 'hearing-aids-base.css' | asset_url | stylesheet_tag }}
+*/
+
+/* ─── Reset & Base ─── */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --ha-blue: #003087;
+  --ha-link: #0057A8;
+  --ha-cta: #005BD4;
+  --ha-cta-hover: #003FAA;
+  --ha-border: #e2e2e2;
+  --ha-border-dark: #c8c8c8;
+  --ha-text: #1a1a1a;
+  --ha-text-muted: #6b6b6b;
+  --ha-bg: #ffffff;
+  --ha-bg-light: #f8f8f8;
+  --ha-gold: #c8a400;
+  --ha-gold-bg: #fef7e0;
+  --ha-max-width: 960px;
+  --ha-gutter: 20px;
+}
+
+/* ─── Utility ─── */
+.ha-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+
+/* ─── Responsive images ─── */
+.ha-img-responsive {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ─── Scrollbar hide utility ─── */
+.ha-no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ha-no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ─── CTA Button ─── */
+.ha-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--ha-cta);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 11px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ha-btn:hover { background: var(--ha-cta-hover); }
+
+/* ─── Section wrapper ─── */
+.ha-section {
+  max-width: var(--ha-max-width);
+  margin: 0 auto;
+  padding: 0 var(--ha-gutter);
+}
+
+/* ─── Print styles ─── */
+@media print {
+  .product-carousel__controls,
+  .methodology__panel-header,
+  .quick-dive__nav { display: none; }
+}

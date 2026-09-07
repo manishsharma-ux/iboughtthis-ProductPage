@@ -1,0 +1,308 @@
+{% comment %}
+  FILE: sections/methodology.liquid
+  PURPOSE: "How We Picked the Best Hearing Aids" Forbes-style methodology box with tabs
+{% endcomment %}
+
+<style>
+  .methodology {
+    max-width: 960px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .methodology__panel {
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .methodology__panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    border-bottom: 1px solid #e2e2e2;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .methodology__panel-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .methodology__forbes-icon {
+    width: 28px;
+    height: 28px;
+    background: #1a1a1a;
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    font-family: 'Playfair Display', Georgia, serif;
+    flex-shrink: 0;
+  }
+
+  .methodology__panel-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .methodology__toggle-icon {
+    font-size: 1.1rem;
+    color: #555;
+    transition: transform 0.2s;
+  }
+
+  .methodology__panel--open .methodology__toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .methodology__body {
+    display: none;
+    padding: 28px 28px 0;
+    background: #fff;
+  }
+
+  .methodology__panel--open .methodology__body {
+    display: block;
+  }
+
+  /* Tabs */
+  .methodology__tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .methodology__tab {
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid #d0d0d0;
+    background: #fff;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .methodology__tab--active {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #1a1a1a;
+    font-weight: 700;
+  }
+
+  .methodology__tab-content { display: none; }
+  .methodology__tab-content--active { display: block; }
+
+  .methodology__heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 16px;
+  }
+
+  .methodology__overview-text {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #2a2a2a;
+    font-family: 'Source Serif 4', Georgia, serif;
+    margin-bottom: 28px;
+  }
+
+  .methodology__overview-text a {
+    color: #003087;
+  }
+
+  /* Stats dark block */
+  .methodology__stats-block {
+    background: #2a2040;
+    background-image: linear-gradient(135deg, #1e1a35 0%, #3a2555 100%);
+    border-radius: 8px;
+    padding: 32px 28px;
+    margin-bottom: 28px;
+  }
+
+  .methodology__stats-block-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 24px;
+  }
+
+  .methodology__stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+  }
+
+  .methodology__stat {
+    padding: 0 20px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .methodology__stat:first-child { padding-left: 0; }
+  .methodology__stat:last-child { border-right: none; }
+
+  .methodology__stat-number {
+    font-size: 2.2rem;
+    font-weight: 300;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 6px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .methodology__stat-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .methodology__stat-desc {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.4;
+    font-family: 'Inter', sans-serif;
+  }
+
+  @media (max-width: 600px) {
+    .methodology__stats-grid { grid-template-columns: 1fr; gap: 20px; }
+    .methodology__stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.15); padding: 0 0 20px; }
+    .methodology__stat:last-child { border-bottom: none; padding-bottom: 0; }
+    .methodology__stats-block { padding: 22px 16px; }
+    .methodology__body { padding: 20px 16px 0; }
+  }
+</style>
+
+<section class="page-width mb-4" id="how-we-picked">
+  <div class="methodology__panel {% if section.settings.open_by_default %}methodology__panel--open{% endif %}" id="methodology-panel-{{ section.id }}">
+
+    <div class="methodology__panel-header" id="methodology-header-{{ section.id }}" aria-expanded="{{ section.settings.open_by_default }}" aria-controls="methodology-body-{{ section.id }}">
+      <div class="methodology__panel-header-left">
+        <div class="methodology__forbes-icon">F</div>
+        <span class="methodology__panel-title">{{ section.settings.panel_title }}</span>
+      </div>
+      <span class="methodology__toggle-icon">&#8963;</span>
+    </div>
+
+    <div class="methodology__body" id="methodology-body-{{ section.id }}">
+      <div class="methodology__tabs">
+        <button class="methodology__tab methodology__tab--active" data-tab="overview-{{ section.id }}">Overview</button>
+        <button class="methodology__tab" data-tab="method-{{ section.id }}">Our Methodology</button>
+        <button class="methodology__tab" data-tab="team-{{ section.id }}">Our Team</button>
+      </div>
+
+      <!-- Overview Tab -->
+      <div class="methodology__tab-content methodology__tab-content--active" id="overview-{{ section.id }}">
+        <h3 class="methodology__heading">{{ section.settings.heading }}</h3>
+        <p class="methodology__overview-text">{{ section.settings.overview_text }}</p>
+
+        <div class="methodology__stats-block">
+          <p class="methodology__stats-block-title">{{ section.settings.stats_heading }}</p>
+          <div class="methodology__stats-grid">
+            <div class="methodology__stat">
+              <div class="methodology__stat-number">{{ section.settings.stat1_number }}</div>
+              <div class="methodology__stat-label">{{ section.settings.stat1_label }}</div>
+              <div class="methodology__stat-desc">{{ section.settings.stat1_desc }}</div>
+            </div>
+            <div class="methodology__stat">
+              <div class="methodology__stat-number">{{ section.settings.stat2_number }}</div>
+              <div class="methodology__stat-label">{{ section.settings.stat2_label }}</div>
+              <div class="methodology__stat-desc">{{ section.settings.stat2_desc }}</div>
+            </div>
+            <div class="methodology__stat">
+              <div class="methodology__stat-number">{{ section.settings.stat3_number }}</div>
+              <div class="methodology__stat-label">{{ section.settings.stat3_label }}</div>
+              <div class="methodology__stat-desc">{{ section.settings.stat3_desc }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Methodology Tab -->
+      <div class="methodology__tab-content" id="method-{{ section.id }}">
+        <h3 class="methodology__heading">Our Methodology</h3>
+        <p class="methodology__overview-text">{{ section.settings.methodology_text }}</p>
+      </div>
+
+      <!-- Team Tab -->
+      <div class="methodology__tab-content" id="team-{{ section.id }}">
+        <h3 class="methodology__heading">Our Team</h3>
+        <p class="methodology__overview-text">{{ section.settings.team_text }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var panel = document.getElementById('methodology-panel-{{ section.id }}');
+  var header = document.getElementById('methodology-header-{{ section.id }}');
+  if (!panel || !header) return;
+
+  header.addEventListener('click', function() {
+    panel.classList.toggle('methodology__panel--open');
+    var expanded = panel.classList.contains('methodology__panel--open');
+    header.setAttribute('aria-expanded', expanded);
+  });
+
+  // Tabs
+  var tabs = panel.querySelectorAll('.methodology__tab');
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('methodology__tab--active'); });
+      tab.classList.add('methodology__tab--active');
+      var targetId = tab.getAttribute('data-tab');
+      var contents = panel.querySelectorAll('.methodology__tab-content');
+      contents.forEach(function(c) { c.classList.remove('methodology__tab-content--active'); });
+      var target = document.getElementById(targetId);
+      if (target) target.classList.add('methodology__tab-content--active');
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Methodology Panel",
+  "settings": [
+    { "type": "text", "id": "panel_title", "label": "Panel Title", "default": "How We Picked the Best Hearing Aids" },
+    { "type": "checkbox", "id": "open_by_default", "label": "Open by Default", "default": true },
+    { "type": "text", "id": "heading", "label": "Overview Heading", "default": "How We Picked the Best Hearing Aids" },
+    { "type": "richtext", "id": "overview_text", "label": "Overview Text" },
+    { "type": "text", "id": "stats_heading", "label": "Stats Block Heading", "default": "How We Evaluate the Best Hearing Aids" },
+    { "type": "header", "content": "Stat 1" },
+    { "type": "text", "id": "stat1_number", "label": "Number", "default": "5" },
+    { "type": "text", "id": "stat1_label", "label": "Label", "default": "Hearing health experts consulted" },
+    { "type": "text", "id": "stat1_desc", "label": "Description", "default": "We gathered expert opinions from audiologists on the Advisory Board" },
+    { "type": "header", "content": "Stat 2" },
+    { "type": "text", "id": "stat2_number", "label": "Number", "default": "33" },
+    { "type": "text", "id": "stat2_label", "label": "Label", "default": "Data metrics considered" },
+    { "type": "text", "id": "stat2_desc", "label": "Description", "default": "Includes costs, features and user feedback" },
+    { "type": "header", "content": "Stat 3" },
+    { "type": "text", "id": "stat3_number", "label": "Number", "default": "13" },
+    { "type": "text", "id": "stat3_label", "label": "Label", "default": "Hearing aids lab tested" },
+    { "type": "text", "id": "stat3_desc", "label": "Description", "default": "Real users evaluated the devices" },
+    { "type": "header", "content": "Other Tabs" },
+    { "type": "richtext", "id": "methodology_text", "label": "Methodology Tab Text" },
+    { "type": "richtext", "id": "team_text", "label": "Team Tab Text" }
+  ],
+  "presets": [{ "name": "Methodology Panel" }]
+}
+{% endschema %}

@@ -1,0 +1,173 @@
+{% comment %}
+  sections/main-article.liquid
+  Renders the standard Shopify blog article content (article.content).
+  Also shows tags and a simple social share row.
+{% endcomment %}
+
+<section class="rl-main-article">
+  <div class="rl-page-width">
+    <div class="rl-article-content">
+      {{ article.content }}
+    </div>
+
+    {%- comment -%} Tags {%- endcomment -%}
+    {%- if article.tags.size > 0 -%}
+      <div class="rl-article-tags">
+        <span class="rl-tags-label">Topics:</span>
+        {%- for tag in article.tags -%}
+          <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="rl-tag">{{ tag }}</a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Sources / footnotes passed in via metafield {%- endcomment -%}
+    {%- assign sources_content = article.metafields.custom.sources -%}
+    {%- if sources_content != blank -%}
+      <div class="rl-article-sources">
+        <h4>Sources</h4>
+        {{ sources_content | metafield_tag }}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<style>
+  .rl-main-article {
+    background: #fff;
+    padding: 48px 0 64px;
+  }
+
+  /* Article body typography */
+  .rl-article-content {
+    max-width: 820px;
+    color: #374151;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+  .rl-article-content h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(20px, 2.5vw, 28px);
+    font-weight: 700;
+    color: #111;
+    margin: 36px 0 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .rl-article-content h3 {
+    font-size: clamp(17px, 2vw, 22px);
+    font-weight: 700;
+    color: #1f2937;
+    margin: 28px 0 10px;
+  }
+  .rl-article-content p { margin: 0 0 16px; }
+  .rl-article-content ul,
+  .rl-article-content ol {
+    padding-left: 20px;
+    margin: 0 0 16px;
+  }
+  .rl-article-content li { margin-bottom: 6px; }
+  .rl-article-content a {
+    color: #1d4ed8;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .rl-article-content a:hover { color: #1e40af; }
+  .rl-article-content blockquote {
+    border-left: 4px solid #0b2a4a;
+    margin: 24px 0;
+    padding: 12px 20px;
+    background: #f1f5f9;
+    font-style: italic;
+    color: #374151;
+  }
+  .rl-article-content img {
+    max-width: 100%;
+    border-radius: 8px;
+    height: auto;
+  }
+  .rl-article-content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 20px 0;
+  }
+  .rl-article-content table th {
+    background: #0b2a4a;
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .rl-article-content table td {
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+  }
+  .rl-article-content table tr:nth-child(even) td {
+    background: #f9fafb;
+  }
+
+  /* Tags */
+  .rl-article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+    max-width: 820px;
+  }
+  .rl-tags-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .rl-tag {
+    background: #f1f5f9;
+    color: #374151;
+    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .rl-tag:hover {
+    background: #0b2a4a;
+    color: #fff;
+  }
+
+  /* Sources */
+  .rl-article-sources {
+    max-width: 820px;
+    margin-top: 48px;
+    padding: 24px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+  }
+  .rl-article-sources h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .rl-article-sources p,
+  .rl-article-sources li {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.7;
+    margin: 0 0 6px;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Main Article Content",
+  "settings": []
+}
+{% endschema %}
