@@ -1,8 +1,90 @@
 {% comment %} list-image.liquid {% endcomment %}
 
+{%- liquid
+  assign gap = section.settings.gap | default: 24
+  assign half_gap = gap | divided_by: 2
+
+  case section.settings.image_ratio
+    when 'square'
+      assign ratio_pct = 100
+    when 'landscape'
+      assign ratio_pct = 75
+    when 'portrait'
+      assign ratio_pct = 133
+    when 'wide'
+      assign ratio_pct = 56.25
+    else
+      assign ratio_pct = 0
+  endcase
+-%}
+
 <style>
     .customstyle{{ section.id }} .list-image-item{
-        padding: 0px 15px;
+        padding: 0px {{ half_gap }}px;
+    }
+    .customstyle{{ section.id }} .list-image-content{
+        margin-left: -{{ half_gap }}px;
+        margin-right: -{{ half_gap }}px;
+    }
+
+    /* Uniform tiles: every image gets the same box so the row lines up
+       regardless of the source images' own aspect ratios. */
+    .customstyle{{ section.id }} .list-image-media{
+        position: relative;
+        display: block;
+        overflow: hidden;
+        background: {{ section.settings.tile_bg }};
+        border-radius: {{ section.settings.tile_radius }}px;
+        {% if section.settings.tile_border %}border: 1px solid {{ section.settings.tile_border_color }};{% endif %}
+        {% if ratio_pct > 0 %}padding-top: {{ ratio_pct }}%;{% endif %}
+    }
+    .customstyle{{ section.id }} .list-image-media img{
+        {% if ratio_pct > 0 %}
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        {% else %}
+        width: 100%;
+        height: auto;
+        {% endif %}
+        display: block;
+        object-fit: {{ section.settings.image_fit }};
+        {% if section.settings.image_fit == 'contain' %}padding: {{ section.settings.tile_padding }}px;{% endif %}
+        transition: transform .45s cubic-bezier(.2,.6,.2,1);
+    }
+    {% if section.settings.image_zoom %}
+    .customstyle{{ section.id }} .list-image-media:hover img{
+        transform: scale(1.04);
+    }
+    {% endif %}
+
+    /* Slick stretches slides to equal height so captions/tiles stay aligned. */
+    .customstyle{{ section.id }} .slick-track{
+        display: flex;
+        align-items: stretch;
+    }
+    .customstyle{{ section.id }} .slick-slide{
+        height: auto;
+    }
+    .customstyle{{ section.id }} .list-image-item .items-content{
+        height: 100%;
+    }
+
+    @media (max-width: 749px){
+        .customstyle{{ section.id }} .list-image-item{
+            padding: 0px {{ half_gap | at_most: 8 }}px;
+        }
+        .customstyle{{ section.id }} .list-image-content{
+            margin-left: -{{ half_gap | at_most: 8 }}px;
+            margin-right: -{{ half_gap | at_most: 8 }}px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+        .customstyle{{ section.id }} .list-image-media img{ transition: none; }
+        .customstyle{{ section.id }} .list-image-media:hover img{ transform: none; }
     }
 </style>
 <div class="customstyle{{ section.id }}" data-aos={{section.settings.animation}}>
@@ -34,9 +116,22 @@
                     </style>
                     <div class="items-content position-relative">
                         {% if block.settings.image != blank %}
-                            <img src="{{ block.settings.image | image_url: width: 1920 }}" width="auto" height="auto" loading="lazy" alt="">
+                            {%- assign blk_img = block.settings.image -%}
+                            <div class="list-image-media">
+                              <img
+                                src="{{ blk_img | image_url: width: 900 }}"
+                                srcset="{{ blk_img | image_url: width: 450 }} 450w, {{ blk_img | image_url: width: 900 }} 900w, {{ blk_img | image_url: width: 1350 }} 1350w"
+                                sizes="(min-width:990px) {{ 100 | divided_by: section.settings.show }}vw, (min-width:750px) 50vw, 100vw"
+                                width="{{ blk_img.width }}"
+                                height="{{ blk_img.height }}"
+                                loading="lazy"
+                                alt="{{ blk_img.alt | default: block.settings.product.title | default: product.title | escape }}"
+                              >
+                            </div>
                         {%- else -%}
-                            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                            <div class="list-image-media">
+                              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                            </div>
                         {% endif %}
                         {% if  block.settings.product != blank %}
                         <div class="product-hover-product d-none d-lg-block">
@@ -258,6 +353,93 @@
                 "step": 1,
                 "label": "Display items",
                 "default": 3
+                },
+                {
+                "type": "header",
+                "content": "Image tiles"
+                },
+                {
+                "type": "paragraph",
+                "content": "Forces every image into the same box so the row lines up even when the source images have different shapes."
+                },
+                {
+                "type": "select",
+                "id": "image_ratio",
+                "label": "Image ratio",
+                "default": "portrait",
+                "options": [
+                    { "value": "auto", "label": "Adapt to image (uneven)" },
+                    { "value": "square", "label": "Square (1:1)" },
+                    { "value": "landscape", "label": "Landscape (4:3)" },
+                    { "value": "portrait", "label": "Portrait (3:4)" },
+                    { "value": "wide", "label": "Wide (16:9)" }
+                ]
+                },
+                {
+                "type": "select",
+                "id": "image_fit",
+                "label": "Image fit",
+                "default": "contain",
+                "options": [
+                    { "value": "cover", "label": "Fill the box (crops)" },
+                    { "value": "contain", "label": "Fit inside (no crop)" }
+                ],
+                "info": "Use Fit inside for graphics and charts that must not be cropped."
+                },
+                {
+                "type": "range",
+                "id": "tile_padding",
+                "min": 0,
+                "max": 40,
+                "step": 2,
+                "unit": "px",
+                "label": "Inner padding",
+                "default": 16,
+                "info": "Only applies with Fit inside"
+                },
+                {
+                "type": "color",
+                "id": "tile_bg",
+                "label": "Tile background",
+                "default": "#ffffff"
+                },
+                {
+                "type": "checkbox",
+                "id": "tile_border",
+                "label": "Show border",
+                "default": true
+                },
+                {
+                "type": "color",
+                "id": "tile_border_color",
+                "label": "Border colour",
+                "default": "#e6e6e6"
+                },
+                {
+                "type": "range",
+                "id": "tile_radius",
+                "min": 0,
+                "max": 30,
+                "step": 1,
+                "unit": "px",
+                "label": "Corner radius",
+                "default": 14
+                },
+                {
+                "type": "range",
+                "id": "gap",
+                "min": 0,
+                "max": 48,
+                "step": 4,
+                "unit": "px",
+                "label": "Gap between tiles",
+                "default": 24
+                },
+                {
+                "type": "checkbox",
+                "id": "image_zoom",
+                "label": "Zoom on hover",
+                "default": true
                 }
 
         ],

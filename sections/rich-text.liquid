@@ -1,10 +1,34 @@
 <!-- rich-text.liquid -->
+{%- liquid
+  comment
+    Body copy defaults to centred to match how the other templates already
+    use this section; switch to left for long multi-paragraph copy.
+  endcomment
+  assign body_align = section.settings.body_align | default: 'center'
+
+  case section.settings.content_width
+    when 'medium'
+      assign content_col = 'col-lg-9 col-12'
+    when 'wide'
+      assign content_col = 'col-lg-10 col-12'
+    else
+      assign content_col = 'col-lg-7 col-12'
+  endcase
+-%}
+{%- style -%}
+  .customstyle{{ section.id }} .rte p{
+    line-height:1.75;
+  }
+  .customstyle{{ section.id }} .rte p + p{
+    margin-top:1.1em;
+  }
+{%- endstyle -%}
 <div class="customstyle{{ section.id }}" data-aos="{{ section.settings.animation }}" >
   <div class="{{ section.settings.setwidth }}">
     {%- render 'style-section' -%}
   <div class="section-block">
     <div class="row justify-content-center">
-      <div class="col-lg-7 col-12">
+      <div class="{{ content_col }}">
       {%- if section.settings.title_top != blank -%}
         <div class="subtop text-center mb-2" data-aos="{{ section.settings.animation }}" data-aos-duration="300">{{ section.settings.title_top }}</div>
       {%- endif -%}
@@ -14,7 +38,7 @@
       </h3>
       {%- endif -%}
       {% if section.settings.text != blank %}
-        <div class="rte text-center txt-body-70">
+        <div class="rte text-{{ body_align }} txt-body-70">
           {{ section.settings.text }}
         </div>
       {% endif %}
@@ -254,6 +278,28 @@
       "id": "text",
       "label": "Text",
       "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+    },
+    {
+      "type": "select",
+      "id": "body_align",
+      "label": "Body text alignment",
+      "default": "center",
+      "options": [
+        { "value": "center", "label": "Centered" },
+        { "value": "left", "label": "Left" }
+      ],
+      "info": "Use Left for long multi-paragraph copy — centred text is hard to read past a couple of lines."
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "default": "narrow",
+      "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "wide", "label": "Wide" }
+      ]
     },
     {
       "type": "select",
