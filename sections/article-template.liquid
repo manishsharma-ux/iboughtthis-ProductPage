@@ -103,25 +103,46 @@
     The tag route needs no metafield setup - just tag the post in the blog editor.
   endcomment
   assign tag_prefix = section.settings.product_tag_prefix | default: 'product:' | downcase
+  assign product_source = 'none'
+  assign tried_handle = ''
 
   assign attached_product = article.metafields.custom.attached_product.value
+  if attached_product != blank
+    assign product_source = 'metafield'
+  endif
 
   if attached_product == blank
     for t in article.tags
       assign t_dc = t | downcase | strip
       if t_dc contains tag_prefix
         assign wanted = t_dc | remove_first: tag_prefix | strip
+
+        comment
+          Accept a bare handle, a pasted product URL, or a typed title -
+          handleize normalises all three to the handle Shopify stores.
+        endcomment
+        if wanted contains '?'
+          assign wanted = wanted | split: '?' | first
+        endif
+        if wanted contains '/'
+          assign wanted = wanted | split: '/' | last
+        endif
+        assign wanted = wanted | handleize
+
+        assign tried_handle = wanted
         assign candidate = all_products[wanted]
         if candidate.handle != blank
           assign attached_product = candidate
+          assign product_source = 'tag'
           break
         endif
       endif
     endfor
   endif
 
-  if attached_product == blank
+  if attached_product == blank and section.settings.attached_product != blank
     assign attached_product = section.settings.attached_product
+    assign product_source = 'fallback'
   endif
 
   assign rail_on = false
@@ -642,6 +663,32 @@
     </div>
     {%- if rail_on -%}
     <div class="{% if section.settings.sidebar_enable %}col-lg-3{% else %}col-lg-4{% endif %} col-12 ibt-article-rail{% if section.settings.rail_position == 'left' %} order-lg-first{% endif %}">
+      {%- if request.design_mode -%}
+        {%- comment -%} Editor-only: explains which source picked the product. Never shown to shoppers. {%- endcomment -%}
+        <div style="border:1px dashed #c9c9c9;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;line-height:1.6;color:#54595f;background:#fafafa;">
+          <strong style="color:#1a1a1a;">Attached product debug</strong><br>
+          Source:
+          {%- case product_source -%}
+            {%- when 'metafield' -%} <b>metafield</b> (custom.attached_product)
+            {%- when 'tag' -%} <b>tag</b> &mdash; this post has its own product
+            {%- when 'fallback' -%} <b>fallback picker</b> &mdash; same on every untagged post
+            {%- else -%} <b>none</b>
+          {%- endcase -%}<br>
+          Looking for tags starting: <code>{{ tag_prefix }}</code><br>
+          Tags on this post:
+          {%- if article.tags.size > 0 -%}
+            <code>{{ article.tags | join: '</code>, <code>' }}</code>
+          {%- else -%}
+            <em>none</em>
+          {%- endif -%}<br>
+          {%- if tried_handle != blank -%}
+            Handle tried: <code>{{ tried_handle }}</code>
+            {%- if product_source != 'tag' %} &mdash; <b style="color:#b42318;">no product with that handle is published to the Online Store</b>{% endif -%}
+            <br>
+          {%- endif -%}
+          Showing: <b>{{ attached_product.title | default: 'nothing' }}</b>
+        </div>
+      {%- endif -%}
       {%- render 'ibt-sticky-product',
             product_ref: attached_product,
             uid: section.id,
