@@ -1,0 +1,183 @@
+{% doc %}
+  @prompt
+    full width image as section where we can add a image for desktop and mobile both also add links on it
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-fullwidth-image-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    position: relative;
+  }
+
+  .ai-fullwidth-image-link-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    text-decoration: none;
+  }
+
+  .ai-fullwidth-image-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-fullwidth-image-img-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .ai-fullwidth-image-mobile-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  .ai-fullwidth-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    min-height: 400px;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-fullwidth-image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    max-height: 400px;
+  }
+
+  .ai-fullwidth-image-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-fullwidth-image-desktop-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-fullwidth-image-mobile-{{ ai_gen_id }} {
+      display: block;
+    }
+
+    .ai-fullwidth-image-placeholder-{{ ai_gen_id }} {
+      min-height: 300px;
+    }
+  }
+{% endstyle %}
+
+<full-width-image-{{ ai_gen_id }} class="ai-fullwidth-image-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.image_link != blank %}
+    <a href="{{ block.settings.image_link }}" class="ai-fullwidth-image-link-{{ ai_gen_id }}">
+  {% endif %}
+
+  <div class="ai-fullwidth-image-wrapper-{{ ai_gen_id }}">
+    {% if block.settings.desktop_image or block.settings.mobile_image %}
+      {% if block.settings.desktop_image %}
+        <img
+          src="{{ block.settings.desktop_image | image_url: width: 2400 }}"
+          alt="{{ block.settings.desktop_image.alt | escape }}"
+          loading="lazy"
+          width="{{ block.settings.desktop_image.width }}"
+          height="{{ block.settings.desktop_image.height }}"
+          class="ai-fullwidth-image-img-{{ ai_gen_id }} ai-fullwidth-image-desktop-{{ ai_gen_id }}"
+        >
+      {% endif %}
+
+      {% if block.settings.mobile_image %}
+        <img
+          src="{{ block.settings.mobile_image | image_url: width: 1200 }}"
+          alt="{{ block.settings.mobile_image.alt | escape }}"
+          loading="lazy"
+          width="{{ block.settings.mobile_image.width }}"
+          height="{{ block.settings.mobile_image.height }}"
+          class="ai-fullwidth-image-img-{{ ai_gen_id }} ai-fullwidth-image-mobile-{{ ai_gen_id }}"
+        >
+      {% elsif block.settings.desktop_image %}
+        <img
+          src="{{ block.settings.desktop_image | image_url: width: 1200 }}"
+          alt="{{ block.settings.desktop_image.alt | escape }}"
+          loading="lazy"
+          width="{{ block.settings.desktop_image.width }}"
+          height="{{ block.settings.desktop_image.height }}"
+          class="ai-fullwidth-image-img-{{ ai_gen_id }} ai-fullwidth-image-mobile-{{ ai_gen_id }}"
+        >
+      {% endif %}
+    {% else %}
+      <div class="ai-fullwidth-image-placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+        <div class="ai-fullwidth-image-empty-state-{{ ai_gen_id }}">
+          Add a desktop image and optionally a mobile image
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if block.settings.image_link != blank %}
+    </a>
+  {% endif %}
+</full-width-image-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FullWidthImage{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+    }
+
+    customElements.define('full-width-image-{{ ai_gen_id }}', FullWidthImage{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Full width image",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image"
+    },
+    {
+      "type": "paragraph",
+      "content": "If no mobile image is selected, the desktop image will be used on mobile devices."
+    },
+    {
+      "type": "header",
+      "content": "Link"
+    },
+    {
+      "type": "url",
+      "id": "image_link",
+      "label": "Image link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Full width image"
+    }
+  ]
+}
+{% endschema %}
