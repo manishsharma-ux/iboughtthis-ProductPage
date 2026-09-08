@@ -1,0 +1,109 @@
+<!-- ibt-blog-card.liquid | Modern blog listing card -->
+{%- comment -%}
+  Post card for the blog listing. Unlike blog-grid-*, this renders a complete
+  card when an article has no featured image instead of collapsing to nothing.
+
+  Styling lives in the parent section, scoped to #shopify-section-<id>, so the
+  listing can be restyled without touching the other blog templates.
+
+  Accepts: article, image_size, enable_date, enable_tag, enable_comment,
+           enable_short, enable_btn_blog, enable_read_time, animation
+{%- endcomment -%}
+
+{%- liquid
+  assign image_size = image_size | default: 'wide'
+
+  assign ratio = 56.25
+  case image_size
+    when 'portrait'
+      assign ratio = 133
+    when 'square'
+      assign ratio = 100
+    when 'landscape'
+      assign ratio = 75
+    when 'wide'
+      assign ratio = 56.25
+    when 'auto'
+      if article.image
+        assign ratio = 1 | divided_by: article.image.aspect_ratio | times: 100
+      endif
+  endcase
+
+  assign words = article.content | strip_html | split: ' ' | size
+  assign read_time = words | divided_by: 200
+  if read_time < 1
+    assign read_time = 1
+  endif
+
+  assign excerpt = article.excerpt | strip_html | strip
+  if excerpt == blank
+    assign excerpt = article.content | strip_html | truncatewords: 24
+  endif
+-%}
+
+<article class="ibt-bc" {% if animation != blank %}data-aos="{{ animation }}"{% endif %}>
+  <a class="ibt-bc__media{% unless article.image %} ibt-bc__media--empty{% endunless %}"
+     href="{{ article.url }}"
+     tabindex="-1"
+     aria-hidden="true"
+     style="padding-top:{{ ratio }}%">
+    {%- if article.image -%}
+      <img
+        src="{{ article.image | image_url: width: 800 }}"
+        srcset="{{ article.image | image_url: width: 400 }} 400w, {{ article.image | image_url: width: 800 }} 800w, {{ article.image | image_url: width: 1200 }} 1200w"
+        sizes="(min-width:992px) 33vw, (min-width:768px) 50vw, 100vw"
+        alt="{{ article.image.alt | default: article.title | escape }}"
+        width="{{ article.image.width }}"
+        height="{{ article.image.height }}"
+        loading="lazy"
+      >
+    {%- else -%}
+      <span class="ibt-bc__initial">{{ article.title | slice: 0 | upcase }}</span>
+    {%- endif -%}
+
+    {%- if enable_read_time -%}
+      <span class="ibt-bc__time">{{ read_time }} min read</span>
+    {%- endif -%}
+  </a>
+
+  <div class="ibt-bc__body">
+    {%- if enable_tag and article.tags.size > 0 -%}
+      <div class="ibt-bc__tags">
+        {%- for tag in article.tags limit: 2 -%}
+          <a class="ibt-bc__tag" href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <h3 class="ibt-bc__title">
+      <a href="{{ article.url }}">{{ article.title }}</a>
+    </h3>
+
+    {%- if enable_short and excerpt != blank -%}
+      <p class="ibt-bc__excerpt">{{ excerpt }}</p>
+    {%- endif -%}
+
+    <div class="ibt-bc__foot">
+      <div class="ibt-bc__meta">
+        {%- if enable_date -%}
+          <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+            {{ article.published_at | date: '%b %d, %Y' }}
+          </time>
+        {%- endif -%}
+        {%- if enable_comment and blog.comments_enabled? -%}
+          <span class="ibt-bc__dot" aria-hidden="true"></span>
+          <span>{{ 'blogs.comments.with_count' | t: count: article.comments_count }}</span>
+        {%- endif -%}
+      </div>
+
+      {%- if enable_btn_blog -%}
+        <a class="ibt-bc__more" href="{{ article.url }}">
+          {{ 'blogs.article.read_more' | t }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</article>

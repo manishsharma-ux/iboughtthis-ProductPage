@@ -1,0 +1,581 @@
+<!-- ibt-sticky-product.liquid | Attached product card that sticks in a side rail -->
+{%- comment -%}
+  Renders an affiliate product card that follows the reader down the page.
+
+  Accepts:
+    product_ref  - product object (required; renders a hint in the editor when blank)
+    uid          - unique id used to scope the CSS, pass section.id
+    heading      - small eyebrow above the card
+    cta_label    - buy button text
+    cta_note     - disclosure line under the button
+    accent       - button background colour
+    sticky_top   - offset in px the card parks at, clears the sticky header
+    show_mobile  - boolean, docks a compact bar at the bottom on small screens
+    mobile_after - px scrolled before the mobile bar appears
+
+  Usage:
+    {%- render 'ibt-sticky-product',
+          product_ref: section.settings.attached_product,
+          uid: section.id,
+          heading: section.settings.rail_heading -%}
+{%- endcomment -%}
+
+{%- liquid
+  assign p = product_ref
+
+  assign accent = accent | default: '#1c4ead'
+  assign cta_label = cta_label | default: 'View Deal on Amazon'
+  assign sticky_top = sticky_top | default: 100
+  assign mobile_after = mobile_after | default: 600
+
+  comment
+    Affiliate destination. Mirrors the fallback order used by ibt-hero so a
+    product behaves the same wherever it is surfaced.
+  endcomment
+  assign buy_url = p.metafields.custom.custom_tracking_link.value
+  if buy_url == blank
+    assign buy_url = p.metafields.custom.tracking_link.value
+  endif
+  if buy_url == blank
+    assign buy_url = p.url
+  endif
+
+  assign is_external = true
+  if buy_url == p.url
+    assign is_external = false
+  endif
+
+  assign rating = p.metafields.custom.rating.value
+  assign review_count = p.metafields.custom.number_of_reviews.value
+  assign score_label = p.metafields.custom.score_label.value
+
+  assign badge_text = p.metafields.custom.badge.value
+  if badge_text == blank
+    assign badge_text = p.metafields.custom.badge_text.value
+  endif
+
+  assign rating_pct = 0
+  if rating != blank
+    assign rating_pct = rating | times: 20
+  endif
+-%}
+
+{%- if p == blank -%}
+  {%- if request.design_mode -%}
+    <div class="ibt-sp-empty">
+      <strong>No product attached yet.</strong>
+      <span>Pick one under <em>Attached product</em> in this section&rsquo;s settings.</span>
+    </div>
+    <style>
+      .ibt-sp-empty{
+        border:1px dashed #c9c9c9;
+        border-radius:14px;
+        padding:24px 20px;
+        text-align:center;
+        color:#54595f;
+        font-size:14px;
+        line-height:1.5;
+        background:#fafafa;
+      }
+      .ibt-sp-empty strong{ display:block; margin-bottom:4px; color:#1a1a1a; }
+    </style>
+  {%- endif -%}
+{%- else -%}
+
+  {%- style -%}
+    .ibt-sp-{{ uid }}{
+      --ibt-sp-accent:{{ accent }};
+      --ibt-sp-accent-hover:{{ accent | color_darken: 8 }};
+      --ibt-sp-ink:#1a1a1a;
+      --ibt-sp-body:#54595f;
+      --ibt-sp-line:#e6e6e6;
+      --ibt-sp-soft:#f7f7f5;
+      --ibt-sp-star:#ffa41c;
+      --ibt-sp-radius:16px;
+      --ibt-sp-top:{{ sticky_top }}px;
+    }
+
+    /* Zero-height marker the observer watches; needs a real box to be tracked. */
+    .ibt-sp-{{ uid }}__sentinel{
+      display:block;
+      width:100%;
+      height:1px;
+      margin-bottom:-1px;
+    }
+
+    /* ---------- desktop rail ---------- */
+    .ibt-sp-{{ uid }}__rail{
+      position:-webkit-sticky;
+      position:sticky;
+      top:var(--ibt-sp-top);
+      opacity:0;
+      transform:translateY(14px);
+      transition:opacity .5s ease, transform .5s ease;
+      will-change:opacity, transform;
+    }
+    .ibt-sp-{{ uid }}__rail.is-in{
+      opacity:1;
+      transform:none;
+    }
+
+    .ibt-sp-{{ uid }}__eyebrow{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.09em;
+      text-transform:uppercase;
+      color:var(--ibt-sp-body);
+      margin:0 0 10px;
+    }
+    .ibt-sp-{{ uid }}__eyebrow::after{
+      content:"";
+      flex:1 1 auto;
+      height:1px;
+      background:var(--ibt-sp-line);
+    }
+
+    .ibt-sp-{{ uid }}__card{
+      position:relative;
+      border:1px solid var(--ibt-sp-line);
+      border-radius:var(--ibt-sp-radius);
+      background:#fff;
+      overflow:hidden;
+      box-shadow:0 1px 2px rgba(16,24,40,.04);
+      transition:box-shadow .3s ease, transform .3s ease;
+    }
+    .ibt-sp-{{ uid }}__rail.is-stuck .ibt-sp-{{ uid }}__card{
+      box-shadow:0 12px 32px rgba(16,24,40,.12);
+    }
+    .ibt-sp-{{ uid }}__card:hover{
+      box-shadow:0 14px 36px rgba(16,24,40,.14);
+    }
+
+    .ibt-sp-{{ uid }}__badge{
+      position:absolute;
+      top:12px;
+      left:12px;
+      z-index:2;
+      background:var(--ibt-sp-accent);
+      color:#fff;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      padding:5px 10px;
+      border-radius:999px;
+    }
+
+    .ibt-sp-{{ uid }}__media{
+      display:block;
+      background:#fff;
+      padding:18px;
+      border-bottom:1px solid var(--ibt-sp-line);
+      overflow:hidden;
+    }
+    .ibt-sp-{{ uid }}__media img{
+      display:block;
+      width:100%;
+      height:180px;
+      object-fit:contain;
+      transition:transform .4s ease;
+    }
+    .ibt-sp-{{ uid }}__media:hover img{ transform:scale(1.04); }
+
+    .ibt-sp-{{ uid }}__body{ padding:16px 18px 18px; }
+
+    .ibt-sp-{{ uid }}__vendor{
+      font-size:12px;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      color:var(--ibt-sp-body);
+      margin:0 0 6px;
+    }
+    .ibt-sp-{{ uid }}__title{
+      font-size:16px;
+      line-height:1.35;
+      margin:0 0 10px;
+      font-weight:600;
+    }
+    .ibt-sp-{{ uid }}__title a{
+      color:var(--ibt-sp-ink);
+      text-decoration:none;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+    .ibt-sp-{{ uid }}__title a:hover{ color:var(--ibt-sp-accent); }
+
+    .ibt-sp-{{ uid }}__rating{
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-bottom:10px;
+    }
+    .ibt-sp-{{ uid }}__score{
+      font-size:14px;
+      font-weight:700;
+      color:var(--ibt-sp-ink);
+    }
+    .ibt-sp-{{ uid }}__stars{
+      position:relative;
+      display:inline-block;
+      line-height:1;
+      font-size:15px;
+      letter-spacing:1px;
+      color:#dcdcdc;
+    }
+    .ibt-sp-{{ uid }}__stars i{
+      position:absolute;
+      top:0;
+      left:0;
+      overflow:hidden;
+      white-space:nowrap;
+      color:var(--ibt-sp-star);
+      font-style:normal;
+    }
+    .ibt-sp-{{ uid }}__count{
+      font-size:12px;
+      color:var(--ibt-sp-body);
+    }
+    .ibt-sp-{{ uid }}__label{
+      display:inline-block;
+      font-size:11px;
+      font-weight:600;
+      color:var(--ibt-sp-accent);
+      background:var(--ibt-sp-soft);
+      border-radius:999px;
+      padding:3px 9px;
+      margin-bottom:10px;
+    }
+
+    .ibt-sp-{{ uid }}__price{
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      margin-bottom:14px;
+    }
+    .ibt-sp-{{ uid }}__price b{
+      font-size:20px;
+      font-weight:700;
+      color:var(--ibt-sp-ink);
+    }
+    .ibt-sp-{{ uid }}__price s{
+      font-size:13px;
+      color:var(--ibt-sp-body);
+    }
+
+    .ibt-sp-{{ uid }}__cta{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      width:100%;
+      background:var(--ibt-sp-accent);
+      color:#fff;
+      border:0;
+      border-radius:999px;
+      padding:13px 18px;
+      font-size:14px;
+      font-weight:700;
+      text-align:center;
+      text-decoration:none;
+      transition:background .2s ease, transform .2s ease;
+    }
+    .ibt-sp-{{ uid }}__cta:hover{
+      background:var(--ibt-sp-accent-hover);
+      color:#fff;
+      transform:translateY(-1px);
+    }
+    .ibt-sp-{{ uid }}__cta svg{
+      width:14px;
+      height:14px;
+      flex:0 0 auto;
+    }
+
+    .ibt-sp-{{ uid }}__note{
+      margin:10px 0 0;
+      font-size:11px;
+      line-height:1.5;
+      color:var(--ibt-sp-body);
+      text-align:center;
+    }
+
+    /* ---------- mobile docked bar ---------- */
+    .ibt-sp-{{ uid }}__bar{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:996;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      background:#fff;
+      border-top:1px solid var(--ibt-sp-line);
+      box-shadow:0 -6px 20px rgba(16,24,40,.12);
+      transform:translateY(105%);
+      transition:transform .35s ease;
+    }
+    .ibt-sp-{{ uid }}__bar.is-in{ transform:translateY(0); }
+    .ibt-sp-{{ uid }}__bar img{
+      width:44px;
+      height:44px;
+      object-fit:contain;
+      flex:0 0 auto;
+    }
+    .ibt-sp-{{ uid }}__bar-txt{
+      flex:1 1 auto;
+      min-width:0;
+    }
+    .ibt-sp-{{ uid }}__bar-title{
+      display:block;
+      font-size:13px;
+      font-weight:600;
+      color:var(--ibt-sp-ink);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .ibt-sp-{{ uid }}__bar-price{
+      font-size:13px;
+      font-weight:700;
+      color:var(--ibt-sp-ink);
+    }
+    .ibt-sp-{{ uid }}__bar .ibt-sp-{{ uid }}__cta{
+      width:auto;
+      flex:0 0 auto;
+      padding:10px 16px;
+      font-size:13px;
+    }
+    .ibt-sp-{{ uid }}__close{
+      position:absolute;
+      top:-30px;
+      right:10px;
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      border:1px solid var(--ibt-sp-line);
+      background:#fff;
+      color:var(--ibt-sp-body);
+      font-size:16px;
+      line-height:1;
+      cursor:pointer;
+      box-shadow:0 2px 8px rgba(16,24,40,.12);
+    }
+
+    @media (max-width:991px){
+      .ibt-sp-{{ uid }}__rail{
+        position:static;
+        margin-top:32px;
+      }
+      .ibt-sp-{{ uid }}__media img{ height:200px; }
+    }
+    @media (min-width:992px){
+      .ibt-sp-{{ uid }}__bar{ display:none; }
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      .ibt-sp-{{ uid }}__rail,
+      .ibt-sp-{{ uid }}__card,
+      .ibt-sp-{{ uid }}__media img,
+      .ibt-sp-{{ uid }}__cta,
+      .ibt-sp-{{ uid }}__bar{
+        transition:none !important;
+      }
+      .ibt-sp-{{ uid }}__rail{
+        opacity:1;
+        transform:none;
+      }
+    }
+  {%- endstyle -%}
+
+  <div class="ibt-sp-{{ uid }}" data-ibt-sticky-product data-mobile-after="{{ mobile_after }}" data-sticky-top="{{ sticky_top }}">
+    <span class="ibt-sp-{{ uid }}__sentinel" data-sentinel aria-hidden="true"></span>
+
+    <div class="ibt-sp-{{ uid }}__rail" data-rail>
+      {%- if heading != blank -%}
+        <p class="ibt-sp-{{ uid }}__eyebrow">{{ heading }}</p>
+      {%- endif -%}
+
+      <div class="ibt-sp-{{ uid }}__card">
+        {%- if badge_text != blank -%}
+          <span class="ibt-sp-{{ uid }}__badge">{{ badge_text }}</span>
+        {%- endif -%}
+
+        {%- if p.featured_image -%}
+          <a
+            class="ibt-sp-{{ uid }}__media"
+            href="{{ buy_url }}"
+            {% if is_external %}target="_blank" rel="nofollow sponsored noopener"{% endif %}
+          >
+            <img
+              src="{{ p.featured_image | image_url: width: 480 }}"
+              srcset="{{ p.featured_image | image_url: width: 320 }} 320w, {{ p.featured_image | image_url: width: 480 }} 480w, {{ p.featured_image | image_url: width: 640 }} 640w"
+              sizes="(min-width:992px) 300px, 90vw"
+              alt="{{ p.featured_image.alt | default: p.title | escape }}"
+              width="{{ p.featured_image.width }}"
+              height="{{ p.featured_image.height }}"
+              loading="lazy"
+            >
+          </a>
+        {%- endif -%}
+
+        <div class="ibt-sp-{{ uid }}__body">
+          {%- if p.vendor != blank -%}
+            <p class="ibt-sp-{{ uid }}__vendor">{{ p.vendor }}</p>
+          {%- endif -%}
+
+          <h3 class="ibt-sp-{{ uid }}__title">
+            <a
+              href="{{ buy_url }}"
+              {% if is_external %}target="_blank" rel="nofollow sponsored noopener"{% endif %}
+            >{{ p.title }}</a>
+          </h3>
+
+          {%- if rating != blank -%}
+            <div class="ibt-sp-{{ uid }}__rating">
+              <span class="ibt-sp-{{ uid }}__score">{{ rating }}</span>
+              <span
+                class="ibt-sp-{{ uid }}__stars"
+                role="img"
+                aria-label="Rated {{ rating }} out of 5{% if review_count != blank %} based on {{ review_count }} reviews{% endif %}"
+              >&#9733;&#9733;&#9733;&#9733;&#9733;<i style="width:{{ rating_pct }}%">&#9733;&#9733;&#9733;&#9733;&#9733;</i></span>
+              {%- if review_count != blank -%}
+                <span class="ibt-sp-{{ uid }}__count">({{ review_count }})</span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if score_label != blank -%}
+            <span class="ibt-sp-{{ uid }}__label">{{ score_label }}</span>
+          {%- endif -%}
+
+          {%- if p.price > 0 -%}
+            <div class="ibt-sp-{{ uid }}__price">
+              <b>{{ p.price | money }}</b>
+              {%- if p.compare_at_price > p.price -%}
+                <s>{{ p.compare_at_price | money }}</s>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          <a
+            class="ibt-sp-{{ uid }}__cta"
+            href="{{ buy_url }}"
+            {% if is_external %}target="_blank" rel="nofollow sponsored noopener"{% endif %}
+          >
+            {{ cta_label }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </a>
+
+          {%- if cta_note != blank -%}
+            <p class="ibt-sp-{{ uid }}__note">{{ cta_note }}</p>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    {%- if show_mobile -%}
+      <div class="ibt-sp-{{ uid }}__bar" data-bar>
+        <button type="button" class="ibt-sp-{{ uid }}__close" data-close aria-label="Dismiss">&times;</button>
+        {%- if p.featured_image -%}
+          <img
+            src="{{ p.featured_image | image_url: width: 132 }}"
+            alt="{{ p.featured_image.alt | default: p.title | escape }}"
+            width="44"
+            height="44"
+            loading="lazy"
+          >
+        {%- endif -%}
+        <span class="ibt-sp-{{ uid }}__bar-txt">
+          <span class="ibt-sp-{{ uid }}__bar-title">{{ p.title }}</span>
+          {%- if p.price > 0 -%}
+            <span class="ibt-sp-{{ uid }}__bar-price">{{ p.price | money }}</span>
+          {%- endif -%}
+        </span>
+        <a
+          class="ibt-sp-{{ uid }}__cta"
+          href="{{ buy_url }}"
+          {% if is_external %}target="_blank" rel="nofollow sponsored noopener"{% endif %}
+        >{{ cta_label }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <script>
+    (function () {
+      var root = document.currentScript.previousElementSibling;
+      if (!root || !root.hasAttribute('data-ibt-sticky-product')) {
+        root = document.querySelector('.ibt-sp-{{ uid }}');
+      }
+      if (!root) return;
+
+      var rail = root.querySelector('[data-rail]');
+      var sentinel = root.querySelector('[data-sentinel]');
+      var bar = root.querySelector('[data-bar]');
+      var closeBtn = root.querySelector('[data-close]');
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Entrance: reveal the card the first time it scrolls into view.
+      if (rail) {
+        if (reduce || !('IntersectionObserver' in window)) {
+          rail.classList.add('is-in');
+        } else {
+          new IntersectionObserver(function (entries, obs) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                rail.classList.add('is-in');
+                obs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.15 }).observe(rail);
+        }
+      }
+
+      // Stuck state: deepen the shadow once the card parks against the header.
+      // rootMargin pulls the trigger line down to the same offset the card
+      // parks at, so the shadow appears exactly when it stops moving.
+      if (rail && sentinel && 'IntersectionObserver' in window) {
+        var top = parseInt(root.getAttribute('data-sticky-top'), 10) || 100;
+        new IntersectionObserver(function (entries) {
+          rail.classList.toggle('is-stuck', !entries[0].isIntersecting);
+        }, { threshold: 0, rootMargin: '-' + top + 'px 0px 0px 0px' }).observe(sentinel);
+      }
+
+      // Mobile bar: slide up past the threshold, stay hidden once dismissed.
+      if (bar) {
+        var after = parseInt(root.getAttribute('data-mobile-after'), 10) || 600;
+        var dismissed = false;
+        var ticking = false;
+
+        var sync = function () {
+          ticking = false;
+          if (dismissed) return;
+          bar.classList.toggle('is-in', window.pageYOffset > after);
+        };
+
+        window.addEventListener('scroll', function () {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(sync);
+        }, { passive: true });
+
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function () {
+            dismissed = true;
+            bar.classList.remove('is-in');
+          });
+        }
+
+        sync();
+      }
+    })();
+  </script>
+{%- endif -%}

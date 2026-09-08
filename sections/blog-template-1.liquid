@@ -3,6 +3,28 @@
     assign blog_layout  = section.settings.blog_layout
     assign grid_column  = section.settings.grid_column
     assign image_size   = section.settings.image_size
+
+    comment
+      The attached product rail takes a quarter of the row, so drop one column
+      from the post grid to stop the cards being squeezed.
+    endcomment
+    assign attached_product = section.settings.attached_product
+    assign rail_on = false
+    if attached_product != blank or request.design_mode
+      if section.settings.rail_enable
+        assign rail_on = true
+      endif
+    endif
+
+    if rail_on and blog_layout == 'grid'
+      case grid_column
+      when '4'
+        assign grid_column = '3'
+      when '3'
+        assign grid_column = '2'
+      endcase
+    endif
+
     assign enable_btn_blog = section.settings.enable_btn_blog
     assign enable_btn_line = section.settings.enable_btn_line
     assign enable_date  = section.settings.enable_date
@@ -34,6 +56,28 @@
     else
       assign blog_search_types = 'article'
     endcase
+
+    comment
+      Width of the posts column, sharing the row with the legacy sidebar
+      and/or the attached product rail.
+    endcomment
+    if section.settings.sidebar_enable and rail_on
+      assign main_col = 'col-lg-6 col-12'
+    elsif section.settings.sidebar_enable
+      assign main_col = 'col-md-9'
+    elsif rail_on
+      assign main_col = 'col-lg-9 col-12'
+    else
+      assign main_col = 'col-12'
+    endif
+
+    if section.settings.sidebar_enable
+      if section.settings.sidebar_position == 'left'
+        assign main_col = main_col | append: ' pl-lg-5'
+      else
+        assign main_col = main_col | append: ' pr-lg-5'
+      endif
+    endif
 -%}
 <style>
   .sidebar-blog-wrap.is_stuck{padding-top:20px}
@@ -127,6 +171,280 @@
   }
 {%- endif -%}
 </style>
+
+{%- comment -%} Scoped refresh: everything below only affects this section. {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}{
+    --ibt-bl-accent:{{ section.settings.accent_color }};
+    --ibt-bl-accent-hover:{{ section.settings.accent_color | color_darken: 8 }};
+    --ibt-bl-ink:#1a1a1a;
+    --ibt-bl-body:#54595f;
+    --ibt-bl-line:#e6e6e6;
+    --ibt-bl-soft:#f7f7f5;
+    --ibt-bl-radius:16px;
+  }
+
+  /* ---------- search ---------- */
+  #shopify-section-{{ section.id }} .blog-search-bar{
+    max-width:38rem;
+    margin:0 auto 3.5rem;
+  }
+  #shopify-section-{{ section.id }} .blog-search-bar .search__input{
+    height:52px;
+    border:1px solid var(--ibt-bl-line);
+    border-radius:999px;
+    padding:0 3.25rem 0 1.35rem;
+    font-size:15px;
+    background:#fff;
+    box-shadow:0 1px 2px rgba(16,24,40,.04);
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  #shopify-section-{{ section.id }} .blog-search-bar .search__input:focus{
+    outline:none;
+    border-color:var(--ibt-bl-accent);
+    box-shadow:0 0 0 4px {{ section.settings.accent_color | color_modify: 'alpha', 0.12 }};
+  }
+  #shopify-section-{{ section.id }} .blog-search-bar .field__label{
+    position:absolute !important;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;
+  }
+  #shopify-section-{{ section.id }} .blog-search-bar .search__button{
+    width:3.25rem;
+    color:var(--ibt-bl-body);
+    background:transparent;
+    transition:color .2s ease;
+  }
+  #shopify-section-{{ section.id }} .blog-search-bar .search__button:hover{
+    color:var(--ibt-bl-accent);
+  }
+
+  /* ---------- grid rhythm ---------- */
+  #shopify-section-{{ section.id }} .ibt-blog-grid{
+    margin-left:-14px;
+    margin-right:-14px;
+  }
+  #shopify-section-{{ section.id }} .ibt-blog-grid > [class*="col-"]{
+    padding-left:14px;
+    padding-right:14px;
+    margin-bottom:28px;
+    display:flex;
+  }
+  #shopify-section-{{ section.id }} .ibt-blog-grid > [class*="col-"] > *{
+    width:100%;
+  }
+
+  /* ---------- card ---------- */
+  #shopify-section-{{ section.id }} .ibt-bc{
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    background:#fff;
+    border:1px solid var(--ibt-bl-line);
+    border-radius:var(--ibt-bl-radius);
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(16,24,40,.04);
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-bc:hover{
+    transform:translateY(-4px);
+    border-color:transparent;
+    box-shadow:0 16px 40px rgba(16,24,40,.13);
+  }
+
+  #shopify-section-{{ section.id }} .ibt-bc__media{
+    position:relative;
+    display:block;
+    overflow:hidden;
+    background:var(--ibt-bl-soft);
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__media img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:transform .55s cubic-bezier(.2,.6,.2,1);
+  }
+  #shopify-section-{{ section.id }} .ibt-bc:hover .ibt-bc__media img{
+    transform:scale(1.06);
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__media--empty{
+    background:linear-gradient(135deg, var(--ibt-bl-soft) 0%, #ececea 100%);
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__initial{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:56px;
+    font-weight:700;
+    color:#c9c9c4;
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__time{
+    position:absolute;
+    left:12px;
+    bottom:12px;
+    z-index:2;
+    background:rgba(26,26,26,.82);
+    color:#fff;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.03em;
+    padding:4px 9px;
+    border-radius:999px;
+  }
+
+  #shopify-section-{{ section.id }} .ibt-bc__body{
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+    padding:18px 20px 20px;
+  }
+
+  #shopify-section-{{ section.id }} .ibt-bc__tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:10px;
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__tag{
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--ibt-bl-accent);
+    background:var(--ibt-bl-soft);
+    border-radius:999px;
+    padding:4px 10px;
+    text-decoration:none;
+    transition:background .2s ease, color .2s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__tag:hover{
+    background:var(--ibt-bl-accent);
+    color:#fff;
+  }
+
+  #shopify-section-{{ section.id }} .ibt-bc__title{
+    font-size:19px;
+    line-height:1.35;
+    font-weight:600;
+    margin:0 0 10px;
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__title a{
+    color:var(--ibt-bl-ink);
+    text-decoration:none;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    transition:color .2s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__title a:hover{
+    color:var(--ibt-bl-accent);
+  }
+
+  #shopify-section-{{ section.id }} .ibt-bc__excerpt{
+    font-size:14px;
+    line-height:1.65;
+    color:var(--ibt-bl-body);
+    margin:0 0 18px;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+
+  #shopify-section-{{ section.id }} .ibt-bc__foot{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:auto;
+    padding-top:14px;
+    border-top:1px solid var(--ibt-bl-line);
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__meta{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    color:var(--ibt-bl-body);
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__dot{
+    width:3px;
+    height:3px;
+    border-radius:50%;
+    background:currentColor;
+    opacity:.5;
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__more{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ibt-bl-accent);
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__more svg{
+    width:13px;
+    height:13px;
+    transition:transform .25s ease;
+  }
+  #shopify-section-{{ section.id }} .ibt-bc__more:hover{
+    color:var(--ibt-bl-accent-hover);
+  }
+  #shopify-section-{{ section.id }} .ibt-bc:hover .ibt-bc__more svg{
+    transform:translateX(3px);
+  }
+
+  /* ---------- rail column ---------- */
+  /* The column stretches to the row height; the wrapper has to stretch with it
+     or position:sticky has no travel and the card never follows the reader. */
+  #shopify-section-{{ section.id }} .ibt-blog-rail{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:28px;
+  }
+  #shopify-section-{{ section.id }} .ibt-blog-rail > *{
+    flex:1 1 auto;
+  }
+
+  /* ---------- pagination ---------- */
+  #shopify-section-{{ section.id }} .pagination-blog{
+    margin-top:12px;
+  }
+
+  @media (max-width:749px){
+    #shopify-section-{{ section.id }} .blog-search-bar{
+      margin-bottom:2.25rem;
+    }
+    #shopify-section-{{ section.id }} .ibt-bc__title{
+      font-size:17px;
+    }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    #shopify-section-{{ section.id }} .ibt-bc,
+    #shopify-section-{{ section.id }} .ibt-bc__media img,
+    #shopify-section-{{ section.id }} .ibt-bc__more svg{
+      transition:none !important;
+    }
+    #shopify-section-{{ section.id }} .ibt-bc:hover{
+      transform:none;
+    }
+    #shopify-section-{{ section.id }} .ibt-bc:hover .ibt-bc__media img{
+      transform:none;
+    }
+  }
+{%- endstyle -%}
+
 {%- render 'style-section' -%}
 <div class="customstyle{{ section.id }}">
   <div class="container">
@@ -155,12 +473,14 @@
     <div class="row {% if section.settings.sidebar_position == 'left' %}flex-row-reverse{% endif %}">
       {%- assign limit = section.settings.limit -%}
       {%- paginate blog.articles by limit -%}
-      <div class="{% if section.settings.sidebar_enable %}col-md-9 {% if section.settings.sidebar_position == 'left' %} pl-lg-5 {% else %} pr-lg-5{% endif %} {% else %}col-12{% endif %}">
-        <div class="row">
+      <div class="{{ main_col }}">
+        <div class="row{% if section.settings.item_style == 'ibt-card' %} ibt-blog-grid{% endif %}">
           {%- for article in blog.articles -%}
           <div class="{{ col }} {% if forloop.index == 3 %}col--last{% endif %}">
             {%- liquid
               case section.settings.item_style
+              when 'ibt-card'
+                render 'ibt-blog-card', article: article, image_size: image_size, enable_btn_blog: enable_btn_blog, enable_date: enable_date, enable_tag: enable_tag, enable_comment: enable_comment, enable_short: enable_short, enable_read_time: section.settings.enable_read_time, animation: animation
               when 'blog-1'
                 render 'blog-grid-1', article : article, image_size : image_size, enable_btn_blog : enable_btn_blog, enable_btn_line: enable_btn_line, enable_date : enable_date, enable_tag : enable_tag, enable_comment: enable_comment, enable_short : enable_short, animation: animation
               when 'blog-3'
@@ -184,6 +504,20 @@
         {%- endif -%}
       </div>
       {%- endpaginate -%}
+      {%- if rail_on -%}
+      <div class="col-lg-3 col-12 ibt-blog-rail{% if section.settings.rail_position == 'left' %} order-lg-first{% endif %}">
+        {%- render 'ibt-sticky-product',
+              product_ref: attached_product,
+              uid: section.id,
+              heading: section.settings.rail_heading,
+              cta_label: section.settings.rail_cta_label,
+              cta_note: section.settings.rail_cta_note,
+              accent: section.settings.accent_color,
+              sticky_top: section.settings.rail_sticky_top,
+              show_mobile: section.settings.rail_show_mobile,
+              mobile_after: section.settings.rail_mobile_after -%}
+      </div>
+      {%- endif -%}
       {%- if section.settings.sidebar_enable -%}
       {%- render 'blogSidebar' -%}
       {%- endif -%}
@@ -393,6 +727,10 @@
       "default": "blog-1",
       "options": [
         {
+          "value": "ibt-card",
+          "label": "IBT Card (modern)"
+        },
+        {
           "value": "blog-1",
           "label": "Item Basic"
         },
@@ -479,6 +817,20 @@
       "default": true
     },
     {
+      "type": "checkbox",
+      "id": "enable_read_time",
+      "label": "Show reading time",
+      "default": true,
+      "info": "IBT Card style only"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent colour",
+      "default": "#1c4ead",
+      "info": "Links, tags, buttons and the attached product CTA"
+    },
+    {
       "type": "range",
       "id": "limit",
       "min": 6,
@@ -486,6 +838,86 @@
       "step": 1,
       "label": "Limit",
       "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Attached product"
+    },
+    {
+      "type": "paragraph",
+      "content": "Pins a product card beside the posts. It follows the reader down the page and links straight to the product's tracking link."
+    },
+    {
+      "type": "checkbox",
+      "id": "rail_enable",
+      "label": "Show attached product",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "attached_product",
+      "label": "Attached product"
+    },
+    {
+      "type": "text",
+      "id": "rail_heading",
+      "label": "Card heading",
+      "default": "Editor's pick"
+    },
+    {
+      "type": "text",
+      "id": "rail_cta_label",
+      "label": "Button label",
+      "default": "View Deal on Amazon"
+    },
+    {
+      "type": "text",
+      "id": "rail_cta_note",
+      "label": "Disclosure note",
+      "default": "We may earn a commission when you buy through this link, at no extra cost to you."
+    },
+    {
+      "type": "select",
+      "id": "rail_position",
+      "label": "Position",
+      "default": "right",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "rail_sticky_top",
+      "min": 60,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "label": "Sticky offset",
+      "default": 100,
+      "info": "Raise this if the card slides under a sticky header"
+    },
+    {
+      "type": "checkbox",
+      "id": "rail_show_mobile",
+      "label": "Dock a bar on mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "rail_mobile_after",
+      "min": 200,
+      "max": 1500,
+      "step": 50,
+      "unit": "px",
+      "label": "Show mobile bar after",
+      "default": 600
     },
     {
       "type": "header",
