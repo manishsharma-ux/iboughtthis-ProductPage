@@ -95,10 +95,31 @@
   assign modern = section.settings.modern_ui
 
   comment
-    Attached product: per-article metafield first so each review can point at
-    its own product, falling back to the section-wide picker.
+    Attached product, resolved most-specific first so every post can show a
+    different one:
+      1. article metafield custom.attached_product
+      2. an article tag such as "product:sony-wh-1000xm5"
+      3. the section-wide fallback picker (same product on every post)
+    The tag route needs no metafield setup - just tag the post in the blog editor.
   endcomment
+  assign tag_prefix = section.settings.product_tag_prefix | default: 'product:' | downcase
+
   assign attached_product = article.metafields.custom.attached_product.value
+
+  if attached_product == blank
+    for t in article.tags
+      assign t_dc = t | downcase | strip
+      if t_dc contains tag_prefix
+        assign wanted = t_dc | remove_first: tag_prefix | strip
+        assign candidate = all_products[wanted]
+        if candidate.handle != blank
+          assign attached_product = candidate
+          break
+        endif
+      endif
+    endfor
+  endif
+
   if attached_product == blank
     assign attached_product = section.settings.attached_product
   endif
@@ -435,9 +456,13 @@
               {%- render 'icon-tag' -%}
                 <ul class="list-unstyled list-blog-tags ml-2">
                 {% for tag in article.tags %}
+                {%- comment -%} Skip the product:handle helper tag - it drives the rail, it is not a real topic. {%- endcomment -%}
+                {%- assign tag_dc = tag | downcase | strip -%}
+                {%- unless modern and tag_dc contains tag_prefix -%}
                 <li class=" d-inline-block px-2 py-1 mr-2">
                   <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="button">{{ tag }}</a>{% if forloop.last %}{% else %}, {% endif %}
                 </li>
+                {%- endunless -%}
                 {% endfor %}
                 </ul>
             </div>
@@ -944,7 +969,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Pins a product card beside the post. Set article metafield custom.attached_product to give each post its own product, or pick a fallback below. Needs Modern UI on."
+      "content": "Pins a product card beside the post. To show a DIFFERENT product on each post, tag the post with product:the-product-handle — that tag is hidden from the post. A custom.attached_product metafield wins over the tag. The picker below is only the fallback used when a post has neither. Needs Modern UI on."
     },
     {
       "type": "checkbox",
@@ -953,10 +978,17 @@
       "default": true
     },
     {
+      "type": "text",
+      "id": "product_tag_prefix",
+      "label": "Product tag prefix",
+      "default": "product:",
+      "info": "Tag a post product:sony-wh-1000xm5 to attach that product to it"
+    },
+    {
       "type": "product",
       "id": "attached_product",
       "label": "Fallback product",
-      "info": "Used when the article has no custom.attached_product metafield"
+      "info": "Shown only on posts with no product tag and no metafield. Leave empty to show no card on those posts."
     },
     {
       "type": "text",
