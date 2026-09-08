@@ -95,20 +95,29 @@
   assign modern = section.settings.modern_ui
 
   comment
-    Attached product, resolved most-specific first so every post can show a
-    different one:
-      1. article metafield custom.attached_product
-      2. an article tag such as "product:sony-wh-1000xm5"
-      3. the section-wide fallback picker (same product on every post)
-    The tag route needs no metafield setup - just tag the post in the blog editor.
+    Attached product. Two ways to vary it per post, and the priority setting
+    says which wins when both are present:
+
+    "template" (default) - duplicate this template per product, pick the
+      product in the customizer, then assign posts to that template. The
+      picker below is the product for every post on this template.
+
+    "post" - one template, and each post overrides via a
+      custom.attached_product metafield or a product:handle tag.
+
+    Whichever runs second still fills in when the first is empty, so a
+    template with no product picked can still be driven per post, and a
+    post with no tag still falls back to the template's product.
   endcomment
   assign tag_prefix = section.settings.product_tag_prefix | default: 'product:' | downcase
-  assign product_source = 'none'
-  assign tried_handle = ''
+  assign attached_product = blank
 
-  assign attached_product = article.metafields.custom.attached_product.value
-  if attached_product != blank
-    assign product_source = 'metafield'
+  if section.settings.product_priority != 'post'
+    assign attached_product = section.settings.attached_product
+  endif
+
+  if attached_product == blank
+    assign attached_product = article.metafields.custom.attached_product.value
   endif
 
   if attached_product == blank
@@ -129,20 +138,17 @@
         endif
         assign wanted = wanted | handleize
 
-        assign tried_handle = wanted
         assign candidate = all_products[wanted]
         if candidate.handle != blank
           assign attached_product = candidate
-          assign product_source = 'tag'
           break
         endif
       endif
     endfor
   endif
 
-  if attached_product == blank and section.settings.attached_product != blank
+  if attached_product == blank
     assign attached_product = section.settings.attached_product
-    assign product_source = 'fallback'
   endif
 
   assign rail_on = false
@@ -663,32 +669,6 @@
     </div>
     {%- if rail_on -%}
     <div class="{% if section.settings.sidebar_enable %}col-lg-3{% else %}col-lg-4{% endif %} col-12 ibt-article-rail{% if section.settings.rail_position == 'left' %} order-lg-first{% endif %}">
-      {%- if request.design_mode -%}
-        {%- comment -%} Editor-only: explains which source picked the product. Never shown to shoppers. {%- endcomment -%}
-        <div style="border:1px dashed #c9c9c9;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;line-height:1.6;color:#54595f;background:#fafafa;">
-          <strong style="color:#1a1a1a;">Attached product debug</strong><br>
-          Source:
-          {%- case product_source -%}
-            {%- when 'metafield' -%} <b>metafield</b> (custom.attached_product)
-            {%- when 'tag' -%} <b>tag</b> &mdash; this post has its own product
-            {%- when 'fallback' -%} <b>fallback picker</b> &mdash; same on every untagged post
-            {%- else -%} <b>none</b>
-          {%- endcase -%}<br>
-          Looking for tags starting: <code>{{ tag_prefix }}</code><br>
-          Tags on this post:
-          {%- if article.tags.size > 0 -%}
-            <code>{{ article.tags | join: '</code>, <code>' }}</code>
-          {%- else -%}
-            <em>none</em>
-          {%- endif -%}<br>
-          {%- if tried_handle != blank -%}
-            Handle tried: <code>{{ tried_handle }}</code>
-            {%- if product_source != 'tag' %} &mdash; <b style="color:#b42318;">no product with that handle is published to the Online Store</b>{% endif -%}
-            <br>
-          {%- endif -%}
-          Showing: <b>{{ attached_product.title | default: 'nothing' }}</b>
-        </div>
-      {%- endif -%}
       {%- render 'ibt-sticky-product',
             product_ref: attached_product,
             uid: section.id,
@@ -1016,7 +996,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Pins a product card beside the post. To show a DIFFERENT product on each post, tag the post with product:the-product-handle — that tag is hidden from the post. A custom.attached_product metafield wins over the tag. The picker below is only the fallback used when a post has neither. Needs Modern UI on."
+      "content": "Pins a product card beside the post. To give each post its own product: duplicate this template (template dropdown at the top of the customizer → Create template → based on Default article), pick the product below, then assign posts to that template. Needs Modern UI on."
     },
     {
       "type": "checkbox",
@@ -1025,17 +1005,34 @@
       "default": true
     },
     {
+      "type": "product",
+      "id": "attached_product",
+      "label": "Attached product",
+      "info": "The product shown on every post using this template. Leave empty to show no card."
+    },
+    {
+      "type": "select",
+      "id": "product_priority",
+      "label": "If a post also sets its own product",
+      "default": "template",
+      "options": [
+        {
+          "value": "template",
+          "label": "This template's product wins"
+        },
+        {
+          "value": "post",
+          "label": "The post's own product wins"
+        }
+      ],
+      "info": "A post can override with a custom.attached_product metafield or a product:handle tag. This decides which one shows when both exist."
+    },
+    {
       "type": "text",
       "id": "product_tag_prefix",
       "label": "Product tag prefix",
       "default": "product:",
-      "info": "Tag a post product:sony-wh-1000xm5 to attach that product to it"
-    },
-    {
-      "type": "product",
-      "id": "attached_product",
-      "label": "Fallback product",
-      "info": "Shown only on posts with no product tag and no metafield. Leave empty to show no card on those posts."
+      "info": "Only used for the per-post tag override, e.g. product:sony-wh-1000xm5"
     },
     {
       "type": "text",
