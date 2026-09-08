@@ -87,7 +87,322 @@
   assign layout_featured = section.settings.layout_featured
   assign enable_full = section.settings.enable_full
   assign align = section.settings.align
+
+  comment
+    The refreshed styling is opt-in: article-template backs a dozen other
+    templates, so leaving it off by default keeps those pages exactly as they are.
+  endcomment
+  assign modern = section.settings.modern_ui
+
+  comment
+    Attached product: per-article metafield first so each review can point at
+    its own product, falling back to the section-wide picker.
+  endcomment
+  assign attached_product = article.metafields.custom.attached_product.value
+  if attached_product == blank
+    assign attached_product = section.settings.attached_product
+  endif
+
+  assign rail_on = false
+  if modern and section.settings.rail_enable
+    if attached_product != blank or request.design_mode
+      assign rail_on = true
+    endif
+  endif
+
+  comment
+    Column widths for the body, sharing the row with the legacy sidebar
+    and/or the attached product rail.
+  endcomment
+  if section.settings.sidebar_enable and rail_on
+    assign main_col = 'col-lg-6 col-12'
+  elsif section.settings.sidebar_enable
+    assign main_col = 'col-md-9'
+  elsif rail_on
+    assign main_col = 'col-lg-8 col-12'
+  else
+    assign main_col = 'col-md-8'
+  endif
+
+  if section.settings.sidebar_enable
+    if section.settings.sidebar_position == 'left'
+      assign main_col = main_col | append: ' pl-lg-5'
+    else
+      assign main_col = main_col | append: ' pr-lg-5'
+    endif
+  endif
 -%}
+{%- if modern -%}
+{%- comment -%} Scoped refresh: only emitted when "Modern UI" is on. {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}{
+    --ibt-ar-accent:{{ section.settings.accent_color }};
+    --ibt-ar-accent-hover:{{ section.settings.accent_color | color_darken: 8 }};
+    --ibt-ar-ink:#1a1a1a;
+    --ibt-ar-body:#54595f;
+    --ibt-ar-line:#e6e6e6;
+    --ibt-ar-soft:#f7f7f5;
+    --ibt-ar-radius:16px;
+  }
+
+  /* ---------- reading progress ---------- */
+  .ibt-progress-{{ section.id }}{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    height:3px;
+    z-index:998;
+    background:transparent;
+    pointer-events:none;
+  }
+  .ibt-progress-{{ section.id }} span{
+    display:block;
+    height:100%;
+    width:0;
+    background:var(--ibt-ar-accent);
+    transition:width .1s linear;
+  }
+
+  /* ---------- hero ---------- */
+  #shopify-section-{{ section.id }} .featured-over .article__photo-wrapper:before{
+    background:linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.45) 55%, rgba(0,0,0,.7) 100%);
+  }
+  #shopify-section-{{ section.id }} .featured-over h1{
+    font-size:clamp(28px, 4vw, 46px);
+    line-height:1.2;
+    font-weight:700;
+    letter-spacing:-.01em;
+    margin-bottom:18px;
+  }
+  #shopify-section-{{ section.id }} .featured-over .blog__meta{
+    font-size:13px;
+    opacity:.92;
+  }
+  #shopify-section-{{ section.id }} .featured-over .content-block{
+    margin-bottom:3rem;
+  }
+
+  /* ---------- article body ---------- */
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"]{
+    font-size:17px;
+    line-height:1.8;
+    color:#2d3138;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] > * + *{
+    margin-top:1.35em;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] h2,
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] h3,
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] h4{
+    color:var(--ibt-ar-ink);
+    font-weight:700;
+    line-height:1.3;
+    letter-spacing:-.01em;
+    margin-top:2em;
+    margin-bottom:.6em;
+    scroll-margin-top:110px;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] h2{ font-size:28px; }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] h3{ font-size:22px; }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] h4{ font-size:18px; }
+
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] a:not(.button):not(.btn){
+    color:var(--ibt-ar-accent);
+    text-decoration:underline;
+    text-underline-offset:3px;
+    text-decoration-thickness:1px;
+    transition:color .2s ease;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] a:not(.button):not(.btn):hover{
+    color:var(--ibt-ar-accent-hover);
+  }
+
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] img{
+    border-radius:var(--ibt-ar-radius);
+    display:block;
+    margin:2em auto;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] ul,
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] ol{
+    padding-left:1.3em;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] li + li{
+    margin-top:.5em;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] li::marker{
+    color:var(--ibt-ar-accent);
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] blockquote{
+    margin:2em 0;
+    padding:18px 24px;
+    border-left:3px solid var(--ibt-ar-accent);
+    background:var(--ibt-ar-soft);
+    border-radius:0 12px 12px 0;
+    font-size:18px;
+    font-style:italic;
+    color:var(--ibt-ar-ink);
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] blockquote p:last-child{
+    margin-bottom:0;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] hr{
+    margin:2.5em 0;
+    border:0;
+    border-top:1px solid var(--ibt-ar-line);
+  }
+  /* Wide tables scroll instead of pushing the page sideways. */
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] table{
+    width:100%;
+    display:block;
+    overflow-x:auto;
+    border-collapse:collapse;
+    font-size:15px;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] th,
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] td{
+    border:1px solid var(--ibt-ar-line);
+    padding:10px 14px;
+    text-align:left;
+  }
+  #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] th{
+    background:var(--ibt-ar-soft);
+    font-weight:700;
+    color:var(--ibt-ar-ink);
+  }
+
+  /* ---------- tags + share ---------- */
+  #shopify-section-{{ section.id }} .list-blog-tags{
+    margin-bottom:0;
+  }
+  #shopify-section-{{ section.id }} .list-blog-tags li{
+    padding:0 !important;
+    margin:0 6px 0 0 !important;
+  }
+  #shopify-section-{{ section.id }} .list-blog-tags li a{
+    display:inline-block;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--ibt-ar-accent);
+    background:var(--ibt-ar-soft);
+    border-radius:999px;
+    padding:5px 12px;
+    text-decoration:none;
+    transition:background .2s ease, color .2s ease;
+  }
+  #shopify-section-{{ section.id }} .list-blog-tags li a:hover{
+    background:var(--ibt-ar-accent);
+    color:#fff;
+  }
+
+  /* ---------- prev / next ---------- */
+  #shopify-section-{{ section.id }} .next_prev > li{
+    padding:0 14px;
+  }
+  #shopify-section-{{ section.id }} .next_prev .media{
+    width:100%;
+    padding:16px;
+    border:1px solid var(--ibt-ar-line);
+    border-radius:var(--ibt-ar-radius);
+    background:#fff;
+    transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+  }
+  #shopify-section-{{ section.id }} .next_prev .media:hover{
+    transform:translateY(-2px);
+    border-color:transparent;
+    box-shadow:0 12px 30px rgba(16,24,40,.1);
+  }
+  #shopify-section-{{ section.id }} .next_prev .article__photo-wrapper{
+    border-radius:10px;
+    overflow:hidden;
+  }
+  #shopify-section-{{ section.id }} .next_prev .h5{
+    font-size:15px;
+    line-height:1.4;
+    font-weight:600;
+    color:var(--ibt-ar-ink);
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    text-decoration:none;
+  }
+  #shopify-section-{{ section.id }} .next_prev .h5:hover{
+    color:var(--ibt-ar-accent);
+  }
+  #shopify-section-{{ section.id }} .next_prev .border-left{
+    border-left:0 !important;
+  }
+
+  /* ---------- comments ---------- */
+  #shopify-section-{{ section.id }} .comments .comment{
+    border:1px solid var(--ibt-ar-line) !important;
+    border-radius:var(--ibt-ar-radius);
+    padding:18px 20px !important;
+    margin-bottom:14px !important;
+    background:#fff;
+  }
+  #shopify-section-{{ section.id }} .comment-form .form-control{
+    border:1px solid var(--ibt-ar-line);
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:15px;
+    background:#fff;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  #shopify-section-{{ section.id }} .comment-form .form-control:focus{
+    outline:none;
+    border-color:var(--ibt-ar-accent);
+    box-shadow:0 0 0 4px {{ section.settings.accent_color | color_modify: 'alpha', 0.12 }};
+  }
+  #shopify-section-{{ section.id }} .comment-form .btn{
+    border-radius:999px;
+    padding:12px 30px;
+    font-weight:700;
+  }
+
+  /* ---------- attached product rail ---------- */
+  #shopify-section-{{ section.id }} .ibt-article-rail{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:28px;
+  }
+  #shopify-section-{{ section.id }} .ibt-article-rail > *{
+    flex:1 1 auto;
+  }
+
+  @media (max-width:749px){
+    #shopify-section-{{ section.id }} .rte[itemprop="articleBody"]{
+      font-size:16px;
+      line-height:1.75;
+    }
+    #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] h2{ font-size:23px; }
+    #shopify-section-{{ section.id }} .rte[itemprop="articleBody"] h3{ font-size:19px; }
+    #shopify-section-{{ section.id }} .next_prev > li{
+      padding:0 6px;
+    }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .ibt-progress-{{ section.id }} span,
+    #shopify-section-{{ section.id }} .next_prev .media{
+      transition:none !important;
+    }
+    #shopify-section-{{ section.id }} .next_prev .media:hover{
+      transform:none;
+    }
+  }
+{%- endstyle -%}
+
+{%- if section.settings.enable_progress -%}
+  <div class="ibt-progress-{{ section.id }}" aria-hidden="true">
+    <span data-bar></span>
+  </div>
+{%- endif -%}
+{%- endif -%}
+
 {%- render 'style-section' -%}
 <div class="article-main wrapper customstyle{{ section.id }}" data-aos="{{ section.settings.animation }}">
   {%- comment -%} <div class="indicator"></div> {%- endcomment -%}
@@ -106,8 +421,8 @@
 -%}
 
 <div class="container">
-  <article itemscope itemtype="http://schema.org/Article" class="row {% if section.settings.sidebar_position == 'left' %}flex-row-reverse{% endif %} {% unless section.settings.sidebar_enable %} justify-content-center{% endunless %}">
-    <div  class="{% if section.settings.sidebar_enable %}col-md-9 {% if section.settings.sidebar_position == 'left' %} pl-lg-5{% else %} pr-lg-5{% endif %} {% else %}col-md-8{% endif %}">
+  <article itemscope itemtype="http://schema.org/Article" class="row {% if section.settings.sidebar_position == 'left' %}flex-row-reverse{% endif %} {% unless section.settings.sidebar_enable or rail_on %} justify-content-center{% endunless %}">
+    <div  class="{{ main_col }}">
       
       
       <div class="content-block">
@@ -300,12 +615,62 @@
       {%- endif -%}
 
     </div>
+    {%- if rail_on -%}
+    <div class="{% if section.settings.sidebar_enable %}col-lg-3{% else %}col-lg-4{% endif %} col-12 ibt-article-rail{% if section.settings.rail_position == 'left' %} order-lg-first{% endif %}">
+      {%- render 'ibt-sticky-product',
+            product_ref: attached_product,
+            uid: section.id,
+            heading: section.settings.rail_heading,
+            cta_label: section.settings.rail_cta_label,
+            cta_note: section.settings.rail_cta_note,
+            accent: section.settings.accent_color,
+            sticky_top: section.settings.rail_sticky_top,
+            show_mobile: section.settings.rail_show_mobile,
+            mobile_after: section.settings.rail_mobile_after -%}
+    </div>
+    {%- endif -%}
     {%- if section.settings.sidebar_enable -%}
     {%- render 'blogSidebar' -%}
     {%- endif -%}
   </article>
 </div>
 </div>
+
+{%- if modern and section.settings.enable_progress -%}
+  <script>
+    (function () {
+      var bar = document.querySelector('.ibt-progress-{{ section.id }} [data-bar]');
+      var body = document.querySelector('#shopify-section-{{ section.id }} .rte[itemprop="articleBody"]');
+      if (!bar || !body) return;
+
+      var ticking = false;
+
+      // Progress across the article body only, so the bar reads 100% at the
+      // end of the post rather than at the end of the comments and footer.
+      var sync = function () {
+        ticking = false;
+        var rect = body.getBoundingClientRect();
+        var total = rect.height - window.innerHeight;
+        if (total <= 0) {
+          bar.style.width = rect.bottom <= window.innerHeight ? '100%' : '0%';
+          return;
+        }
+        var pct = (-rect.top / total) * 100;
+        bar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      };
+
+      var onScroll = function () {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(sync);
+      };
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      sync();
+    })();
+  </script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -549,6 +914,109 @@
       "id": "blog_show_previous_and_next_buttons",
       "label": "Show next/ previous buttons",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Modern UI"
+    },
+    {
+      "type": "checkbox",
+      "id": "modern_ui",
+      "label": "Use refreshed styling",
+      "default": false,
+      "info": "Off by default so the other templates built on this section keep their current look."
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent colour",
+      "default": "#1c4ead"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_progress",
+      "label": "Reading progress bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Attached product"
+    },
+    {
+      "type": "paragraph",
+      "content": "Pins a product card beside the post. Set article metafield custom.attached_product to give each post its own product, or pick a fallback below. Needs Modern UI on."
+    },
+    {
+      "type": "checkbox",
+      "id": "rail_enable",
+      "label": "Show attached product",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "attached_product",
+      "label": "Fallback product",
+      "info": "Used when the article has no custom.attached_product metafield"
+    },
+    {
+      "type": "text",
+      "id": "rail_heading",
+      "label": "Card heading",
+      "default": "Featured in this review"
+    },
+    {
+      "type": "text",
+      "id": "rail_cta_label",
+      "label": "Button label",
+      "default": "View Deal on Amazon"
+    },
+    {
+      "type": "text",
+      "id": "rail_cta_note",
+      "label": "Disclosure note",
+      "default": "We may earn a commission when you buy through this link, at no extra cost to you."
+    },
+    {
+      "type": "select",
+      "id": "rail_position",
+      "label": "Position",
+      "default": "right",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "rail_sticky_top",
+      "min": 60,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "label": "Sticky offset",
+      "default": 100
+    },
+    {
+      "type": "checkbox",
+      "id": "rail_show_mobile",
+      "label": "Dock a bar on mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "rail_mobile_after",
+      "min": 200,
+      "max": 1500,
+      "step": 50,
+      "unit": "px",
+      "label": "Show mobile bar after",
+      "default": 600
     },
     {
       "type": "header",
