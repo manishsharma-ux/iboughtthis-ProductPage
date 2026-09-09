@@ -213,19 +213,12 @@
         "paragraph_jK4Yrx": {
           "type": "paragraph",
           "settings": {
-            "subtext": "True Classic Men’s T-Shirts are thoughtfully crafted to combine comfort, fit, and versatility in one everyday essential. Designed with an athletic cut, these t-shirts contour the chest and shoulders while offering enough room through the midsection for all-day comfort and easy movement. Whether worn solo or layered, they create a polished yet relaxed look that works for almost any occasion.Made from a premium cotton-polyester blend, these men’s t-shirts feel soft, breathable, and lightweight while maintaining durability through repeated washes."
-          }
-        },
-        "paragraph_rYPVAN": {
-          "type": "paragraph",
-          "settings": {
-            "subtext": "The fabric is engineered to hold its shape and softness over time, with minimal shrinkage, so your t-shirt continues to fit just right wear after wear.With a classic crew neck and short sleeves, these plain men’s t-shirts pair effortlessly with jeans, joggers, or shorts. Ideal for work, casual outings, lounging, or travel, they are designed to be reliable staples you can reach for every day. Available in multiple colors and sizes, these multipack tees make it easy to stock up on high-quality essentials that look great and feel even better."
+            "subtext": "True Classic Men’s T-Shirts are thoughtfully crafted to combine comfort, fit, and versatility in one everyday essential. Designed with an athletic cut, these t-shirts contour the chest and shoulders while offering enough room through the midsection for all-day comfort and easy movement. Whether worn solo or layered, they create a polished yet relaxed look that works for almost any occasion.Made from a premium cotton-polyester blend, these men’s t-shirts feel soft, breathable, and lightweight while maintaining durability through repeated washes.The fabric is engineered to hold its shape and softness over time, with minimal shrinkage, so your t-shirt continues to fit just right wear after wear.With a classic crew neck and short sleeves, these plain men’s t-shirts pair effortlessly with jeans, joggers, or shorts. Ideal for work, casual outings, lounging, or travel, they are designed to be reliable staples you can reach for every day. Available in multiple colors and sizes, these multipack tees make it easy to stock up on high-quality essentials that look great and feel even better."
           }
         }
       },
       "block_order": [
-        "paragraph_jK4Yrx",
-        "paragraph_rYPVAN"
+        "paragraph_jK4Yrx"
       ],
       "custom_css": [
         ".col-lg-7.col-12 {max-width: 100% !important;}"
