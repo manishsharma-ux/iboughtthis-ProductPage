@@ -76,8 +76,8 @@
         "boxed": false,
         "animation": "fade-up",
         "bgsection": "#ffffff",
-        "paddingsection": "48px 0px 48px 0px",
-        "paddingmobile": "32px 0px 32px 0px",
+        "paddingsection": "56px 0px 56px 0px",
+        "paddingmobile": "36px 0px 36px 0px",
         "marginsection": "0px 0px 0px 0px",
         "marginmobile": "0px 0px 0px 0px"
       }
@@ -121,8 +121,8 @@
       "name": "List image",
       "settings": {
         "animation": "",
-        "paddingsection": "0px 0px 0px 0px",
-        "paddingmobile": "60px 0px 60px 0px",
+        "paddingsection": "56px 0px 56px 0px",
+        "paddingmobile": "36px 0px 36px 0px",
         "marginsection": "0px 0px 0px 0px",
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
@@ -234,8 +234,8 @@
         "body_align": "center",
         "content_width": "narrow",
         "align-heading": "center",
-        "paddingsection": "20px 0px 20px 0px",
-        "paddingmobile": "40px 0px 40px 0px",
+        "paddingsection": "56px 0px 56px 0px",
+        "paddingmobile": "36px 0px 36px 0px",
         "marginsection": "0px 0px 0px 0px",
         "marginmobile": "0px 0px 0px 0px"
       }
@@ -323,8 +323,8 @@
       ],
       "settings": {
         "animation": "",
-        "paddingsection": "0px 0px 0px 0px",
-        "paddingmobile": "60px 0px 60px 0px",
+        "paddingsection": "56px 0px 56px 0px",
+        "paddingmobile": "36px 0px 36px 0px",
         "marginsection": "0px 0px 0px 0px",
         "marginmobile": "0px 0px 0px 0px",
         "bgsection": "#ffffff"
