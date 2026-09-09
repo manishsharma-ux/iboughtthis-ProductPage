@@ -1,7 +1,6 @@
 <!doctype html>
 <html class="no-js " lang="{{ shop.locale }}">
   <head>
-{% include 'booster-seo' %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -19,7 +18,7 @@
       <link rel="shortcut icon" href="{{ settings.favicon | image_url: width: 32, height: 32 }}" type="image/png">
     {%- endif -%}
 
-    {% comment %}<title>
+    <title>
       {{ page_title }}
       {% if current_tags %}
         {% assign meta_tags = current_tags | join: ', ' %}
@@ -34,12 +33,12 @@
         &ndash;
         {{ shop.name }}
       {% endunless %}
-    </title>{% endcomment %}
+    </title>
    
     {%- if page_description -%}
-      {% comment %}<meta name="description" content="{{ page_description | escape }}">{% endcomment %}
+      <meta name="description" content="{{ page_description | escape }}">
       {% else %}
-      {% comment %}<meta name="description" content="{{ page_description | escape }}">{% endcomment %}
+      <meta name="description" content="{{ settings.meta_description | escape }}">
     {%- endif -%}
     
     {%- render 'social-meta-tags' -%}
