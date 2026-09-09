@@ -755,7 +755,9 @@
       var rail = document.querySelector('#shopify-section-{{ section.id }} .ibt-article-rail');
       var body = document.querySelector('#shopify-section-{{ section.id }} .rte[itemprop="articleBody"]');
       if (!rail || !body) return;
-      var wrap = rail.firstElementChild;
+      // Not firstElementChild: the snippet's style tag renders a real <style>
+      // element ahead of the wrapper, so match the wrapper by its own hook.
+      var wrap = rail.querySelector('[data-ibt-sticky-product]');
       var card = wrap && wrap.querySelector('[data-rail]');
       if (!wrap || !card) return;
 
@@ -770,6 +772,12 @@
         card.classList.remove('is-fixed', 'is-parked');
         card.style.width = '';
         wrap.style.height = '';
+        // Below the breakpoint the card sits in the flow under the post, so it
+        // must not reserve the article's full height.
+        if (window.innerWidth < 992) {
+          travel = 0;
+          return;
+        }
         var edge = stopAtContent
           ? body.getBoundingClientRect().bottom
           : (rail.parentNode ? rail.parentNode.getBoundingClientRect().bottom : body.getBoundingClientRect().bottom);
