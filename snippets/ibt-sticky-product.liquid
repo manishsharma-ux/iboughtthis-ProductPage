@@ -9,6 +9,7 @@
     cta_label    - buy button text
     cta_note     - disclosure line under the button
     accent       - button background colour
+    compact      - boolean, tighter card for narrow rails
     sticky_top   - offset in px the card parks at, clears the sticky header
     show_mobile  - boolean, docks a compact bar at the bottom on small screens
     mobile_after - px scrolled before the mobile bar appears
@@ -303,6 +304,50 @@
       color:var(--ibt-sp-body);
       text-align:center;
     }
+
+    {%- if compact -%}
+    /* ---------- compact: same card, smaller footprint ---------- */
+    .ibt-sp-{{ uid }}__eyebrow{
+      font-size:10px;
+      margin-bottom:8px;
+    }
+    .ibt-sp-{{ uid }}__media{ padding:12px; }
+    .ibt-sp-{{ uid }}__media img{ height:132px; }
+    .ibt-sp-{{ uid }}__body{ padding:12px 14px 14px; }
+    .ibt-sp-{{ uid }}__vendor{
+      font-size:10px;
+      margin-bottom:4px;
+    }
+    .ibt-sp-{{ uid }}__title{
+      font-size:14px;
+      line-height:1.3;
+      margin-bottom:8px;
+    }
+    .ibt-sp-{{ uid }}__title a{ -webkit-line-clamp:2; }
+    .ibt-sp-{{ uid }}__rating{ margin-bottom:8px; }
+    .ibt-sp-{{ uid }}__score{ font-size:13px; }
+    .ibt-sp-{{ uid }}__stars{ font-size:13px; }
+    .ibt-sp-{{ uid }}__count{ font-size:11px; }
+    .ibt-sp-{{ uid }}__label{
+      font-size:10px;
+      padding:2px 8px;
+      margin-bottom:8px;
+    }
+    .ibt-sp-{{ uid }}__price{ margin-bottom:10px; }
+    .ibt-sp-{{ uid }}__price b{ font-size:17px; }
+    .ibt-sp-{{ uid }}__price s{ font-size:12px; }
+    .ibt-sp-{{ uid }}__cta{
+      padding:10px 14px;
+      font-size:13px;
+    }
+    .ibt-sp-{{ uid }}__note{
+      font-size:10px;
+      margin-top:8px;
+    }
+    @media (max-width:991px){
+      .ibt-sp-{{ uid }}__media img{ height:170px; }
+    }
+    {%- endif -%}
 
     /* ---------- mobile docked bar ---------- */
     .ibt-sp-{{ uid }}__bar{

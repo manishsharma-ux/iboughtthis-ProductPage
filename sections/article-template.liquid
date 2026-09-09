@@ -151,6 +151,18 @@
     assign attached_product = section.settings.attached_product
   endif
 
+  comment
+    Tags left after the product:handle helper is filtered out. Used to drop the
+    tag row entirely rather than leave a label icon with nothing beside it.
+  endcomment
+  assign visible_tags = 0
+  for t in article.tags
+    assign t_dc = t | downcase | strip
+    unless modern and t_dc contains tag_prefix
+      assign visible_tags = visible_tags | plus: 1
+    endunless
+  endfor
+
   assign rail_on = false
   if modern and section.settings.rail_enable
     if attached_product != blank or request.design_mode
@@ -420,6 +432,18 @@
   #shopify-section-{{ section.id }} .ibt-article-rail > *{
     flex:1 1 auto;
   }
+  {%- if section.settings.rail_stop_at_content -%}
+  /* Travel is capped to the article body by JS, so the card releases where
+     the post ends instead of riding down through the comments. */
+  @media (min-width:992px){
+    #shopify-section-{{ section.id }} .ibt-article-rail{
+      align-self:flex-start;
+    }
+    #shopify-section-{{ section.id }} .ibt-article-rail > *{
+      flex:0 0 auto;
+    }
+  }
+  {%- endif -%}
 
   @media (max-width:749px){
     #shopify-section-{{ section.id }} .rte[itemprop="articleBody"]{
@@ -479,6 +503,7 @@
         </div>
         <div class="border-top py-4">
           <div class="d-flex justify-content-start justify-content-lg-between align-items-center flex-wrap">
+            {%- if visible_tags > 0 -%}
             <div class="d-flex align-items-center">
               {%- render 'icon-tag' -%}
                 <ul class="list-unstyled list-blog-tags ml-2">
@@ -493,6 +518,7 @@
                 {% endfor %}
                 </ul>
             </div>
+            {%- endif -%}
            
             {%- if section.settings.social_sharing_blog -%}
               {%- render 'social-sharing', share_title: article.title, share_permalink: article.url, share_image: article.image -%}
@@ -676,6 +702,7 @@
             cta_label: section.settings.rail_cta_label,
             cta_note: section.settings.rail_cta_note,
             accent: section.settings.accent_color,
+            compact: section.settings.rail_compact,
             sticky_top: section.settings.rail_sticky_top,
             show_mobile: section.settings.rail_show_mobile,
             mobile_after: section.settings.rail_mobile_after -%}
@@ -720,6 +747,48 @@
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll, { passive: true });
       sync();
+    })();
+  </script>
+{%- endif -%}
+
+{%- if rail_on and section.settings.rail_stop_at_content -%}
+  <script>
+    (function () {
+      var rail = document.querySelector('#shopify-section-{{ section.id }} .ibt-article-rail');
+      var body = document.querySelector('#shopify-section-{{ section.id }} .rte[itemprop="articleBody"]');
+      if (!rail || !body) return;
+      var wrap = rail.firstElementChild;
+      if (!wrap) return;
+
+      // A sticky element can only travel inside its parent. Sizing that parent
+      // to end where the article body ends releases the card at the end of the
+      // post instead of letting it ride down past the comments.
+      var apply = function () {
+        if (window.innerWidth < 992) {
+          wrap.style.height = '';
+          return;
+        }
+        wrap.style.height = '';
+        var height = body.getBoundingClientRect().bottom - rail.getBoundingClientRect().top;
+        wrap.style.height = (height > 0 ? height : 0) + 'px';
+      };
+
+      var scheduled = false;
+      var schedule = function () {
+        if (scheduled) return;
+        scheduled = true;
+        window.requestAnimationFrame(function () {
+          scheduled = false;
+          apply();
+        });
+      };
+
+      apply();
+      window.addEventListener('resize', schedule, { passive: true });
+      window.addEventListener('load', schedule);
+      if ('ResizeObserver' in window) {
+        new ResizeObserver(schedule).observe(body);
+      }
     })();
   </script>
 {%- endif -%}
@@ -1067,6 +1136,20 @@
           "label": "Right"
         }
       ]
+    },
+    {
+      "type": "checkbox",
+      "id": "rail_compact",
+      "label": "Compact card",
+      "default": true,
+      "info": "Smaller image, tighter spacing, title trimmed to two lines"
+    },
+    {
+      "type": "checkbox",
+      "id": "rail_stop_at_content",
+      "label": "Release card at end of post",
+      "default": true,
+      "info": "The card follows the reader through the article, then stops instead of continuing past the comments"
     },
     {
       "type": "range",
