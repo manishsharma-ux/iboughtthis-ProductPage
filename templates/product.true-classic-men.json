@@ -1,0 +1,350 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "ibt-hero",
+      "blocks": {
+        "trust_1": {
+          "type": "trust_point",
+          "settings": {
+            "text": "Independently tested by our review team"
+          }
+        },
+        "trust_2": {
+          "type": "trust_point",
+          "settings": {
+            "text": "Price and availability checked against Amazon"
+          }
+        }
+      },
+      "block_order": [
+        "trust_1",
+        "trust_2"
+      ],
+      "custom_css": [],
+      "settings": {
+        "setwidth": "container",
+        "media_style": "media-bottom",
+        "media_size": "normal",
+        "image_size": "square",
+        "enable_video_looping": true,
+        "force_square": true,
+        "image_fit": "contain",
+        "gallery_bg": "#ffffff",
+        "sticky_media": true,
+        "badge_text": "",
+        "show_vendor": true,
+        "show_price": true,
+        "reviews_anchor": "",
+        "show_description": true,
+        "desc_source": "description",
+        "desc_lines": 5,
+        "read_more_label": "Read more",
+        "read_less_label": "Read less",
+        "cta_label": "View Deal on Amazon",
+        "cta_bg": "#1c4ead",
+        "cta_color": "#ffffff",
+        "cta_note": "We may earn a commission when you buy through this link, at no extra cost to you.",
+        "bgsection": "#ffffff",
+        "paddingsection": "24px 0px 48px 0px",
+        "paddingmobile": "16px 0px 32px 0px",
+        "marginsection": "0px 0px 0px 0px",
+        "marginmobile": "0px 0px 0px 0px"
+      }
+    },
+    "about": {
+      "type": "ibt-about",
+      "disabled": true,
+      "settings": {
+        "setwidth": "container",
+        "eyebrow": "",
+        "heading": "About the product",
+        "body": "<p>ggg</p>",
+        "image": "shopify://shop_images/grace3.jpg",
+        "use_product_image": false,
+        "image_position": "left",
+        "image_width": 45,
+        "image_caption": "",
+        "boxed": false,
+        "animation": "fade-up",
+        "bgsection": "#ffffff",
+        "paddingsection": "48px 0px 48px 0px",
+        "paddingmobile": "32px 0px 32px 0px",
+        "marginsection": "0px 0px 0px 0px",
+        "marginmobile": "0px 0px 0px 0px"
+      }
+    },
+    "list_image_Vn6ErC": {
+      "type": "list-image",
+      "blocks": {
+        "image_item_9JPCdE": {
+          "type": "image_item",
+          "settings": {
+            "image": "shopify://shop_images/61bV4bAPb0L._AC_SX679__1.jpg",
+            "product": "",
+            "top": 30,
+            "left": 60
+          }
+        },
+        "image_item_Wc4Xjj": {
+          "type": "image_item",
+          "settings": {
+            "image": "shopify://shop_images/true_3.jpg",
+            "product": "",
+            "top": 30,
+            "left": 60
+          }
+        },
+        "image_item_hHQC8n": {
+          "type": "image_item",
+          "settings": {
+            "image": "shopify://shop_images/true_4.jpg",
+            "product": "",
+            "top": 30,
+            "left": 60
+          }
+        }
+      },
+      "block_order": [
+        "image_item_9JPCdE",
+        "image_item_Wc4Xjj",
+        "image_item_hHQC8n"
+      ],
+      "name": "List image",
+      "settings": {
+        "animation": "",
+        "paddingsection": "0px 0px 0px 0px",
+        "paddingmobile": "60px 0px 60px 0px",
+        "marginsection": "0px 0px 0px 0px",
+        "marginmobile": "0px 0px 0px 0px",
+        "setwidth": "container",
+        "bgsection": "rgba(0,0,0,0)",
+        "title_top": "",
+        "title": "About the Product",
+        "des": "",
+        "align-heading": "center",
+        "arrows": true,
+        "draggable": true,
+        "dots": true,
+        "infinite": true,
+        "rows": "1",
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
+      }
+    },
+    "features": {
+      "type": "ibt-key-features",
+      "blocks": {
+        "feature_K9UM4h": {
+          "type": "feature",
+          "settings": {
+            "text": "Athletic fit that enhances the chest and shoulders while allowing comfortable movement",
+            "description": ""
+          }
+        },
+        "feature_cPfDVF": {
+          "type": "feature",
+          "settings": {
+            "text": "Soft and breathable cotton-polyester blend for all-day wear",
+            "description": ""
+          }
+        },
+        "feature_9bbFcH": {
+          "type": "feature",
+          "settings": {
+            "text": "Durable fabric that retains shape and softness after repeated washing",
+            "description": ""
+          }
+        },
+        "feature_PTFmAM": {
+          "type": "feature",
+          "settings": {
+            "text": "Minimal shrinkage for a consistent, reliable fit",
+            "description": ""
+          }
+        }
+      },
+      "block_order": [
+        "feature_K9UM4h",
+        "feature_cPfDVF",
+        "feature_9bbFcH",
+        "feature_PTFmAM"
+      ],
+      "custom_css": [],
+      "settings": {
+        "setwidth": "container",
+        "eyebrow": "",
+        "heading": "Key features",
+        "fallback_body": "",
+        "columns": "1",
+        "icon_color": "#1c6b33",
+        "image": "shopify://shop_images/true_5.jpg",
+        "image_position": "right",
+        "image_width": 45,
+        "image_caption": "",
+        "boxed": false,
+        "animation": "fade-up",
+        "bgsection": "#f9f9f7",
+        "paddingsection": "56px 0px 56px 0px",
+        "paddingmobile": "36px 0px 36px 0px",
+        "marginsection": "0px 0px 0px 0px",
+        "marginmobile": "0px 0px 0px 0px"
+      }
+    },
+    "rich_text_KMja74": {
+      "type": "rich-text",
+      "blocks": {
+        "paragraph_jK4Yrx": {
+          "type": "paragraph",
+          "settings": {
+            "subtext": "True Classic Men’s T-Shirts are thoughtfully crafted to combine comfort, fit, and versatility in one everyday essential. Designed with an athletic cut, these t-shirts contour the chest and shoulders while offering enough room through the midsection for all-day comfort and easy movement. Whether worn solo or layered, they create a polished yet relaxed look that works for almost any occasion.Made from a premium cotton-polyester blend, these men’s t-shirts feel soft, breathable, and lightweight while maintaining durability through repeated washes."
+          }
+        },
+        "paragraph_rYPVAN": {
+          "type": "paragraph",
+          "settings": {
+            "subtext": "The fabric is engineered to hold its shape and softness over time, with minimal shrinkage, so your t-shirt continues to fit just right wear after wear.With a classic crew neck and short sleeves, these plain men’s t-shirts pair effortlessly with jeans, joggers, or shorts. Ideal for work, casual outings, lounging, or travel, they are designed to be reliable staples you can reach for every day. Available in multiple colors and sizes, these multipack tees make it easy to stock up on high-quality essentials that look great and feel even better."
+          }
+        }
+      },
+      "block_order": [
+        "paragraph_jK4Yrx",
+        "paragraph_rYPVAN"
+      ],
+      "custom_css": [
+        ".col-lg-7.col-12 {max-width: 100% !important;}"
+      ],
+      "name": "Rich text",
+      "settings": {
+        "animation": "",
+        "setwidth": "container",
+        "bgsection": "#f1f1f1",
+        "title_top": "",
+        "title": "Expert Backed Review Summary",
+        "text": "",
+        "body_align": "center",
+        "content_width": "narrow",
+        "align-heading": "center",
+        "paddingsection": "20px 0px 20px 0px",
+        "paddingmobile": "40px 0px 40px 0px",
+        "marginsection": "0px 0px 0px 0px",
+        "marginmobile": "0px 0px 0px 0px"
+      }
+    },
+    "faqs": {
+      "type": "ibt-faqs",
+      "blocks": {
+        "faq_1": {
+          "type": "faq",
+          "settings": {
+            "question": "1. Are True Classic Men’s T-Shirts comfortable for everyday wear?",
+            "answer": "<p>Yes, they feature a soft, breathable cotton-polyester blend designed for comfortable all-day wear.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "faq",
+          "settings": {
+            "question": "2. Do True Classic Men’s T-Shirts shrink after washing?",
+            "answer": "<p>They are designed for minimal shrinkage and to retain their shape and softness after repeated washes.</p>"
+          }
+        },
+        "faq_3": {
+          "type": "faq",
+          "settings": {
+            "question": "3. What fit do True Classic Men’s T-Shirts have?",
+            "answer": "<p>They feature an athletic fit that contours the chest and shoulders while allowing more room through the midsection. </p>"
+          }
+        },
+        "faq_4": {
+          "type": "faq",
+          "settings": {
+            "question": "4. What sizes are available in True Classic Men’s T-Shirts?",
+            "answer": "<p>The T-shirts are available in multiple colors and sizes ranging from S to 3XL. </p><p></p>"
+          }
+        },
+        "faq_5": {
+          "type": "faq",
+          "settings": {
+            "question": "5. How can you style True Classic Men’s T-Shirts?",
+            "answer": "<p>Their classic crew-neck design pairs easily with jeans, joggers, shorts, or layered outfits. </p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "faq_5"
+      ],
+      "settings": {
+        "setwidth": "container",
+        "eyebrow": "Before you buy",
+        "heading": "FAQs",
+        "intro": "",
+        "align": "left",
+        "single_open": true,
+        "open_first": false,
+        "enable_faq_schema": true,
+        "boxed": true,
+        "narrow": true,
+        "accent_color": "#1c4ead",
+        "animation": "fade-up",
+        "bgsection": "#ffffff",
+        "paddingsection": "56px 0px 56px 0px",
+        "paddingmobile": "36px 0px 36px 0px",
+        "marginsection": "0px 0px 0px 0px",
+        "marginmobile": "0px 0px 0px 0px"
+      }
+    },
+    "17887771541e7c349e": {
+      "type": "apps",
+      "blocks": {
+        "lai_product_reviews_lai_product_section_Tbwa3E": {
+          "type": "shopify://apps/lai-product-reviews/blocks/lai-product-section/cad3c6c6-329e-4416-ba74-b79359b5b6e1",
+          "settings": {
+            "lai_product": "",
+            "title": "",
+            "use_other_product": false
+          }
+        }
+      },
+      "block_order": [
+        "lai_product_reviews_lai_product_section_Tbwa3E"
+      ],
+      "settings": {
+        "animation": "",
+        "paddingsection": "0px 0px 0px 0px",
+        "paddingmobile": "60px 0px 60px 0px",
+        "marginsection": "0px 0px 0px 0px",
+        "marginmobile": "0px 0px 0px 0px",
+        "bgsection": "#ffffff"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "about",
+    "list_image_Vn6ErC",
+    "features",
+    "rich_text_KMja74",
+    "faqs",
+    "17887771541e7c349e"
+  ]
+}
