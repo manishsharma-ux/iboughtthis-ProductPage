@@ -85,16 +85,16 @@
   }
   #shopify-section-{{ section.id }} .ibt-feat__icon{
     flex:0 0 auto;
-    width:22px;
-    height:22px;
-    margin-top:2px;
+    width:12px;
+    height:12px;
+    margin-top:10px;
     color:var(--ibt-check);
   }
   #shopify-section-{{ section.id }} .ibt-feat__copy{ min-width:0; }
   #shopify-section-{{ section.id }} .ibt-feat__title{
     display:block;
-    font-size:17px;
-    font-weight:700;
+    font-size:24px;
+    {% comment %} font-weight:700; {% endcomment %}
     line-height:1.45;
     color:var(--ibt-ink);
     margin:0 0 2px;
@@ -214,7 +214,7 @@
         {%- if section.settings.eyebrow != blank -%}
           <p class="ibt-eyebrow">{{ section.settings.eyebrow }}</p>
         {%- endif -%}
-        <h2 class="ibt-h2">{{ section.settings.heading | default: 'Key features' }}</h2>
+        <h2 class="section-title-1 mb-3 aos-init aos-animate">{{ section.settings.heading | default: 'Key features' }}</h2>
 
         {%- if manual_count > 0 -%}
           <ul class="ibt-feat__list">
