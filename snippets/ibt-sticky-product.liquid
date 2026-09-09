@@ -126,15 +126,22 @@
     .ibt-sp-{{ uid }}{
       position:relative;
     }
-    .ibt-sp-{{ uid }} .ibt-sp-{{ uid }}__rail.is-fixed{
+    /* The [data-…] hook lifts these above a hand-written
+       `.…__rail.is-in.is-stuck { position:fixed }` override, so the parked
+       state always wins and the card cannot ride over the footer. */
+    .ibt-sp-{{ uid }}[data-ibt-sticky-product] .ibt-sp-{{ uid }}__rail.is-fixed{
       position:fixed;
       top:var(--ibt-sp-top);
     }
-    .ibt-sp-{{ uid }} .ibt-sp-{{ uid }}__rail.is-parked{
+    .ibt-sp-{{ uid }}[data-ibt-sticky-product] .ibt-sp-{{ uid }}__rail.is-parked{
       position:absolute;
       top:auto;
       bottom:0;
       width:100%;
+    }
+    .ibt-sp-{{ uid }}[data-ibt-sticky-product] .ibt-sp-{{ uid }}__rail:not(.is-fixed):not(.is-parked){
+      position:relative;
+      top:auto;
     }
 
     .ibt-sp-{{ uid }}__eyebrow{
