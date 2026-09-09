@@ -432,9 +432,8 @@
   #shopify-section-{{ section.id }} .ibt-article-rail > *{
     flex:1 1 auto;
   }
-  {%- if section.settings.rail_stop_at_content -%}
-  /* Travel is capped to the article body by JS, so the card releases where
-     the post ends instead of riding down through the comments. */
+  /* The rail column must not stretch: JS gives the wrapper an explicit height
+     that defines exactly how far the pinned card may travel. */
   @media (min-width:992px){
     #shopify-section-{{ section.id }} .ibt-article-rail{
       align-self:flex-start;
@@ -443,7 +442,6 @@
       flex:0 0 auto;
     }
   }
-  {%- endif -%}
 
   @media (max-width:749px){
     #shopify-section-{{ section.id }} .rte[itemprop="articleBody"]{
@@ -751,43 +749,82 @@
   </script>
 {%- endif -%}
 
-{%- if rail_on and section.settings.rail_stop_at_content -%}
+{%- if rail_on -%}
   <script>
     (function () {
       var rail = document.querySelector('#shopify-section-{{ section.id }} .ibt-article-rail');
       var body = document.querySelector('#shopify-section-{{ section.id }} .rte[itemprop="articleBody"]');
       if (!rail || !body) return;
       var wrap = rail.firstElementChild;
-      if (!wrap) return;
+      var card = wrap && wrap.querySelector('[data-rail]');
+      if (!wrap || !card) return;
 
-      // A sticky element can only travel inside its parent. Sizing that parent
-      // to end where the article body ends releases the card at the end of the
-      // post instead of letting it ride down past the comments.
-      var apply = function () {
-        if (window.innerWidth < 992) {
-          wrap.style.height = '';
-          return;
-        }
+      var offset = parseInt('{{ section.settings.rail_sticky_top | default: 100 }}', 10) || 100;
+      var travel = 0;
+
+      // The wrapper reserves the column space and defines how far the card can
+      // travel. Bounded by the article body when the card should let go at the
+      // end of the post, otherwise by the whole row.
+      var stopAtContent = {% if section.settings.rail_stop_at_content %}true{% else %}false{% endif %};
+      var measure = function () {
+        card.classList.remove('is-fixed', 'is-parked');
+        card.style.width = '';
         wrap.style.height = '';
-        var height = body.getBoundingClientRect().bottom - rail.getBoundingClientRect().top;
-        wrap.style.height = (height > 0 ? height : 0) + 'px';
+        var edge = stopAtContent
+          ? body.getBoundingClientRect().bottom
+          : (rail.parentNode ? rail.parentNode.getBoundingClientRect().bottom : body.getBoundingClientRect().bottom);
+        travel = edge - wrap.getBoundingClientRect().top;
+        if (travel < 0) travel = 0;
+        wrap.style.height = travel + 'px';
       };
 
-      var scheduled = false;
-      var schedule = function () {
-        if (scheduled) return;
-        scheduled = true;
+      var position = function () {
+        if (window.innerWidth < 992) {
+          card.classList.remove('is-fixed', 'is-parked');
+          card.style.width = '';
+          return;
+        }
+        var wrapTop = wrap.getBoundingClientRect().top;
+        var cardHeight = card.offsetHeight;
+
+        if (wrapTop > offset) {
+          // Article has not reached the pin line yet.
+          card.classList.remove('is-fixed', 'is-parked');
+          card.style.width = '';
+        } else if (wrapTop + travel - cardHeight > offset) {
+          // Pinned: content scrolls, card holds its place.
+          card.classList.add('is-fixed');
+          card.classList.remove('is-parked');
+          card.style.width = wrap.clientWidth + 'px';
+        } else {
+          // End of the post - let the card go with the page.
+          card.classList.remove('is-fixed');
+          card.classList.add('is-parked');
+          card.style.width = '';
+        }
+      };
+
+      var ticking = false;
+      var onScroll = function () {
+        if (ticking) return;
+        ticking = true;
         window.requestAnimationFrame(function () {
-          scheduled = false;
-          apply();
+          ticking = false;
+          position();
         });
       };
 
-      apply();
-      window.addEventListener('resize', schedule, { passive: true });
-      window.addEventListener('load', schedule);
+      var refresh = function () {
+        measure();
+        position();
+      };
+
+      refresh();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', refresh, { passive: true });
+      window.addEventListener('load', refresh);
       if ('ResizeObserver' in window) {
-        new ResizeObserver(schedule).observe(body);
+        new ResizeObserver(refresh).observe(body);
       }
     })();
   </script>

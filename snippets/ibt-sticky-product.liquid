@@ -119,6 +119,24 @@
       transform:none;
     }
 
+    /* The theme wraps every page in .page-container { overflow:hidden }, which
+       silently kills position:sticky. So the card is driven by JS instead:
+       fixed while the article scrolls past, then parked at the end of it.
+       The wrapper reserves the space and anchors the parked state. */
+    .ibt-sp-{{ uid }}{
+      position:relative;
+    }
+    .ibt-sp-{{ uid }} .ibt-sp-{{ uid }}__rail.is-fixed{
+      position:fixed;
+      top:var(--ibt-sp-top);
+    }
+    .ibt-sp-{{ uid }} .ibt-sp-{{ uid }}__rail.is-parked{
+      position:absolute;
+      top:auto;
+      bottom:0;
+      width:100%;
+    }
+
     .ibt-sp-{{ uid }}__eyebrow{
       display:flex;
       align-items:center;
