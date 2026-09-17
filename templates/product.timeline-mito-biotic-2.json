@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/pure_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/pure_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/pure_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Mitopure® Powered – Patented Urolithin A bioactive targets visible skin aging.",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Peptide Complex – Supports smoother, firmer-looking skin.",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Lightweight Hydration – Fast-absorbing moisture without a heavy feel.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Niacinamide – Supports the skin barrier and more even-looking tone.",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/pure_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>Timeline Mitopure Dewy Cream is designed for users who want meaningful hydration and anti-aging skincare in a lighter daily moisturizer. Unlike heavier barrier creams, its lightweight texture absorbs quickly and leaves skin with a dewy, healthy-looking finish, making it practical for both morning and evening routines. The standout ingredient is <strong>Mitopure®</strong>, Timeline's patented form of Urolithin A. The brand positions this bioactive around supporting mitochondrial function in skin, while the overall formula is designed to improve hydration, barrier function, and the visible signs associated with skin aging. Mitopure is supported by a complementary blend of <strong>peptides, niacinamide, and sodium hyaluronate</strong>. The peptide complex is formulated to support skin renewal and address the appearance of wrinkles and elasticity, while niacinamide helps support the skin barrier and more even-looking tone. Sodium hyaluronate works as a moisture-binding ingredient to help skin feel softer and appear plumper. </p><p></p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,36 +230,36 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. What does Timeline Mitopure Dewy Cream do?",
+            "answer": "<p>It hydrates and supports the skin barrier while helping improve the appearance of wrinkles, texture, and elasticity. </p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. Is Timeline Dewy Cream suitable for sensitive skin?",
+            "answer": "<p>Yes, Timeline describes the formula as dermatologist approved and sensitive-skin safe. </p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. What are the main ingredients in Timeline Dewy Cream?",
+            "answer": "<p>Key ingredients include Mitopure, a peptide complex, niacinamide, and sodium hyaluronate. </p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. Can Timeline Dewy Cream be used every day?",
+            "answer": "<p>Yes, Timeline recommends using 1–2 pumps daily, morning and night, with SPF afterward during daytime use. </p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
-            "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
+            "question": "5. Is Timeline Dewy Cream heavy or greasy?",
+            "answer": "<p>No, it is formulated as a lightweight, fast-absorbing moisturizer that provides lasting hydration. </p>"
           }
         }
       },
