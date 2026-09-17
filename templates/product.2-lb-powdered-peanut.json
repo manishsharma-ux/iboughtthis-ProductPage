@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/pb_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/pb_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/pb_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Only One Ingredient – Made entirely from roasted peanuts with no added sugar, salt, additives, or preservatives.",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "7g Plant-Based Protein – Provides 7g of protein and approximately 0.9g of BCAAs per serving.",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "50 Calories Per Serving – Offers peanut flavor and protein in a lower-calorie powdered format.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "U.S.-Grown Peanuts – Uses peanuts sourced exclusively from U.S. farms and is processed and packaged in the United States.",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/pb_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>Nutritionally, each serving provides <strong>7g of protein, 3g of carbohydrates, and 50 calories</strong>, along with approximately 0.9g of naturally occurring BCAAs. Because much of the peanut fat is removed during processing, the powder can be an easy way to add peanut flavor and protein while keeping overall calories and fat lower than conventional peanut butter. Versatility is another advantage. NAKED PB can be blended into protein shakes and smoothies, stirred into oatmeal or yogurt, incorporated into baked goods, or used in sweet and savory sauces. Adding water also allows you to adjust the consistency and turn the powder into a peanut butter-style spread. The product is made from peanuts sourced exclusively from U.S. farms and is processed and packaged in the United States. According to the product information, it is vegan, non-GMO, dairy-free, soy-free, and independently third-party tested for heavy metals.</p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,36 +230,36 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. What is powdered peanut butter?",
+            "answer": "<p>It is peanut butter made by pressing out much of the natural oil andgrinding the peanutsinto a powder.</p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. How can I use powdered peanut butter?",
+            "answer": "<p>Mix it with water to make peanut butteror add itto smoothies, oatmeal, yogurt, and bakedgoods.</p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. Is this powdered peanut butter made from U.S. farms?",
+            "answer": "<p>Yes, the product is marketed as being made from peanutssourced from U.S. farms.</p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. What size package does it come in?",
+            "answer": "<p>Thisproduct comes ina 2-poundpackage of powderedpeanut butter.</p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
-            "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
+            "question": "5. How should I store powdered peanut butter?",
+            "answer": "<ol><li>Keep it tightly sealed in a cool, dry place and follow the storage instructions on the package.</li></ol>"
           }
         }
       },
