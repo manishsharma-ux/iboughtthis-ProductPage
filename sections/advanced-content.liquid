@@ -1,6 +1,11 @@
 <!-- advanced-content.liquid -->
 {%-liquid
   assign text_color = section.settings.text_color
+  assign slide_blocks = section.blocks | where: 'type', 'slide'
+  assign slide_count = slide_blocks.size
+  assign grid_block_count = section.blocks.size | minus: slide_count
+  assign slider_height = section.settings.slider_height | default: '550'
+  assign slider_height_mobile = section.settings.slider_height_mobile | default: '400'
 -%}
 <style>
   .customstyle{{ section.id }}{
@@ -56,6 +61,146 @@
     }
    
   }
+
+  {%- if slide_count > 0 -%}
+  {%- liquid
+    assign arrow_bg = section.settings.slider_arrow_bg | default: 'rgba(0,0,0,0.35)'
+    assign dot_color = section.settings.slider_dot_color | default: '#ffffff'
+  -%}
+  /* ---------- Banner slider ---------- */
+  .customstyle{{ section.id }} .adv-banner-slider-wrapper{
+    position: relative;
+    --adv-arrow-color: {{ section.settings.slider_arrow_color | default: '#ffffff' }};
+    --adv-arrow-bg: {{ arrow_bg }};
+    --adv-dot-rgb: {{ dot_color.red }},{{ dot_color.green }},{{ dot_color.blue }};
+    --adv-content-width: {{ section.settings.slider_content_width | default: 900 }}px;
+    {%- if section.settings.padding and section.settings.setwidth != 'full' -%}
+    margin-right: calc(0px - var(--g-hgutter));
+    margin-left: calc(0px - var(--g-hgutter));
+    {%- endif -%}
+  }
+  .customstyle{{ section.id }} .adv-banner-slider{
+    position: relative;
+    margin-bottom: 0;
+  }
+  .customstyle{{ section.id }} .adv-banner-slider:not(.slick-initialized) .adv-banner-slide + .adv-banner-slide{
+    display: none;
+  }
+  .customstyle{{ section.id }} .adv-banner-slide{
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    background-color: #111111;
+  }
+  .customstyle{{ section.id }} .adv-banner-slide__media,
+  .customstyle{{ section.id }} .adv-banner-slide__overlay,
+  .customstyle{{ section.id }} .adv-banner-slide__link,
+  .customstyle{{ section.id }} .adv-banner-slide__inner{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+  .customstyle{{ section.id }} .adv-banner-slide__media{ z-index: 1; }
+  .customstyle{{ section.id }} .adv-banner-slide__overlay{ z-index: 2; pointer-events: none; }
+  .customstyle{{ section.id }} .adv-banner-slide__link{ z-index: 3; display: block; }
+  .customstyle{{ section.id }} .adv-banner-slide__inner{
+    z-index: 4;
+    padding: 40px 6%;
+    pointer-events: none;
+  }
+  .customstyle{{ section.id }} .adv-banner-slide__content{
+    width: 100%;
+    max-width: var(--adv-content-width);
+    pointer-events: auto;
+  }
+  .customstyle{{ section.id }} .adv-banner-slide__img,
+  .customstyle{{ section.id }} .adv-banner-slide__media .placeholder-svg{
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: var(--adv-img-pos, center center);
+  }
+  .customstyle{{ section.id }} .adv-banner-slide__sub{ margin-bottom: 12px; }
+  .customstyle{{ section.id }} .adv-banner-slide__title{ margin-bottom: 16px; }
+  .customstyle{{ section.id }} .adv-banner-slide__des{ display: inline-block; max-width: 100%; }
+  .customstyle{{ section.id }} .adv-banner-slide__des ul li{ text-align: left; }
+  .customstyle{{ section.id }} .adv-banner-slide__button{ margin-top: 30px; }
+
+  /* content reveal on the active slide */
+  .customstyle{{ section.id }} .adv-banner-slider.slick-initialized .adv-banner-slide__content > *{
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .customstyle{{ section.id }} .adv-banner-slider.slick-initialized .adv-banner-slide__content > :nth-child(2){ transition-delay: .1s; }
+  .customstyle{{ section.id }} .adv-banner-slider.slick-initialized .adv-banner-slide__content > :nth-child(3){ transition-delay: .2s; }
+  .customstyle{{ section.id }} .adv-banner-slider.slick-initialized .adv-banner-slide__content > :nth-child(4){ transition-delay: .3s; }
+  .customstyle{{ section.id }} .adv-banner-slider.slick-initialized .slick-active .adv-banner-slide__content > *{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* heights */
+  .customstyle{{ section.id }} .adv-banner-slider--desktop-adapt .adv-banner-slide{ height: auto; aspect-ratio: var(--adv-ratio, 16 / 6); }
+  .customstyle{{ section.id }} .adv-banner-slider--desktop-450 .adv-banner-slide{ height: 450px; }
+  .customstyle{{ section.id }} .adv-banner-slider--desktop-550 .adv-banner-slide{ height: 550px; }
+  .customstyle{{ section.id }} .adv-banner-slider--desktop-650 .adv-banner-slide{ height: 650px; }
+  .customstyle{{ section.id }} .adv-banner-slider--desktop-750 .adv-banner-slide{ height: 750px; }
+  .customstyle{{ section.id }} .adv-banner-slider--desktop-full .adv-banner-slide{ height: calc(100vh - var(--height-announbar, 0px) - var(--height-header, 0px)); }
+
+  /* arrows */
+  .customstyle{{ section.id }} .adv-banner-slider .slick-arrow{
+    top: 50%;
+    width: 48px;
+    height: 48px;
+    background: var(--adv-arrow-bg);
+    box-shadow: none;
+    z-index: 5;
+    opacity: 1;
+  }
+  .customstyle{{ section.id }} .adv-banner-slider .slick-arrow:before{
+    color: var(--adv-arrow-color);
+    font-size: 16px;
+  }
+  .customstyle{{ section.id }} .adv-banner-slider .slick-arrow.slick-disabled{ opacity: .35; }
+  .customstyle{{ section.id }} .adv-banner-slider .slick-prev{ left: 24px; right: auto; }
+  .customstyle{{ section.id }} .adv-banner-slider .slick-next{ right: 24px; left: auto; }
+  [dir="rtl"] .customstyle{{ section.id }} .adv-banner-slider .slick-prev{ left: auto; right: 24px; }
+  [dir="rtl"] .customstyle{{ section.id }} .adv-banner-slider .slick-next{ right: auto; left: 24px; }
+
+  /* dots */
+  .customstyle{{ section.id }} .adv-banner-slider .slick-dots{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 20px;
+    z-index: 5;
+    margin: 0;
+    line-height: 0;
+  }
+  .customstyle{{ section.id }} .adv-banner-slider .slick-dots li button{ background: rgba(var(--adv-dot-rgb), .55); }
+  .customstyle{{ section.id }} .adv-banner-slider .slick-dots li button::before{ border-color: rgb(var(--adv-dot-rgb)); }
+  .customstyle{{ section.id }} .adv-banner-slider .slick-dots li.slick-active button,
+  .customstyle{{ section.id }} .adv-banner-slider .slick-dots li:hover button{ background: rgb(var(--adv-dot-rgb)); }
+
+  @media (max-width: 767px){
+    .customstyle{{ section.id }} .adv-banner-slider--mobile-adapt .adv-banner-slide{ height: auto; aspect-ratio: var(--adv-ratio-mobile, var(--adv-ratio, 4 / 5)); }
+    .customstyle{{ section.id }} .adv-banner-slider--mobile-300 .adv-banner-slide{ height: 300px; aspect-ratio: auto; }
+    .customstyle{{ section.id }} .adv-banner-slider--mobile-400 .adv-banner-slide{ height: 400px; aspect-ratio: auto; }
+    .customstyle{{ section.id }} .adv-banner-slider--mobile-500 .adv-banner-slide{ height: 500px; aspect-ratio: auto; }
+    .customstyle{{ section.id }} .adv-banner-slider--mobile-full .adv-banner-slide{ height: 100vh; aspect-ratio: auto; }
+    .customstyle{{ section.id }} .adv-banner-slide__inner{ padding: 30px 20px; }
+    .customstyle{{ section.id }} .adv-banner-slide__button{ margin-top: 20px; }
+    .customstyle{{ section.id }} .adv-banner-slider .slick-dots{ bottom: 12px; }
+    {%- unless section.settings.slider_arrows_mobile -%}
+    .customstyle{{ section.id }} .adv-banner-slider .slick-arrow{ display: none !important; }
+    {%- endunless -%}
+  }
+  {%- endif -%}
 </style>
 <section class="customstyle{{ section.id }} lazyload {{ section.settings.text_color }}"
     data-bgset="{% render 'bgset', image: section.settings.image_bg %}"
@@ -66,8 +211,104 @@
   <div class="{{ section.settings.setwidth }}">
     <div class="section-block">
       {%- render 'section-heading' -%}
+      {%- if slide_count > 0 -%}
+        <div class="adv-banner-slider-wrapper" role="region" aria-roledescription="carousel" aria-label="{{ section.settings.title | default: 'Banner slider' | strip_html | escape }}">
+          <div id="AdvBannerSlider-{{ section.id }}"
+               class="adv-banner-slider adv-banner-slider--desktop-{{ slider_height }} adv-banner-slider--mobile-{{ slider_height_mobile }}"
+               data-autoplay="{{ section.settings.slider_autoplay }}"
+               data-speed="{{ section.settings.slider_speed | default: 5 | times: 1000 }}"
+               data-pause-hover="{{ section.settings.slider_pause_hover }}"
+               data-infinite="{{ section.settings.slider_infinite }}"
+               data-transition="{{ section.settings.slider_transition | default: 'fade' }}"
+               data-arrows="{{ section.settings.slider_arrows }}"
+               data-dots="{{ section.settings.slider_dots }}"
+               data-adaptive="{% if slider_height == 'adapt' or slider_height_mobile == 'adapt' %}true{% else %}false{% endif %}">
+            {%- for block in slide_blocks -%}
+              {%- liquid
+                assign slide_image = block.settings.image
+                assign slide_image_mobile = block.settings.image_mobile
+                assign slide_alt = slide_image.alt | default: block.settings.title | strip_html
+                case block.settings.vertical
+                  when 'top'
+                    assign v_align = 'start'
+                  when 'bottom'
+                    assign v_align = 'end'
+                  else
+                    assign v_align = 'center'
+                endcase
+                case block.settings.horizontal
+                  when 'left'
+                    assign h_align = 'start'
+                  when 'right'
+                    assign h_align = 'end'
+                  else
+                    assign h_align = 'center'
+                endcase
+                case block.settings.title_size
+                  when 'h2'
+                    assign title_class = 'h2'
+                  when 'h3'
+                    assign title_class = 'h3'
+                  else
+                    assign title_class = 'section-title-1'
+                endcase
+                assign overlay = block.settings.overlay_color | default: '#000000'
+                assign overlay_alpha = block.settings.overlay_opacity | default: 0 | divided_by: 100.0
+              -%}
+              <div class="adv-banner-slide adv-banner-slide--{{ block.id }}"
+                   style="--adv-img-pos: {{ block.settings.image_position | default: 'center center' }};{% if slide_image != blank %} --adv-ratio: {{ slide_image.aspect_ratio }};{% endif %}{% if slide_image_mobile != blank %} --adv-ratio-mobile: {{ slide_image_mobile.aspect_ratio }};{% endif %}"
+                   {{ block.shopify_attributes }}>
+                <div class="adv-banner-slide__media">
+                  {%- if slide_image != blank -%}
+                    {%- capture desktop_img_class -%}adv-banner-slide__img{% if slide_image_mobile != blank %} d-none d-md-block{% endif %}{%- endcapture -%}
+                    {%- if forloop.first and slide_image_mobile == blank -%}
+                      {{ slide_image | image_url: width: 1920 | image_tag: widths: '750, 1000, 1280, 1500, 1920, 2560', sizes: '100vw', loading: 'eager', fetchpriority: 'high', preload: true, alt: slide_alt, class: desktop_img_class }}
+                    {%- elsif forloop.first -%}
+                      {{ slide_image | image_url: width: 1920 | image_tag: widths: '750, 1000, 1280, 1500, 1920, 2560', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: slide_alt, class: desktop_img_class }}
+                    {%- else -%}
+                      {{ slide_image | image_url: width: 1920 | image_tag: widths: '750, 1000, 1280, 1500, 1920, 2560', sizes: '100vw', loading: 'lazy', alt: slide_alt, class: desktop_img_class }}
+                    {%- endif -%}
+                    {%- if slide_image_mobile != blank -%}
+                      {{ slide_image_mobile | image_url: width: 1200 | image_tag: widths: '375, 500, 750, 1000, 1200', sizes: '100vw', loading: 'lazy', alt: slide_alt, class: 'adv-banner-slide__img d-md-none' }}
+                    {%- endif -%}
+                  {%- else -%}
+                    {%- capture placeholder_index -%}{%- cycle 1, 2 -%}{%- endcapture -%}
+                    {{ 'lifestyle-' | append: placeholder_index | placeholder_svg_tag: 'placeholder-svg' }}
+                  {%- endif -%}
+                  {%- if block.settings.show_overlay -%}
+                    <div class="adv-banner-slide__overlay" style="background-color: rgba({{ overlay.red }}, {{ overlay.green }}, {{ overlay.blue }}, {{ overlay_alpha }});"></div>
+                  {%- endif -%}
+                </div>
+                {%- if block.settings.slide_link != blank -%}
+                  <a class="adv-banner-slide__link" href="{{ block.settings.slide_link }}" aria-label="{{ block.settings.title | default: 'View banner' | strip_html | escape }}"></a>
+                {%- endif -%}
+                <div class="adv-banner-slide__inner d-flex align-items-{{ v_align }} justify-content-{{ h_align }}">
+                  <div class="adv-banner-slide__content text-{{ block.settings.text_align | default: 'center' }}">
+                    {%- if block.settings.sub != blank -%}
+                      <div class="adv-banner-slide__sub subtop" style="color: {{ block.settings.color_sub }};">{{ block.settings.sub }}</div>
+                    {%- endif -%}
+                    {%- if block.settings.title != blank -%}
+                      <h2 class="adv-banner-slide__title {{ title_class }}" style="color: {{ block.settings.color_title }};">{{ block.settings.title }}</h2>
+                    {%- endif -%}
+                    {%- if block.settings.code != blank -%}
+                      <div class="adv-banner-slide__des" style="color: {{ block.settings.color_des }};">{{ block.settings.code }}</div>
+                    {%- endif -%}
+                    {%- if block.settings.button_text != blank -%}
+                      <div class="adv-banner-slide__button">
+                        <a href="{{ block.settings.link_button | default: '#' }}" class="btn {{ block.settings.button_style | default: 'btn-theme' }}">{{ block.settings.button_text }}{% render 'icon-button-base' %}</a>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+      {%- if grid_block_count > 0 -%}
       <div class="row {% unless section.settings.padding %} m-0{% endunless %} {% if section.settings.col_center %} justify-content-center {% endif %}">
         {%- for block in section.blocks -%}
+          {%- if block.type == 'slide' -%}{%- continue -%}{%- endif -%}
           {%- liquid
             case block.settings.width 
             when 'auto' 
@@ -493,9 +734,116 @@
           </div>
         {%- endfor -%}
       </div>
+      {%- endif -%}
     </div>
   </div>
 </section>
+
+{%- if slide_count > 0 -%}
+<script>
+  (function () {
+    var SECTION_ID = '{{ section.id }}';
+    var SLIDER_SELECTOR = '#AdvBannerSlider-' + SECTION_ID;
+
+    function slickReady() {
+      return !!(window.jQuery && jQuery.fn && jQuery.fn.slick);
+    }
+
+    function findSlider(context) {
+      var root = context && context.querySelector ? context : document;
+      return root.querySelector(SLIDER_SELECTOR);
+    }
+
+    function stripEditorAttrsFromClones(event, slick) {
+      // Cloned slides (infinite mode) must not be selectable in the theme editor
+      slick.$slider.find('.slick-cloned').removeAttr('data-shopify-editor-block');
+    }
+
+    function initBannerSlider(context) {
+      if (!slickReady()) return;
+      var el = findSlider(context);
+      if (!el) return;
+      var $slider = jQuery(el);
+      if ($slider.hasClass('slick-initialized')) return;
+
+      var d = el.dataset;
+      var isFade = d.transition === 'fade';
+
+      $slider.on('init reInit', stripEditorAttrsFromClones);
+      $slider.slick({
+        rtl: !!(window.theme && window.theme.rtl === true),
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: d.arrows === 'true',
+        dots: d.dots === 'true',
+        infinite: d.infinite === 'true',
+        fade: isFade,
+        cssEase: isFade ? 'ease' : 'cubic-bezier(0.4, 0, 0.2, 1)',
+        speed: 700,
+        autoplay: d.autoplay === 'true',
+        autoplaySpeed: parseInt(d.speed, 10) || 5000,
+        pauseOnHover: d.pauseHover === 'true',
+        pauseOnFocus: false,
+        pauseOnDotsHover: false,
+        draggable: true,
+        swipe: true,
+        touchThreshold: 20,
+        adaptiveHeight: d.adaptive === 'true',
+        accessibility: true,
+        waitForAnimate: true
+      });
+    }
+
+    function destroyBannerSlider(context) {
+      if (!slickReady()) return;
+      var el = findSlider(context);
+      if (!el) return;
+      var $slider = jQuery(el);
+      if ($slider.hasClass('slick-initialized')) {
+        $slider.slick('unslick');
+      }
+    }
+
+    // vendor.js / theme.js are deferred, so jQuery + slick are available once DOMContentLoaded fires.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { initBannerSlider(document); });
+    } else {
+      initBannerSlider(document);
+    }
+
+    // Theme editor hooks. This script re-runs on every section reload, so register them only once.
+    if (!window.Shopify || !window.Shopify.designMode) return;
+    window.advBannerSliderHooks = window.advBannerSliderHooks || {};
+    if (window.advBannerSliderHooks[SECTION_ID]) return;
+    window.advBannerSliderHooks[SECTION_ID] = true;
+
+    document.addEventListener('shopify:section:load', function (e) {
+      if (e.detail && e.detail.sectionId === SECTION_ID) initBannerSlider(e.target);
+    });
+
+    document.addEventListener('shopify:section:unload', function (e) {
+      if (e.detail && e.detail.sectionId === SECTION_ID) destroyBannerSlider(e.target);
+    });
+
+    document.addEventListener('shopify:block:select', function (e) {
+      if (!e.detail || e.detail.sectionId !== SECTION_ID || !slickReady()) return;
+      var $slider = jQuery(SLIDER_SELECTOR);
+      if (!$slider.hasClass('slick-initialized')) return;
+      var $slide = $slider.find('.adv-banner-slide--' + e.detail.blockId + ':not(.slick-cloned)');
+      if (!$slide.length) return;
+      $slider.slick('slickGoTo', $slide.data('slick-index'));
+      $slider.slick('slickPause');
+    });
+
+    document.addEventListener('shopify:block:deselect', function (e) {
+      if (!e.detail || e.detail.sectionId !== SECTION_ID || !slickReady()) return;
+      var $slider = jQuery(SLIDER_SELECTOR);
+      if (!$slider.hasClass('slick-initialized')) return;
+      if ($slider.attr('data-autoplay') === 'true') $slider.slick('slickPlay');
+    });
+  })();
+</script>
+{%- endif -%}
 
 
 {% schema %}
@@ -832,6 +1180,122 @@
       "id": "col_center",
       "label": "Enable Center Column",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "Banner slider",
+      "info": "Add 'Banner slide' blocks to turn this section into a slider. These settings apply to every slide."
+    },
+    {
+      "type": "select",
+      "id": "slider_height",
+      "label": "Slider height (desktop)",
+      "default": "550",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "450", "label": "450px" },
+        { "value": "550", "label": "550px" },
+        { "value": "650", "label": "650px" },
+        { "value": "750", "label": "750px" },
+        { "value": "full", "label": "Full screen" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "slider_height_mobile",
+      "label": "Slider height (mobile)",
+      "default": "400",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "300", "label": "300px" },
+        { "value": "400", "label": "400px" },
+        { "value": "500", "label": "500px" },
+        { "value": "full", "label": "Full screen" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "slider_content_width",
+      "label": "Content max width",
+      "min": 400,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "default": 900
+    },
+    {
+      "type": "select",
+      "id": "slider_transition",
+      "label": "Transition",
+      "default": "fade",
+      "options": [
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide", "label": "Slide" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "slider_autoplay",
+      "label": "Auto-rotate slides",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "slider_speed",
+      "label": "Change slides every",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "slider_pause_hover",
+      "label": "Pause on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "slider_infinite",
+      "label": "Loop slides",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "slider_arrows",
+      "label": "Show arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "slider_arrows_mobile",
+      "label": "Show arrows on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "slider_dots",
+      "label": "Show dots",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "slider_arrow_color",
+      "label": "Arrow color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "slider_arrow_bg",
+      "label": "Arrow background",
+      "default": "rgba(0,0,0,0.35)"
+    },
+    {
+      "type": "color",
+      "id": "slider_dot_color",
+      "label": "Dot color",
+      "default": "#ffffff"
     },
     {
       "type": "header",
@@ -1713,6 +2177,193 @@
           "default": 30
         }
       ]
+    },
+    {
+      "type": "slide",
+      "name": "Banner slide",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Recommended 1920 x 700px or larger"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Mobile image (optional)",
+          "info": "Shown on screens narrower than 768px. Recommended 750 x 900px"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image focal point",
+          "default": "center center",
+          "options": [
+            { "value": "top left", "label": "Top Left" },
+            { "value": "top center", "label": "Top Center" },
+            { "value": "top right", "label": "Top Right" },
+            { "value": "center left", "label": "Center Left" },
+            { "value": "center center", "label": "Center" },
+            { "value": "center right", "label": "Center Right" },
+            { "value": "bottom left", "label": "Bottom Left" },
+            { "value": "bottom center", "label": "Bottom Center" },
+            { "value": "bottom right", "label": "Bottom Right" }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Overlay"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_overlay",
+          "label": "Show overlay",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "overlay_color",
+          "label": "Overlay color",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay opacity",
+          "min": 0,
+          "max": 90,
+          "step": 5,
+          "unit": "%",
+          "default": 30
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "sub",
+          "label": "Subtitle"
+        },
+        {
+          "type": "color",
+          "id": "color_sub",
+          "label": "Subtitle color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Banner heading"
+        },
+        {
+          "type": "select",
+          "id": "title_size",
+          "label": "Heading size",
+          "default": "h1",
+          "options": [
+            { "value": "h1", "label": "Large" },
+            { "value": "h2", "label": "Medium" },
+            { "value": "h3", "label": "Small" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "color_title",
+          "label": "Heading color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "textarea",
+          "id": "code",
+          "label": "Description",
+          "info": "HTML allowed",
+          "default": "Share a short message about this banner."
+        },
+        {
+          "type": "color",
+          "id": "color_des",
+          "label": "Description color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "link_button",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button style",
+          "default": "btn-outline btn-outline-white",
+          "options": [
+            { "value": "btn-theme", "label": "Theme" },
+            { "value": "btn-theme btn-white", "label": "White" },
+            { "value": "btn-outline btn-outline-white", "label": "Outline white" },
+            { "value": "btn-outline", "label": "Outline" },
+            { "value": "btn-underline btn-underline-white", "label": "Underline white" }
+          ]
+        },
+        {
+          "type": "url",
+          "id": "slide_link",
+          "label": "Whole slide link (optional)",
+          "info": "Makes the entire slide clickable"
+        },
+        {
+          "type": "header",
+          "content": "Position"
+        },
+        {
+          "type": "select",
+          "id": "vertical",
+          "label": "Content vertical position",
+          "default": "middle",
+          "options": [
+            { "value": "top", "label": "Top" },
+            { "value": "middle", "label": "Middle" },
+            { "value": "bottom", "label": "Bottom" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "horizontal",
+          "label": "Content horizontal position",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "text_align",
+          "label": "Text alignment",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        }
+      ]
     }
   ],
   "presets": [
@@ -1722,6 +2373,24 @@
       "blocks": [
         {
           "type": "html"
+        }
+      ]
+    },
+    {
+      "name": "Banner Slider",
+      "category": "Advanced layout",
+      "settings": {
+        "setwidth": "container",
+        "title_top": "",
+        "title": "",
+        "paddingmobile": "0px 0px 0px 0px"
+      },
+      "blocks": [
+        {
+          "type": "slide"
+        },
+        {
+          "type": "slide"
         }
       ]
     }
