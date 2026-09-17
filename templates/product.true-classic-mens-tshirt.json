@@ -230,7 +230,7 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "What material is this polo shirt made from?",
+            "question": "1. What material is this polo shirt made from?",
             "answer": "<p>It is made from a comfortable cotton-blend fabric designed for everyday wear.</p>"
           }
         },
