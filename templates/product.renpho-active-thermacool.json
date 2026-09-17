@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/renpho_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/renpho_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/renpho_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Heat & Cold Therapy – Four heating and four cooling levels.",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Up to 3,200 RPM – Five adjustable percussion speeds.",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "8 mm Amplitude – Designed for targeted muscle massage.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Five Massage Heads – Includes thermal, ball, flat, bullet, and U-shaped heads.",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/renpho_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>The RENPHO Active Thermacool 2 stands out from conventional massage guns by combining percussion therapy and temperature control in one handheld device. Instead of requiring separate hot or cold packs, its dedicated Heat & Cool head can warm or cool the targeted area while you massage, making it particularly convenient for pre- and post-workout routines. Temperature control is one of its strongest features. There are <strong>four heat levels from 102°F to 113°F (39°C–45°C)</strong> and <strong>four cooling levels from 46°F to 57°F (8°C–14°C)</strong>. This gives users more flexibility than a simple on/off heating function and allows the temperature to be adjusted according to personal comfort. For percussion massage, the Thermacool 2 provides <strong>five speed levels and up to 3,200 RPM</strong>, paired with an 8 mm amplitude. That combination provides enough intensity for everyday muscle massage while remaining relatively compact. The brushless motor operates at around 40 dB, helping keep noise under control during home use. The included attachments also improve versatility. Along with the specialized Heat & Cool head, the package includes <strong>flat, bullet, ball, and U-shaped massage heads</strong>, allowing users to choose an attachment based on the muscle group and desired massage style. A carry case is included for keeping the device and accessories organized.</p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,29 +230,29 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. Does the RENPHO Active Thermacool 2 provide both heat and cold?",
+            "answer": "<p>Yes, its thermal head provides four heat and four cooling settings. </p><p></p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. How hot does the RENPHO Thermacool 2 get?",
+            "answer": "<p>The heating function reaches up to <strong>113°F (45°C)</strong>.</p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. How cold does the Thermacool 2 get?",
+            "answer": "<p>Its cooling function reaches as low as <strong>46°F (8°C)</strong></p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "5. How many massage heads come with the Thermacool 2?",
+            "answer": "<p>It includes <strong>five attachments</strong>, including the specialized Heat & Cool massage head. </p>"
           }
         },
         "faq_5": {
