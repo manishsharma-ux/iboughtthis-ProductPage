@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/cream_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/cream_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/cream_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Mitopure® Formula – Features Timeline's patented bioactive ingredient.",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Peptide Enriched – Supports smoother and firmer-looking skin.",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Barrier Support – Helps nourish and reinforce dry skin.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Niacinamide Blend – Supports healthy-looking skin and its moisture barrier.",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/cream_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>Timeline Mito-Biotic Barrier Cream is designed for people who want more than basic hydration from their daily moisturizer. Its rich, protective texture focuses on replenishing dry skin while supporting the skin barrier, making it particularly relevant when skin feels tight, depleted, or in need of extra nourishment. At the center of the formula is <strong>Mitopure®</strong>, Timeline’s patented bioactive ingredient. The cream pairs it with familiar skincare ingredients including <strong>peptides, niacinamide, caffeine, and shea butter</strong>. Together, these ingredients are intended to support skin hydration, collagen-related functions, and the overall health of the moisture barrier. The inclusion of peptides and niacinamide makes the formula particularly interesting for mature or dry skin. Rather than focusing only on temporarily moisturizing the surface, the ingredient combination is positioned to support smoother, firmer-looking skin and help maintain the barrier that limits moisture loss. Shea butter adds the richer emollient feel expected from a barrier-focused cream. Despite being a richer moisturizer, the cream is described as having a satin-matte finish rather than leaving an excessively greasy layer. This makes it potentially easier to incorporate into a regular skincare routine, particularly as the moisturizing step after serums and other lighter treatments. </p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,36 +230,36 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. What is Timeline Mito-Biotic Barrier Cream used for?",
+            "answer": "<p>It is designed to moisturize dry skin, strengthen the moisture barrier, and address visible signs of aging.</p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. What are the key ingredients in the Barrier Cream?",
+            "answer": "<p>Key ingredients include Mitopure, peptides, niacinamide, caffeine, and shea butter. </p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. Is Timeline Mito-Biotic Barrier Cream suitable for dry skin?",
+            "answer": "<p>Yes, its rich and nourishing formula is specifically designed to provide substantial moisture to dry skin.</p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. Can I use this moisturizer with a serum?",
+            "answer": "<p>Yes, it can be applied as the moisturizing step after serums in a skincare routine.</p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
-            "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
+            "question": "5. How much product is in the full-size container?",
+            "answer": "<p>The full-size Barrier Cream contains <strong>1.7 fl oz (50 mL)</strong>.</p>"
           }
         }
       },
