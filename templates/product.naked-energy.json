@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/naked_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/naked_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/naked_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Clears pores without drying your skin200 mg Natural Caffeine – Uses caffeine sourced from coffee beans to provide an energy boost for workouts. out",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "2 g CarnoSyn® Beta-Alanine – Included as a performance-focused ingredient to complement demanding training sessions",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Creatine & L-Arginine – Provides 1 g of creatine and 1 g of AjiPure® L-arginine per serving as part of its workout-support formula.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "No Artificial Sweeteners or Flavors – The unflavored formula avoids artificial sweeteners, flavors, and colors for a simpler ingredient profile.",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/naked_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>NAKED Energy is a practical option for men and women looking for a relatively simple pre-workout formula without the long list of artificial flavors, colors, and sweeteners found in many conventional products. Its unflavored design also makes it easy to mix into water, smoothies, or other workout drinks without adding a strong flavor. The formula centers around several familiar performance-focused ingredients. Each serving provides 200 mg of caffeine sourced from coffee beans, along with 2 g of CarnoSyn® beta-alanine, 1 g of creatine, and 1 g of AjiPure® L-arginine. It also contains vitamin C, B vitamins, folate, and calcium. The combination is intended to support energy, strength, power, stamina, and focus during training. One of the product's main advantages is its minimalist approach. The unflavored version contains 10 listed ingredients and is made without artificial sweeteners, flavors, or colors. It's also vegan, uses non-GMO ingredients, and is NSF Certified for contents, adding another level of quality assurance for people who pay close attention to what's in their supplements. </p><p></p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,28 +230,28 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. What is NAKED Energy Pre-Workout?",
+            "answer": "<p>It is a pre-workout powder formulated to supportenergy and workoutperformance.</p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. Who can use NAKED Energy?",
+            "answer": "<p>It is marketed for both men and women looking for pre-workout support. </p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. When should I take NAKED Energy?",
+            "answer": "<p>It is generally taken before exercise, following the serving directionson the productlabel.</p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
+            "question": "4. Is NAKED Energy suitable for daily workouts?",
             "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
           }
         },
