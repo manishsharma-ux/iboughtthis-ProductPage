@@ -12,29 +12,6 @@
     "a17542b3-01a6-4452-b34d-bf8777e225c3": {
       "type": "advanced-content",
       "blocks": {
-        "slide_hmJ8iB": {
-          "type": "slide",
-          "settings": {
-            "image_position": "center center",
-            "show_overlay": true,
-            "overlay_color": "#000000",
-            "overlay_opacity": 30,
-            "sub": "",
-            "color_sub": "#ffffff",
-            "title": "Best Products to Buy in 2026",
-            "title_size": "h1",
-            "color_title": "#ffffff",
-            "code": "Discover trending, top-rated products worth shopping this year.",
-            "color_des": "#ffffff",
-            "button_text": "Shop Top Picks",
-            "link_button": "",
-            "button_style": "btn-outline btn-outline-white",
-            "slide_link": "",
-            "vertical": "middle",
-            "horizontal": "center",
-            "text_align": "center"
-          }
-        },
         "template--15491952836815__a17542b3-01a6-4452-b34d-bf8777e225c3-html-1": {
           "type": "slide",
           "settings": {
@@ -58,11 +35,34 @@
             "horizontal": "center",
             "text_align": "center"
           }
+        },
+        "slide_hmJ8iB": {
+          "type": "slide",
+          "settings": {
+            "image_position": "center center",
+            "show_overlay": true,
+            "overlay_color": "#000000",
+            "overlay_opacity": 30,
+            "sub": "",
+            "color_sub": "#ffffff",
+            "title": "Best Products to Buy in 2026",
+            "title_size": "h1",
+            "color_title": "#ffffff",
+            "code": "Discover trending, top-rated products worth shopping this year.",
+            "color_des": "#ffffff",
+            "button_text": "Shop Top Picks",
+            "link_button": "shopify://collections/top-picks-of-2026",
+            "button_style": "btn-outline btn-outline-white",
+            "slide_link": "",
+            "vertical": "middle",
+            "horizontal": "center",
+            "text_align": "center"
+          }
         }
       },
       "block_order": [
-        "slide_hmJ8iB",
-        "template--15491952836815__a17542b3-01a6-4452-b34d-bf8777e225c3-html-1"
+        "template--15491952836815__a17542b3-01a6-4452-b34d-bf8777e225c3-html-1",
+        "slide_hmJ8iB"
       ],
       "custom_css": [
         ".grid__item-inner {padding: 50px 0;}",
