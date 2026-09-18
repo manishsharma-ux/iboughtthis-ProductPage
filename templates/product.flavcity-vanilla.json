@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/flavcity_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/flavcity_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/flavcity_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "25g Protein – High-protein serving from whey and collagen.",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "10g Collagen – Grass-fed bovine collagen peptides per serving.",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Grass-Fed Whey – Made with undenatured whey protein concentrate.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Functional Mushrooms – Includes organic reishi and cordyceps powders.",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/flavcity_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>FlavCity Vanilla Protein Smoothie takes an all-in-one approach by combining <strong>grass-fed whey protein with grass-fed bovine collagen</strong>. The current formula provides 25g of total protein and 10g of collagen per serving. Whey supplies high-quality protein for maintaining and building muscle, while collagen provides additional protein and amino acids associated with connective tissues. The formula also contains coconut milk, banana, and vanilla powders for flavor and texture. The addition of <strong>organic reishi and cordyceps mushroom powders</strong> differentiates it from basic protein powders, although evidence for specific focus or energy benefits from functional mushrooms varies by ingredient, dose, and population. The powder contains no added sugar and uses stevia and monk fruit for sweetness. At about 160 calories per 43g serving in the current Vanilla Cream formula, it works well as a protein-rich shake or snack, though a complete meal may require additional calories and nutrients depending on individual needs. </p><h3></h3>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,36 +230,36 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. How much protein does FlavCity Vanilla Protein Smoothie provide?",
+            "answer": "<p>The current Vanilla Cream formula provides <strong>25g of total protein per serving</strong>. </p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. How much collagen is in each serving?",
+            "answer": "<p>Each serving contains <strong>10g of grass-fed bovine collagen</strong>. </p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. Does FlavCity Vanilla contain added sugar?",
+            "answer": "<p>No, the current formula lists <strong>0g of added sugar</strong> per serving. </p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. Does it contain reishi and cordyceps?",
+            "answer": "<p>Yes, organic reishi and organic cordyceps powders are included in the ingredient list.</p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
-            "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
+            "question": "5. How do you prepare FlavCity Protein Smoothie?",
+            "answer": "<p>Simply mix a serving with water or your preferred milk and shake; no blender is required.</p>"
           }
         }
       },
