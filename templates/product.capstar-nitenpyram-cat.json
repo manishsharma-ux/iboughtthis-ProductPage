@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/capstar_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/capstar_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/capstar_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Fast Acting – Starts killing adult fleas within 30 minutes.",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "11.4 mg Nitenpyram – Formulated for cats weighing 2–25 lbs.",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Over 90% Effective – Exceeds 90% effectiveness against adult fleas on cats within six hours in studies.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Oral Tablet – Give directly by mouth or hide in food.",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/capstar_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>Capstar is designed around one primary goal: killing adult fleas quickly. Its active ingredient, <strong>nitenpyram</strong>, belongs to the neonicotinoid class and acts on the flea nervous system. Unlike topical treatments that need to spread across the skin, Capstar is administered orally, either directly or hidden in a small amount of food. Speed is the product's biggest advantage. According to the official U.S. label, Capstar begins working within <strong>30 minutes</strong>, and studies found greater than 90% effectiveness against adult fleas on cats within six hours. This makes it particularly useful when a pet already has visible adult fleas and fast knockdown is the priority. For cats weighing <strong>2–25 pounds</strong>, the labeled dose is one 11.4 mg tablet. If the cat becomes reinfested, another dose can be administered as often as once per day. The product is intended for cats and kittens that are at least four weeks old and weigh at least two pounds. One important limitation is that Capstar is primarily a short-term adult-flea treatment rather than a persistent preventive. It kills fleas currently on the animal, but reinfestation can occur as new fleas emerge from the environment. Effective flea management may therefore require treating other infested pets and addressing immature flea stages in the home with an appropriate longer-term strategy. </p><p></p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,36 +230,36 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. How quickly does Capstar work on cats?",
+            "answer": "<p>Capstar begins killing adult fleas within <strong>30 minutes</strong> of administration. </p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. What cats can take Capstar?",
+            "answer": "<p>It is labeled for cats and kittens at least <strong>4 weeks old and weighing 2 pounds or more</strong>.</p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. How long does Capstar protect against fleas?",
+            "answer": "<p>Capstar provides rapid adult-flea control but does not provide persistent protection against reinfestation. </p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. Can Capstar be given more than once?",
+            "answer": "<p>Yes, if reinfestation occurs, the labeled directions allow another dose as often as once per day. </p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
-            "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
+            "question": "5. Does Capstar require a prescription?",
+            "answer": "<p>No, Capstar is available as an over-the-counter animal medication in the United States. </p>"
           }
         }
       },
