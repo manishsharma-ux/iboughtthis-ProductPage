@@ -213,8 +213,8 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>These full-length orthotic insoles are built for people who need reliable support without overly rigid correction. The design focuses on <strong>moderate pronation control</strong>, making them suitable for everyday walking, standing, work shifts, and light-to-moderate activity rather than extreme athletic correction. The arch support follows a clinically designed contour that helps stabilize the foot and ankle, reducing excess movement that often contributes to plantar fasciitis, heel pain, and general foot strain. Unlike flat cushioning inserts, the structured arch works to distribute pressure more evenly across the foot, which can noticeably reduce stress on the heel and plantar fascia over time. Cushioning is where these insoles quietly stand out. A <strong>dual-layer system</strong> combines firm support with softer top-layer padding, offering comfort without collapsing under body weight. The heel area is especially well-padded, absorbing impact with each step and helping reduce fatigue during long periods of standing or walking. Fit is straightforward and frustration-free. Since they’re sized by shoe rather than trimmed, the insoles sit cleanly inside athletic shoes, walking shoes, work footwear, and many casual styles without shifting or bunching. That makes them practical for people who rotate shoes throughout the week.</p>",
         "body_align": "center",
         "content_width": "narrow",
         "align-heading": "center",
@@ -230,35 +230,35 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. What are PowerStep Pinnacle Insoles used for?",
+            "answer": "<p>They provide arch support and cushioning to help relieve plantar fasciitis, heel pain, and everyday foot discomfort.</p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. Do PowerStep Pinnacle Insoles provide arch support?",
+            "answer": "<p>Yes, they feature built-in arch support designed to stabilize the foot and help control moderate pronation.</p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. Can these insoles help with plantar fasciitis?",
+            "answer": "<p>Yes, they are specifically designed to provide support and cushioning for people experiencing plantar fasciitis and heel pain.</p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. Can I use PowerStep Pinnacle Insoles in everyday shoes?",
+            "answer": "<p>Yes, these full-length insoles are designed for use in a variety of everyday and athletic footwear.</p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
+            "question": "5. Do PowerStep Pinnacle Insoles need to be trimmed?",
             "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
           }
         }
