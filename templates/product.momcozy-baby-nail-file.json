@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/nail_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/nail_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/nail_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Rechargeable built-in battery with Type-C charging",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "4 adjustable speed settings (lowest 3500 RPM)",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Touch-and-stop safety function",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "7 grinding head replacement pads (4 baby, 3 adult)  ",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/nail_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>Trimming a baby’s nails can be stressful, especially with traditional clippers that increase the risk of nicks or accidental cuts. This electric baby nail file is designed to make grooming safer, quieter, and easier from newborn stage through toddler years—and even for adults. Powered by a built-in rechargeable battery, it eliminates the need for constant battery replacements and charges conveniently via Type-C cable. Unlike disposable battery-operated trimmers, this design offers long-term durability while keeping your grooming kit simple and organized. For safety, the device is not intended for use while charging. The adjustable speed system includes four grinding settings, allowing parents to choose the most appropriate level depending on age and nail thickness. The lowest 3500 RPM setting provides extra-gentle trimming for delicate newborn nails. A touch-and-stop function adds another layer of protection by helping prevent accidental injury if sudden movement occurs during grooming.</p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,36 +230,36 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. Is the Momcozy Electric Baby Nail File safe for newborns?",
+            "answer": "<p>Yes, its gentle low-speed setting is designed for safely trimming newborn nails.&nbsp;</p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. Does it have different speed settings?",
+            "answer": "<p>Yes, it offers adjustable speeds to suit babies and other family members.</p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. Does the nail file include a light?",
+            "answer": "<p>Yes, it features a gentle night light for better visibility while trimming.</p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. How many grinding pads are included?",
+            "answer": "<p>It comes with seven replacement grinding pads for different nail-care needs.</p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
-            "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
+            "question": "5. Can adults use the Momcozy Baby Nail File?",
+            "answer": "<p>Yes, the included grinding options make it suitable for the whole family.&nbsp;</p>"
           }
         }
       },
