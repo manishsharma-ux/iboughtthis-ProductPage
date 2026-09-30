@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/tapo_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/tapo_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/tapo_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "2K QHD resolution delivers detailed 2560 × 1440 video.",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "100% wire-free magnetic design allows flexible installation and easy repositioning.",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Color night vision uses a starlight sensor and built-in spotlights for clearer nighttime footage.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "AI detection identifies people, pets, and vehicles to provide more relevant alerts.",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/tapo_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>The Tapo MagCam 2K+ is a versatile wireless security camera designed for homeowners who want reliable monitoring without complicated installation. Its <strong>2K QHD resolution</strong> captures detailed 2560 × 1440 footage, while the wide field of view helps cover more of the surrounding area. The built-in starlight sensor and spotlights also provide color night vision, making it easier to identify activity after dark. One of its biggest advantages is the <strong>100% wire-free design</strong>. The rechargeable battery eliminates the need for a permanent power connection, while the magnetic base makes positioning and adjusting the camera particularly convenient. Tapo rates the battery for up to <strong>300 days</strong> under specific testing conditions, although actual runtime varies with usage and settings.</p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,36 +230,36 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. What resolution does the Tapo MagCam C425 provide?",
+            "answer": "<p>It records in 2K QHD for clear and detailed security footage.&nbsp;</p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. How long can the battery last on one charge?",
+            "answer": "<p>Its 10,000mAh battery is rated for up to 300 days of use, depending on activity and settings.&nbsp;</p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. Does the Tapo MagCam require a subscription?",
+            "answer": "<p>No, it supports local microSD storage up to 512GB, while Tapo Care cloud storage is optional.&nbsp;</p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. Can the camera detect people and vehicles?",
+            "answer": "<p>Yes, it offers AI detection for people, pets, and vehicles</p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
-            "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
+            "question": "5. Is the Tapo MagCam suitable for outdoor use?",
+            "answer": "<p>Yes, it has an IP66 weather-resistant design for indoor and outdoor installation.</p>"
           }
         }
       },
