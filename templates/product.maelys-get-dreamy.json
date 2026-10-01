@@ -87,6 +87,7 @@
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/maelys_2.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +96,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/maelys_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -103,6 +105,7 @@
         "image_item_hHQC8n": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/maelys_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -123,8 +126,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +135,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +153,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Overnight Body Care: Designed to moisturize and improve the look of skin while you sleep.",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Toning Formula: Formulated to support firmer, smoother-looking skin.",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Milk Thistle: Features milk thistle as one of its key skincare ingredients.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Uva-Ursi: Contains uva-ursi as part of its skin-toning formula.",
             "description": ""
           }
         }
@@ -180,7 +192,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/maelys_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +213,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>MAËLYS GET-DREAMY Overnight Toning Whip is designed as a nighttime body care treatment that focuses on improving the appearance of skin texture and tone. The formula combines botanical extracts such as milk thistle and uva-ursi with moisturizing ingredients to support smoother-looking skin when used consistently as part of an evening routine. Overnight application allows the product to work alongside the skin’s natural nighttime renewal cycle, helping maintain a softer and more balanced surface by morning. The whipped cream texture is intentionally lightweight, allowing it to spread easily across larger body areas like thighs, hips, and abdomen. This texture also helps the cream absorb quickly compared to heavier lotions, reducing the sticky or greasy finish that can occur with dense body treatments. As it melts into the skin, moisturizing ingredients such as glycerin and shea butter help reinforce hydration and maintain skin comfort throughout the night. The formula is positioned for individuals looking to address visible uneven skin texture, including areas where the appearance of cellulite may be more noticeable. With regular use, the cream supports smoother-feeling skin while maintaining moisture balance. Packaged in a 6.8 fl oz jar, it provides a practical size for consistent nightly application across targeted areas of the body.</p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,36 +230,36 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. What is MAËLYS GET-DREAMY used for?",
+            "answer": "<p>It is an overnight body cream designed to moisturize and promote smoother, firmer-looking skin.&nbsp;</p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. What are the key ingredients in GET-DREAMY?",
+            "answer": "<p>Key ingredients include milk thistle, uva-ursi, shea butter, and glycerin.&nbsp;</p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. When should I use GET-DREAMY?",
+            "answer": "<p>It is designed to be applied as part of your nighttime body-care routine.&nbsp;</p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. What is the texture of GET-DREAMY?",
+            "answer": "<p>It has a lightweight whipped texture formulated to absorb quickly into the skin.&nbsp;</p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
-            "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
+            "question": "5. How much product comes in the container?",
+            "answer": "<p>Each container includes 6.8 fl oz of body cream.</p>"
           }
         }
       },
