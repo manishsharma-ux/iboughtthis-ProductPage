@@ -84,9 +84,19 @@
     "list_image_Vn6ErC": {
       "type": "list-image",
       "blocks": {
+        "image_item_PYDa9a": {
+          "type": "image_item",
+          "settings": {
+            "image": "shopify://shop_images/deco_2.jpg",
+            "product": "",
+            "top": 30,
+            "left": 60
+          }
+        },
         "image_item_9JPCdE": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/deco_3.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -95,6 +105,7 @@
         "image_item_Wc4Xjj": {
           "type": "image_item",
           "settings": {
+            "image": "shopify://shop_images/deco_4.jpg",
             "product": "",
             "top": 30,
             "left": 60
@@ -110,6 +121,7 @@
         }
       },
       "block_order": [
+        "image_item_PYDa9a",
         "image_item_9JPCdE",
         "image_item_Wc4Xjj",
         "image_item_hHQC8n"
@@ -123,8 +135,8 @@
         "marginmobile": "0px 0px 0px 0px",
         "setwidth": "container",
         "bgsection": "rgba(0,0,0,0)",
-        "title_top": "Sub Title Top",
-        "title": "Custom content",
+        "title_top": "",
+        "title": "About the Product",
         "des": "",
         "align-heading": "center",
         "arrows": true,
@@ -132,7 +144,16 @@
         "dots": true,
         "infinite": true,
         "rows": "1",
-        "show": 3
+        "show": 3,
+        "image_ratio": "portrait",
+        "image_fit": "contain",
+        "tile_padding": 16,
+        "tile_bg": "#ffffff",
+        "tile_border": true,
+        "tile_border_color": "#e6e6e6",
+        "tile_radius": 14,
+        "gap": 24,
+        "image_zoom": true
       }
     },
     "features": {
@@ -141,28 +162,28 @@
         "feature_K9UM4h": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Tri-Band BE10000 Wi-Fi 7 – Delivers combined theoretical wireless speeds approaching 10 Gbps across three frequency bands.",
             "description": ""
           }
         },
         "feature_cPfDVF": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Multi-Link Operation & 320 MHz Channels – Supports faster, more responsive connections with compatible Wi-Fi 7 devices.",
             "description": ""
           }
         },
         "feature_9bbFcH": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Four 2.5 Gbps Ethernet Ports Per Unit – Enables multi-gig wired connections for gaming, streaming, and networking equipment.",
             "description": ""
           }
         },
         "feature_PTFmAM": {
           "type": "feature",
           "settings": {
-            "text": "Clears pores without drying your skin out",
+            "text": "Intelligent Whole-Home Mesh – Uses AI-driven optimization and seamless roaming to improve coverage throughout the home.",
             "description": ""
           }
         }
@@ -180,7 +201,7 @@
         "fallback_body": "",
         "columns": "1",
         "icon_color": "#1c6b33",
-        "image": "shopify://shop_images/grace4.jpg",
+        "image": "shopify://shop_images/deco_5.jpg",
         "image_position": "right",
         "image_width": 45,
         "image_caption": "",
@@ -201,8 +222,10 @@
         "setwidth": "container",
         "bgsection": "#ffffff",
         "title_top": "",
-        "title": "About the ProductTalk about you product",
-        "text": "<p>Expert Backed Review Summary</p>",
+        "title": "Expert Backed Review Summary",
+        "text": "<p>The TP-Link Deco BE63 brings next-generation Wi-Fi 7 technology to modern households that demand reliable connectivity across numerous devices. Its <strong>tri-band BE10000 architecture</strong> delivers theoretical wireless speeds of up to 5,188 Mbps on 6 GHz, 4,324 Mbps on 5 GHz, and 574 Mbps on 2.4 GHz. Wi-Fi 7 features such as Multi-Link Operation (MLO), 320 MHz channel bandwidth, and 4K-QAM help improve throughput and responsiveness when paired with compatible devices. The 6 GHz band offers additional spectrum that can reduce congestion, while intelligent mesh technology helps devices maintain stable connections as users move between rooms. Each Deco BE63 unit includes <strong>four 2.5 Gbps WAN/LAN Ethernet ports and a USB port</strong>, providing flexible connectivity for multi-gig internet plans, gaming consoles, and wired networking equipment. Setup is guided through the TP-Link Deco app, which also provides network monitoring, device management, guest Wi-Fi, and parental controls. TP-Link HomeShield adds security features, although certain advanced protections require a subscription. The system supports backward compatibility with older Wi-Fi devices and can be expanded using other compatible Deco units. However, advertised wireless speeds represent combined theoretical maximums rather than speeds achievable by a single device. Overall, the Deco BE63 is a strong option for upgrading busy households to faster, more flexible mesh networking.</p>",
+        "body_align": "center",
+        "content_width": "narrow",
         "align-heading": "center",
         "paddingsection": "56px 0px 56px 0px",
         "paddingmobile": "36px 0px 36px 0px",
@@ -216,36 +239,36 @@
         "faq_1": {
           "type": "faq",
           "settings": {
-            "question": "Where does this product ship from, and how fast is delivery?",
-            "answer": "<p>Orders are fulfilled by Amazon, so delivery speed depends on your Prime status and location. Most listings ship within one to two business days.</p>"
+            "question": "1. What is the maximum speed of the TP-Link Deco BE63?",
+            "answer": "<p>It offers combined theoretical Wi-Fi speeds of approximately 10 Gbps across the 6 GHz, 5 GHz, and 2.4 GHz bands.</p>"
           }
         },
         "faq_2": {
           "type": "faq",
           "settings": {
-            "question": "Can I return it if it isn't right for me?",
-            "answer": "<p>Yes. Returns are handled under Amazon's standard returns policy, which is normally 30 days from delivery. Check the listing for any category-specific exceptions.</p>"
+            "question": "2. Does the TP-Link Deco BE63 support Wi-Fi 6 and older devices?",
+            "answer": "<p>Yes, it is backward compatible with Wi-Fi 6, Wi-Fi 5, and older supported wireless standards.</p>"
           }
         },
         "faq_3": {
           "type": "faq",
           "settings": {
-            "question": "Is the price on this page current?",
-            "answer": "<p>Amazon pricing changes frequently. We review prices regularly, but the figure on the Amazon listing is always the one that applies at checkout.</p>"
+            "question": "3. How many Ethernet ports does each Deco BE63 unit have?",
+            "answer": "<p>Each unit includes four auto-sensing 2.5 Gbps WAN/LAN Ethernet ports.</p>"
           }
         },
         "faq_4": {
           "type": "faq",
           "settings": {
-            "question": "How do you test and score the products you review?",
-            "answer": "<p>Our reviewers assess each product against the criteria that matter for its category, combine that with verified buyer feedback at scale, and publish a single score out of five.</p>"
+            "question": "4. Can I expand my existing TP-Link Deco network with the BE63?",
+            "answer": "<p>Yes, the Deco BE63 can work with other compatible TP-Link Deco models to expand mesh coverage.</p>"
           }
         },
         "faq_5": {
           "type": "faq",
           "settings": {
-            "question": "Do you earn money if I buy through your link?",
-            "answer": "<p>Yes. We earn a commission on qualifying purchases, at no extra cost to you. It never affects our scores or which products we recommend.</p>"
+            "question": "5. Does the TP-Link Deco BE63 require a subscription?",
+            "answer": "<p>No subscription is required for basic networking, but some advanced HomeShield security and parental-control features require a paid plan.</p>"
           }
         }
       },
